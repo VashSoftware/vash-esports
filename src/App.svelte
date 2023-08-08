@@ -1,14 +1,21 @@
-<main class="container">
+<div class="container">
+    <div>
+        <button>Login</button>
+        <button>Register</button>
+    </div>
+
     <h1>osu! Intermediate 2023</h1>
     <form on:submit={submitForm}>
-        <input id="osuId" type="number" placeholder="osu! ID" />
+        <div class="form-group">
+            <input id="osuId" type="number" placeholder="osu! ID" />
+        </div>
         <input id="email" type="email" placeholder="Email"/>
         <button type="submit">Register</button>
     </form>
-</main>
+</div>
 
 <script lang="ts">
-    import "@picocss/pico";
+    import 'bootstrap/dist/css/bootstrap.min.css';
     import axios from "axios";
 
     async function submitForm(e: Event) {
@@ -22,6 +29,6 @@
             "email": email
         })
 
-        console.log(response)        
+        console.log(response)
     }
 </script>
