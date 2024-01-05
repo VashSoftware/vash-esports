@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite dev --host",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
@@ -13,6 +13,7 @@
     "@sveltejs/kit": "^1.20.4",
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
     "@tsconfig/svelte": "^5.0.0",
+    "cypress": "^12.17.4",
     "esbuild-wasm": "^0.18.9",
     "sass": "^1.64.2",
     "svelte": "^4.0.5",
@@ -21,12 +22,14 @@
     "tslib": "^2.6.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
+    "vitest": "^0.34.2",
     "zod": "^3.22.1"
   },
   "dependencies": {
     "@picocss/pico": "^1.5.10",
     "@popperjs/core": "^2.11.8",
-    "@supabase/supabase-js": "^2.32.0",
+    "@supabase/auth-helpers-sveltekit": "^0.10.2",
+    "@supabase/supabase-js": "^2.33.1",
     "@tanstack/svelte-query": "^4.32.6",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.1"
