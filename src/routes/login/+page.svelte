@@ -15,7 +15,7 @@
       password: password,
     });
 
-    if (data) {
+    if (data.user) {
       user.set(data.user);
       goto("/");
     } else if (error) {
