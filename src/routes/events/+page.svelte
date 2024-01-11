@@ -1,11 +1,5 @@
 <script lang="ts">
-    import { createQuery} from "@tanstack/svelte-query";
-
-    const Event = {
-
-    }
-
-    // const query = createQuery<>({})
+    export let data;
 </script>
 
 <div class="row">
@@ -31,37 +25,17 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>1</td>
-            <td>osu! Beginner 2023</td>
-            <td>0/256</td>
-            <td>
-                <button class="btn btn-primary">Register</button>
-            </td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>osu! Intermediate 2023</td>
-            <td>0/128</td>
-            <td>
-                <button class="btn btn-primary">Register</button>
-            </td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>osu! Advanced 2023</td>
-            <td>0/64</td>
-            <td>
-                <button class="btn btn-primary">Register</button>
-            </td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>osu! Open 2023</td>
-            <td>0/32</td>
-            <td>
-                <button class="btn btn-primary">Register</button>
-            </td>
-        </tr>
+        {#each data.events as event}
+            <tr>
+                <td>{event.id}</td>
+                <td>{event.name}</td>
+                <td>{event.registrations?.length}/{event.maxRegistrations}</td>
+                <td>
+                    <a href="/events/{event.id}/register">
+                        <button class="btn btn-primary">Register</button>
+                    </a>
+                </td>
+            </tr>
+        {/each}
     </tbody>
 </table>
