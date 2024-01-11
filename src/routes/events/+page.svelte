@@ -7,8 +7,8 @@
         <h1>Events</h1>
     </div>
     <div class="col-2">
-        <a class="disabled" href="/events/create">
-            <button class="btn btn-primary disabled">
+        <a href="/events/create">
+            <button class="btn btn-primary">
                 Create Event
             </button>
         </a>
