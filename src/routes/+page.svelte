@@ -1,42 +1,14 @@
 <script>
     import { goto } from '$app/navigation'
     import { createQuery } from "@tanstack/svelte-query";
+    import { supabase } from '../lib/supabaseClient';
 
     const query = createQuery({
         queryKey: ['events'],
         queryFn: () => fetchEvents()
     })
 
-    const events = [
-        {
-            "id": 1,
-            "name": "osu! Advanced 2023",
-            "registrations": 32,
-            "maxRegistrations": 64,
-            "registered": true
-        },
-        {
-            "id": 2,
-            "name": "osu! Advanced 2023",
-            "registrations": 32,
-            "maxRegistrations": 64,
-            "registered": false
-        },
-        {
-            "id": 3,
-            "name": "osu! Advanced 2023",
-            "registrations": 32,
-            "maxRegistrations": 64,
-            "registered": true
-        },
-        {
-            "id": 4,
-            "name": "osu! Advanced 2023",
-            "registrations": 32,
-            "maxRegistrations": 64,
-            "registered": false
-        },
-    ]
+    export let data;
 </script>
 
 <div class='text-center py-5'>
@@ -57,7 +29,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each events as event}
+            {#each data.events as event}
                 <tr role='button' class='align-self-center' on:click={() => goto(`/events/${event.id}`)}>
                     <td class="align-middle">{event.name}</td>
                     <td class="align-middle text-center">{event.registrations} / {event.maxRegistrations}</td>
