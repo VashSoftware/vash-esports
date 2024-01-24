@@ -1,7 +1,5 @@
-import { supabase } from "$lib/supabaseClient";
-
-export async function load() {
-  const { data, error } = await supabase.from("events").select();
+export async function load(request) {
+  const { data, error } = await request.locals.supabase.from("events").select();
 
   return {
     events: data,

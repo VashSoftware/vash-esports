@@ -1,62 +1,39 @@
-<script lang="ts" context="module">
-  import { supabase } from "../../lib/supabaseClient";
-  import { user } from "../../stores";
-  import { goto } from "$app/navigation";
-
-  let email: string;
-  let password: string;
-  let errorMessage: string | null = null;
-
-  const login = async (event: SubmitEvent) => {
-    errorMessage = null;
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (data.user) {
-      user.set(data.user);
-      goto("/");
-    } else if (error) {
-      errorMessage = error.message;
-    }
-  };
+<script lang="ts">
+  export let form;
 </script>
 
 <div class="row justify-content-center">
-  <form class="d-flex col-4" on:submit|preventDefault={login}>
+  <form class="d-flex col-4" method="post">
     <div class="col">
-      {#if errorMessage}
+      {#if form?.error}
         <div class="alert alert-danger" role="alert">
-          {errorMessage}
+          {form.error.message}
         </div>
       {/if}
       <div class="mb-3">
         <div class="pt-3 pb-3">
-          <label for="" class="form-label">E-mail</label>
-          <input
-            type="text"
-            name=""
-            id=""
-            class="form-control"
-            placeholder=""
-            aria-describedby="helpId"
-            bind:value={email}
-          />
+          <label class="form-label"
+            >E-mail
+            <input
+              type="text"
+              name="email"
+              class="form-control"
+              placeholder=""
+              aria-describedby="helpId"
+            />
+          </label>
         </div>
 
         <div class="pt-3 pb-3">
-          <label for="" class="form-label">Password</label>
-          <input
-            type="password"
-            name=""
-            id=""
-            class="form-control"
-            placeholder=""
-            aria-describedby="helpId"
-            bind:value={password}
-          />
+          <label for="" class="form-label"
+            >Password <input
+              type="password"
+              name="password"
+              class="form-control"
+              placeholder=""
+              aria-describedby="helpId"
+            /></label
+          >
         </div>
 
         <div class="text-center pt-3">

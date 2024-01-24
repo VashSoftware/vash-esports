@@ -28,7 +28,7 @@
   "dependencies": {
     "@picocss/pico": "^1.5.10",
     "@popperjs/core": "^2.11.8",
-    "@supabase/auth-helpers-sveltekit": "^0.10.2",
+    "@supabase/ssr": "^0.0.10",
     "@supabase/supabase-js": "^2.33.1",
     "@tanstack/svelte-query": "^4.32.6",
     "axios": "^1.4.0",

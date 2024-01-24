@@ -1,4 +1,3 @@
-import { supabase } from "$lib/supabaseClient.js";
 import { redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 
@@ -6,7 +5,7 @@ export const actions = {
   default: async ({ request }: { request: Request }) => {
     const formData = await request.formData();
 
-    const { error } = await supabase
+    const { error } = await request.locals.supabase
       .from("events")
       .insert({ name: formData.get("event-title") });
 

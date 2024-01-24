@@ -1,7 +1,7 @@
-import { supabase } from "$lib/supabaseClient";
+import type { PageServerLoad } from './$types';
 
-export async function load() {
-        const { data, error } = await supabase.from("events").select();
+export const load: PageServerLoad = async (request) => {
+        const { data, error } = await request.locals.supabase.from("events").select();
 
         return {
             events: data

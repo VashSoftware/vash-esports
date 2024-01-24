@@ -1,12 +1,7 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { supabase } from "$lib/supabaseClient";
-  import { user } from "../../stores";
-  const logOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    user.set(null);
-    goto("/");
-  };
+  import type { PageData } from "./$types";
+
+  export let data: PageData;
 </script>
 
 <h1>Account</h1>
@@ -17,6 +12,9 @@ Email: stan@stanrunge.dev<button class="btn btn-danger">Change email</button>
 <a href="staff">
   <button class="btn btn-primary">Staff page</button>
 </a>
-<button on:click={logOut} class="btn btn-danger">Log out</button>
+<form method="POST">
+  <button type="submit" class="btn btn-danger">Log out</button>
+</form>
+
 
 <h3>Purchases (0)</h3>
