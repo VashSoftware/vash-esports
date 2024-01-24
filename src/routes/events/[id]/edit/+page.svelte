@@ -11,13 +11,22 @@
   </label>
 </form>
 
-- Registrations - Rules - Rounds
+- Rules
 
 <h2>Rounds ({data.rounds.length})</h2>
 <ul>
   {#each data.rounds as round}
     <li>
       {round.id}
+    </li>
+  {/each}
+</ul>
+
+<h2>Registrations ({data.registrations.length})</h2>
+<ul>
+  {#each data.registrations as registration}
+    <li>
+      {registration.id}
     </li>
   {/each}
 </ul>
