@@ -1,17 +1,20 @@
-<script>
-    const register = () => {
-
-    }
+<script lang="ts">
+  export let data;
 </script>
 
-<div class='text-center py-5'>
-    <h1>Register</h1>
+<div class="text-center py-5">
+  <h1>Register for osu! Advanced 2024</h1>
 </div>
 
-<div class="container">
-    <form>
-        <div class="text-center">
-            <button class="btn btn-primary" on:click={register}>Register</button>
-        </div>
-    </form>
-</div>
+<form method="POST">
+  <div class="text-center">
+    Team:
+    <select name="team-id">
+      {#each data.teamMembers as team}
+        <option value={team.teams.id}>{team.teams.name}</option>
+      {/each}
+    </select>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+  </div>
+</form>

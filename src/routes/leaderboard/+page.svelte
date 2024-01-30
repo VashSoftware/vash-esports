@@ -1,23 +1,35 @@
-<script>
-    export let data;
+<script lang="ts">
+  import { goto } from '$app/navigation';
+
+  export let data;
 </script>
 
-<h1>Leaderboard</h1>
+<div class="py-5 text-center">
+  <h1>Leaderboard</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Participated in</th>
-            <th scope="col">Rating</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Stan</td>
-            <td>10</td>
-            <td>2000</td>
-        </tr>
-    </tbody>
+  <div class="btn-group" role="group" aria-label="Basic example">
+    <button type="button" class="btn btn-primary">Users</button>
+    <button type="button" class="btn btn-primary">Teams</button>
+  </div>
+</div>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Matches Played</th>
+      <th scope="col">Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    {#each data.teams as team}
+      <tr
+      role="button"
+      on:click={() => goto(`/teams/${team.id}`)}>
+        <td>{team.name}</td>
+        <td>{team.participated}</td>
+        <td>{1000 || team.rating}</td>
+      </tr>
+    {/each}
+  </tbody>
 </table>
-

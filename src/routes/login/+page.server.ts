@@ -1,4 +1,3 @@
-import { user } from "../../stores";
 import type { Actions } from "./$types";
 import { fail, redirect } from "@sveltejs/kit";
 
@@ -11,8 +10,6 @@ export const actions = {
       password: reqData.get("password") as string,
     });
 
-    console.log(data)
-
     if (error) {
       return fail(error.status, {
         error: {
@@ -22,7 +19,6 @@ export const actions = {
     }
 
     if (data.user) {
-      user.set(data.user);
       throw redirect(302, "/");
     }
   },
