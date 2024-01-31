@@ -6,12 +6,12 @@
 
 <div class="text-center py-5">
   <h1><b>Vash Esports</b></h1>
-  <p>Next-Gen osu! Events</p>
+  <p>Next-Gen Esports Platform</p>
 </div>
 
 <div class="py-4">
   <div class="text-center">
-    <h3><u>Ongoing Matches</u></h3>
+    <h3>Ongoing Matches</h3>
   </div>
   <div class="table-responsive">
     <table class="table table-hover">
@@ -27,11 +27,11 @@
       </thead>
       <tbody>
         {#each data.matches as match}
-  
-        <tr
+          <tr
             role="button"
             class="align-self-center"
-            on:click={() => goto(`/events/${match.rounds.events.id}/matches/${match.id}`)}
+            on:click={() =>
+              goto(`/matches/${match.id}`)}
           >
             <td>{match.rounds.events.name}</td>
             <td
@@ -39,12 +39,16 @@
               {#if match.max_participants}
                 / {match.max_participants}{/if}</td
             >
-            <td class="text-center">{match.participants.teams.name}</td>
-            <td class="text-center">5</td>
+            <td class="text-center"
+              >{match.match_participants[0].participants.teams.name}</td
+            >
+            <td class="text-center">{match.match_participants[0].points}</td>
             <td class="text-center">-</td>
-            <td class="text-center">3</td>
-            <td class="text-center">{match.participants.teams.name}</td>
-            <td class="text-center">727</td>
+            <td class="text-center">{match.match_participants[1].points}</td>
+            <td class="text-center"
+              >{match.match_participants[1].participants.teams.name}</td
+            >
+            <td class="text-center">{match.spectators[0].count}</td>
           </tr>
         {/each}
       </tbody>
@@ -54,7 +58,7 @@
 
 <div class="py-4">
   <div class="text-center">
-    <a href="/events"><h3><u>Current events</u></h3></a>
+    <a class="text-body" href="/events"><h3><u>Ongoing events</u></h3></a>
   </div>
   <div class="table-responsive">
     <table class="table table-hover">
@@ -71,26 +75,59 @@
           <tr
             role="button"
             class="align-self-center"
-            on:click={() => goto(`/events/${event.id}`)}
           >
-            <td>{event.organisations?.name}</td>
-            <td>{event.name}</td>
+            <td><a href="/events/{event.id}">{event.organisations?.name}</a></td
+            >
+            <td><a href="/events/{event.id}">{event.name}</a></td>
             <td
-              >{event.participants.length}
-              {#if event.max_participants}
-                / {event.max_participants}{/if}</td
+              ><a href="/events/{event.id}">
+                {event.participants.length}
+                {#if event.max_participants}
+                  / {event.max_participants}{/if}</a
+              ></td
             >
 
             <td class="align-middle text-end">
-              <a href="/events/{event.id}/register">
-                <button type="button" class="btn btn-primary" disabled={event.participants.length < event.max_participants}
-                  >Register</button
-                >
-              </a>
+              <button
+                class="btn btn-primary"
+                disabled={event.participants.length < event.max_participants}
+                data-bs-toggle="modal"
+                data-bs-target="#registerEventModal">Register</button
+              >
             </td>
           </tr>
         {/each}
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="registerEventModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+          >Close</button
+        >
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
   </div>
 </div>

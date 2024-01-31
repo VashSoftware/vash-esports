@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+
   export let data;
 
   const isActive = () => {
@@ -18,7 +20,7 @@
 </div>
 
 <div>
-  <table class="table-striped table">
+  <table class="table-striped table table-hover">
     <thead>
       <tr>
         <th scope="col">Organisation</th>
@@ -29,10 +31,11 @@
     </thead>
     <tbody>
       {#each data.events as event}
-        <tr>
+        <tr role="button"
+        on:click={() => goto(`/events/${event.id}`)}>
           <td>{event.organisations?.name}</td>
           <td>{event.name}</td>
-          <td>{event.participants.length}/{event.maxRegistrations}</td>
+          <td>{event.participants.length} / {event.max_registrations ? event.max_registrations : '∞'}</td>
           <td>
             <a href="/events/{event.id}/register">
               <button class="btn btn-primary">Register</button>

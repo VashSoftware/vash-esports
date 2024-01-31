@@ -6,38 +6,47 @@
 
 <div class="py-2">
   <h2>General</h2>
-  <form method="POST">
-    <label>
-      Organisation
-      <select name="name">
+  <form method="post" action="?/updateEventSettings">
+    <div class="mb-3">
+      <label for="organisationSelect">Organisation</label>
+      <select id="organisationSelect" name="name" class="form-select">
         {#each data.organisations as organisation}
           <option value={organisation.id}>{organisation.name}</option>
         {/each}
       </select>
-    </label>
+    </div>
 
-    <label>
-      Name:
-      <input type="text" name="name" value={data.event.name} />
-    </label>
-
-    <label>
-      Start Time:
+    <div class="mb-3">
+      <label for="eventNameInput" class="form-label">Name</label>
       <input
-        type="datetime-local"
-        name="startTime"
-        value={new Date(data.event.created_at).toISOString().substring(0, 16)}
+        type="text"
+        class="form-control"
+        id="eventNameInput"
+        aria-describedby="emailHelp"
+        value={data.event.name}
+        name="name"
       />
-    </label>
+    </div>
 
-    <button type="submit">Save Changes</button>
+    <div class="mb-3">
+      <label for="startTimeInput" class="form-label">Start Time</label>
+      <input
+      id="startTimeInput"
+      class="form-control"
+      type="datetime-local"
+      name="startTime"
+      value={new Date(data.event.created_at).toISOString().substring(0, 16)}
+    />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 </div>
 
 <div class="py-2">
   <div class="row">
     <h2 class="col">Staff Members ({data.staffMembers.length})</h2>
-    <div class="col">
+    <div class="col text-end">
       <button class="btn btn-primary">Add Staff Members</button>
     </div>
   </div>
@@ -64,7 +73,7 @@
 <div class="py-2">
   <div class="row">
     <h2 class="col">Rounds ({data.rounds.length})</h2>
-    <div class="col">
+    <div class="col text-end">
       <button class="btn btn-primary">Add Rounds</button>
     </div>
   </div>
@@ -98,7 +107,7 @@
       <h2>Participants ({data.participants.length})</h2>
     </div>
 
-    <div class="col">
+    <div class="col text-end">
       <button class="btn btn-primary">Invite Teams</button>
     </div>
   </div>

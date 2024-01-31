@@ -4,7 +4,7 @@ export const load: PageServerLoad = async (request) => {
   const { data, error } = await request.locals.supabase
     .from("events")
     .select(`*, participants (count), organisations (name)`)
-    .limit(15);
+    .limit(25);
 
   return {
     events: data,

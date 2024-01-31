@@ -1,23 +1,29 @@
-import type { PageServerLoad } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const events = await locals.supabase
-    .from("events")
-    .select(`*, participants (teams(team_members( user_profiles(*)))), organisations (name)`)
-    .eq('started', true)
-    .order("created_at", { ascending: false })
-    .limit(10);
-  
   const matches = await locals.supabase
     .from("matches")
     .select(
-      `*, rounds (name, events (id, name)), participants!matches_participant1_id_fkey (teams (name))`
-  );
+      `*, rounds (name, events (id, name)), match_participants (points, participants (teams (name))), spectators(count)`
+    )
+    .eq("ongoing", true)
+    .is("spectators.stopped_at", null);
 
-  console.log(events)
+  const events = await locals.supabase
+    .from("events")
+    .select(
+      `*, participants (teams(team_members( user_profiles(*)))), organisations (name)`
+    )
+    .eq("started", true)
+    .order("created_at", { ascending: false })
+    .limit(10);
 
   return {
-    events: events.data,
     matches: matches.data,
+    events: events.data,
   };
 };
+
+export const actions = {
+  register: async (event) => { console.log('hello!')}
+} satisfies Actions;

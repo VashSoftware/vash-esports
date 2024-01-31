@@ -1,5 +1,14 @@
-export const load = async ({ locals: { getSession } }) => {
+export const load = async ({ locals }) => {
+  const userPictureUrl = await locals.supabase.storage
+    .from("user_pictures")
+    .getPublicUrl(locals.user?.id);
+
+  const isLoggedIn = () => {
+    return locals.user?.id;
+  };
+
   return {
-    session: await getSession(),
-  }
-}
+    isLoggedIn: isLoggedIn(),
+    userPictureUrl: userPictureUrl.data.publicUrl,
+  };
+};
