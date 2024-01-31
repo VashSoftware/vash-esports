@@ -6,6 +6,7 @@
   <img src="image source" class="img-fluid rounded-top" alt="" />
 
   <div class="col">
+    <img />
     <h1>Stan</h1>
   </div>
   <div class="col">
@@ -17,6 +18,7 @@
       >
 
       <button class="btn btn-primary"> Discord profile </button>
+      <a href="/account" class="btn btn-secondary"> Manage </a>
     </div>
   </div>
 </div>
