@@ -6,6 +6,8 @@
   <img src="image source" class="img-fluid rounded-top" alt="" />
 
   <div class="col">
+    
+    <img src={data.userPictureUrl} height=256/>
     <h1>Stan</h1>
   </div>
   <div class="col">
