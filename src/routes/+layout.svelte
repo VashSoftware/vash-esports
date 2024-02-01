@@ -6,11 +6,18 @@
 </script>
 
 <main class="d-flex flex-column min-vh-100">
-  <nav class="navbar navbar-expand-lg bg-dark-subtle">
-    <div class="container">
-      <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
-      <div class="ms-auto">
-        <ul class="navbar-nav align-items-center">
+  <nav class="navbar navbar-expand-lg bg-dark-subtle justify-content-center">
+    <div class="container row ">
+      <div class="col">
+        <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
+      </div>
+      <div class="col text-center">
+        <form method="post">
+          <input type="search" class="form-control" placeholder="Search"/>
+        </form>
+      </div>
+      <div class="col">
+        <ul class="navbar-nav align-items-center justify-content-end">
           {#if data.isLoggedIn}
             <li class="nav-item">
               <a class="nav-link" href="/events">Events</a>
@@ -23,7 +30,12 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/users/1"
-                ><img class="rounded" height={64} src={data.userPictureUrl} alt="User" /></a
+                ><img
+                  class="rounded"
+                  height={64}
+                  src={data.userPictureUrl}
+                  alt="User"
+                /></a
               >
             </li>
           {:else}
