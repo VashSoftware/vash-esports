@@ -7,7 +7,7 @@
 
 <main class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg bg-dark-subtle justify-content-center">
-    <div class="container row ">
+    <div class="container row p-0">
       <div class="col">
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
       </div>
@@ -16,7 +16,7 @@
           <input type="search" class="form-control" placeholder="Search"/>
         </form>
       </div>
-      <div class="col">
+      <div class="col p-0">
         <ul class="navbar-nav align-items-center justify-content-end">
           {#if data.isLoggedIn}
             <li class="nav-item">
@@ -28,7 +28,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/rankings">Rankings</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item ms-2">
               <a class="nav-link" href="/users/1"
                 ><img
                   class="rounded"
