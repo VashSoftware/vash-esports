@@ -83,17 +83,17 @@ Team 2: 10% -->
             class="img-thumbnail w-100 img-fluid"
             src="https://assets.ppy.sh/beatmaps/2124033/covers/cover@2x.jpg"
             alt="Match map cover"
-            style="filter: blur(1px); height: 60px; object-fit: cover"
+            style="filter: blur(1px) brightness(50%); height: 60px; object-fit: cover"
           />
         </div>
         <div
           class="text-center row align-items-center"
-          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 2px 2px 4px #000000;"
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 16px #000000;"
         >
           <div class="col">
             <div>
-              {map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
-                .difficulty_name}]
+              <b>{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
+                .difficulty_name}]</b>
             </div>
 
             <div>
