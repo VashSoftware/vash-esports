@@ -6,7 +6,7 @@
 
 <div class="text-center py-5">
   <h1><b>Vash Esports</b></h1>
-  <p>Next-Gen Esports Platform</p>
+  <h3>Next-Gen Esports Platform</h3>
 </div>
 
 <div class="py-4">
