@@ -12,7 +12,7 @@ Email: stan@stanrunge.dev<button class="btn btn-danger">Change email</button>
 <a href="staff">
   <button class="btn btn-primary">Staff page</button>
 </a>
-<form method="post" action="?/logOut">
+<form method="post" action="/account?/logOut">
   <button type="submit" class="btn btn-danger">Log out</button>
 </form>
 

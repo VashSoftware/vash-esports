@@ -1,4 +1,5 @@
-import type { Actions, PageServerLoad } from './$types';
+import { redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
   const { data, error } = await locals.supabase.from("teams").select();
@@ -10,8 +11,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions = {
-  logOut: async (event) => {
-    event.locals.supabase.auth.signOut();
+  logOut: async ({ locals }) => {
+    await locals.supabase.auth.signOut();
+
+    throw redirect(302, "/");
   },
   createOrganisation: async (event) => {},
   createTeam: async (event) => {},

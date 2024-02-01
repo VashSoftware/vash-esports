@@ -23,7 +23,3 @@ export const load: PageServerLoad = async ({ locals }) => {
     events: events.data,
   };
 };
-
-export const actions = {
-  register: async (event) => { console.log('hello!')}
-} satisfies Actions;
