@@ -36,6 +36,7 @@
     "@supabase/ssr": "^0.0.10",
     "@supabase/supabase-js": "^2.33.1",
     "@tanstack/svelte-query": "^4.32.6",
+    "@vercel/analytics": "^1.1.2",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.1"
   }

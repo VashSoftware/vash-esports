@@ -1,3 +1,8 @@
+import { dev } from "$app/environment";
+import { inject } from "@vercel/analytics";
+
+inject({ mode: dev ? "development" : "production" });
+
 export const load = async ({ locals }) => {
   const userPictureUrl = await locals.supabase.storage
     .from("user_pictures")
@@ -6,6 +11,8 @@ export const load = async ({ locals }) => {
   const isLoggedIn = () => {
     return locals.user?.id;
   };
+
+  console.log(locals.user);
 
   return {
     isLoggedIn: isLoggedIn(),

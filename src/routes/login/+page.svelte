@@ -2,7 +2,9 @@
   export let form;
 </script>
 
-<div class="row justify-content-center">
+<div class="row justify-content-center text-center align-items-center">
+  
+  <h1 class="py-5">Login</h1>
   <form class="d-flex col-4" method="post">
     <div class="col">
       {#if form?.error}
