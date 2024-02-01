@@ -4,12 +4,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const { data, error } = await locals.supabase
     .from("matches")
     .select(
-      `*, rounds ( events (id, name)), match_participants(points, participants(teams(id, name))), match_maps(maps(*, mapsets(*)))`
+      `*, rounds ( events (id, name)), match_participants(points, participants(teams(id, name))), match_maps(maps(*, mapsets(*)), scores(*))`
     )
     .eq("id", params.match_id)
     .single();
-
-  console.log(data.match_maps[0].maps.mapsets);
 
   let teamIcons = [];
   for (let i = 0; i < data.match_participants; i++) {
@@ -19,6 +17,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
     teamIcons = [...teamIcons, teamIcon];
   }
+
+  const changes = await locals.supabase
+    .channel("schema-db-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+      },
+      (payload) => console.log(payload)
+    )
+    .subscribe();
 
   return {
     match: data,

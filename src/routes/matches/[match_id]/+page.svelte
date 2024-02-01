@@ -4,11 +4,23 @@
 
 <div class="py-5">
   <div>
-    <div class="text-center">
-      <a href="/events/{data.match.rounds.events.id}">
-        <h2>{data.match.rounds.events.name}</h2></a
-      >
-      <h3>Grand Finals</h3>
+    <div class="row text-center">
+      <div class="col"></div>
+      <div class="col">
+        <a href="/events/{data.match.rounds.events.id}">
+          <h2>{data.match.rounds.events.name}</h2></a
+        >
+        <h3>Grand Finals</h3>
+      </div>
+      <div class="col text-end">
+        <a
+          class="btn btn-primary"
+          href="https://twitch.tv/ces_live"
+          role="button"
+          style="background-color: #6441a5; border: 2px solid #6441a5;"
+          >Watch on Twitch</a
+        >
+      </div>
     </div>
 
     <div class="row align-items-center">
@@ -27,7 +39,13 @@
         </a>
       </div>
       <div class="col text-center">
-        <h1>{data.match.match_participants[0].points} - {data.match.match_participants[1].points}</h1>
+        {#if data.match.ongoing}
+          <b class="text-danger">(LIVE)</b>
+        {/if}
+        <h1>
+          {data.match.match_participants[0].points} - {data.match
+            .match_participants[1].points}
+        </h1>
       </div>
       <div class="col text-end">
         <a
@@ -51,26 +69,40 @@
 Team 1: 90%
 Team 2: 10% -->
 
-<h2>Maps</h2>
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Artist - Name [Difficulty]</th>
-        <th>Star Rating</th>
-        <th>BPM</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each data.match.match_maps as map, i}
-      <tr class="">
-        <td>{i + 1}</td>
-        <td>{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps.difficulty_name}]</td>
-        <td>{map.maps.star_rating}</td>
-        <td>{map.maps.mapsets.bpm}</td>
-      </tr>
-      {/each}
-    </tbody>
-  </table>
-</div>
+<div class="text-center"><h2>Maps</h2></div>
+
+{#each data.match.match_maps as map}
+  <div class="row py-1 align-items-center">
+    <div class="col text-end">
+      <h3>{map.scores[0]?.score.toLocaleString()}</h3>
+    </div>
+    <div class="col">
+      <div style="position: relative;">
+        <div class="text-center">
+          <img
+            class="img-thumbnail w-100 img-fluid"
+            src="https://assets.ppy.sh/beatmaps/2124033/covers/cover@2x.jpg"
+            alt="Match map cover"
+            style="filter: blur(1px); height: 60px; object-fit: cover"
+          />
+        </div>
+        <div
+          class="text-center row align-items-center"
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 2px 2px 4px #000000;"
+        >
+          <div class="col">
+            <div>
+              {map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
+                .difficulty_name}]
+            </div>
+
+            <div>
+              {map.maps.star_rating}★ - {map.maps.mapsets.bpm}BPM
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col"><h3>{map.scores[1]?.score.toLocaleString()}</h3></div>
+  </div>
+{/each}
