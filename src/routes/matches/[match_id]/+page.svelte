@@ -69,21 +69,52 @@
 Team 1: 90%
 Team 2: 10% -->
 
-<div class="text-center"><h2>Maps</h2></div>
+<div class="py-3 text-center">
+  <div><h2>Community Predictions</h2></div>
+</div>
+<div class="d-flex justify-content-center align-items-center">
+  <div class="progress-stacked" style="width: 50%; height: 50px">
+    <div
+      class="progress"
+      role="progressbar"
+      aria-label="Segment one"
+      aria-valuenow="90"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      style="width: 90%; height: 50px"
+    >
+      <div class="progress-bar fs-5"><b>90 (90%)</b></div>
+    </div>
+    <div
+      class="progress"
+      role="progressbar"
+      aria-label="Segment two"
+      aria-valuenow="10"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      style="width: 10%; height: 50px"
+    >
+      <div class="progress-bar bg-danger fs-5"><b>10 (10%)</b></div>
+    </div>
+  </div>
+</div>
 
+
+<div class="text-center py-3"><h2>Maps</h2></div>
 {#each data.match.match_maps as map}
   <div class="row py-1 align-items-center">
     <div class="col text-end">
       <h3>{map.scores[0]?.score.toLocaleString()}</h3>
     </div>
-    <div class="col">
+    <div class="col-6">
       <div style="position: relative;">
         <div class="text-center">
           <img
             class="img-thumbnail w-100 img-fluid"
-            src="https://assets.ppy.sh/beatmaps/2124033/covers/cover@2x.jpg"
+            src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
+              .osu_id}/covers/cover@2x.jpg"
             alt="Match map cover"
-            style="filter: blur(1px) brightness(50%); height: 60px; object-fit: cover"
+            style="filter: blur(1px) brightness(50%); height: 80px; object-fit: cover"
           />
         </div>
         <div
@@ -92,8 +123,10 @@ Team 2: 10% -->
         >
           <div class="col">
             <div>
-              <b>{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
-                .difficulty_name}]</b>
+              <b
+                >{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
+                  .difficulty_name}]</b
+              >
             </div>
 
             <div>
