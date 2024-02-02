@@ -6,12 +6,12 @@
 
 <div class="text-center py-5">
   <h1><b>Vash Esports</b></h1>
-  <h3>Next-Gen Esports Platform</h3>
+  <h3>Next-Gen osu! Events Platform</h3>
 </div>
 
 <div class="py-4">
   <div class="text-center">
-    <h3>Ongoing Matches</h3>
+    <a class="text-body" href="/matches"><h3>Ongoing Matches</h3></a>
   </div>
   <div class="table-responsive">
     <table class="table table-hover">
