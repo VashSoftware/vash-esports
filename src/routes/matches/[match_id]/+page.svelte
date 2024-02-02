@@ -1,5 +1,31 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
+
   export let data;
+
+  $: participant1Predictions = data.match.match_predictions.filter(
+    (prediction) =>
+      prediction.winning_participant_id ===
+      data.match.match_participants[0].participants.id
+  ).length;
+
+  $: participant2Predictions = data.match.match_predictions.filter(
+    (prediction) =>
+      prediction.winning_participant_id ===
+      data.match.match_participants[1].participants.id
+  ).length;
+
+  $: participant1PredictionPercentage = (
+    (participant1Predictions /
+      (participant1Predictions + participant2Predictions)) *
+    100
+  );
+
+  $: participant2PredictionPercentage = (
+    (participant2Predictions /
+      (participant1Predictions + participant2Predictions)) *
+    100
+  );
 </script>
 
 <div class="py-5">
@@ -72,33 +98,52 @@ Team 2: 10% -->
 <div class="py-3 text-center">
   <div><h2>Community Predictions</h2></div>
 </div>
-<div class="d-flex justify-content-center align-items-center">
-  <div class="progress-stacked" style="width: 50%; height: 50px">
-    <div
-      class="progress"
-      role="progressbar"
-      aria-label="Segment one"
-      aria-valuenow="90"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      style="width: 90%; height: 50px"
-    >
-      <div class="progress-bar fs-5"><b>90 (90%)</b></div>
+<div class="row">
+  <div class="col text-end">
+    <form method="post" use:enhance>
+      <input type="hidden" name="participantId" value="{data
+        .match.match_participants[0].participants.id}" />
+      <button type="submit" class="btn btn-primary btn-lg">Vote for {data
+        .match.match_participants[0].participants.teams.name}</button>
+    </form>
+  </div>
+  <div class="col">
+    <div class="progress-stacked" style="height: 48px">
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Segment one"
+        aria-valuenow="90"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style="width: {participant1PredictionPercentage}%; height: 50px"
+      >
+        <div class="progress-bar fs-5"><b>{participant1Predictions} ({participant1PredictionPercentage.toFixed(1) }%)</b></div>
+      </div>
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Segment two"
+        aria-valuenow="10"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style="width:{participant2PredictionPercentage}%; height: 50px"
+      >
+        <div class="progress-bar bg-danger fs-5"><b>{participant2Predictions} ({participant2PredictionPercentage.toFixed(1) }%)</b></div>
+      </div>
     </div>
-    <div
-      class="progress"
-      role="progressbar"
-      aria-label="Segment two"
-      aria-valuenow="10"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      style="width: 10%; height: 50px"
-    >
-      <div class="progress-bar bg-danger fs-5"><b>10 (10%)</b></div>
+  </div>
+  <div class="col">
+    <div class="col">
+      <form method="post" use:enhance>
+        <input type="hidden" name="participantId" value="{data
+          .match.match_participants[1].participants.id}" />
+        <button type="submit" class="btn btn-danger btn-lg">Vote for {data
+          .match.match_participants[1].participants.teams.name}</button>
+      </form>
     </div>
   </div>
 </div>
-
 
 <div class="text-center py-3"><h2>Maps</h2></div>
 {#each data.match.match_maps as map}
