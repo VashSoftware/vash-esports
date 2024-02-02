@@ -12,8 +12,9 @@
 <main class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg bg-dark-subtle justify-content-center">
     <div class="container row p-0">
-      <div class="col">
+      <div class="col d-flex align-items-center">
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
+        <div class="btn btn-warning btn-sm">ALPHA</div>
       </div>
       <div class="col text-center">
         <div class="position-relative">
