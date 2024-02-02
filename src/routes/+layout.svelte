@@ -3,6 +3,10 @@
   import type { LayoutData } from "./$types";
 
   export let data: LayoutData;
+
+  function search(event: InputEvent) {
+    console.log(event)
+  }
 </script>
 
 <main class="d-flex flex-column min-vh-100">
@@ -12,9 +16,9 @@
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
       </div>
       <div class="col text-center">
-        <form method="post" class="d-flex">
+        <div class="position-relative">
           <div class="input-group">
-            <input type="search" class="form-control" placeholder="Search" />
+            <input type="search" class="form-control" placeholder="Search" on:input={search} />
             <!-- <button type="submit" class="btn btn-secondary"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +34,14 @@
               </svg></button
             > -->
           </div>
-        </form>
+          <ul class="list-group position-absolute w-100 ">
+            {#each [1,2,3] as searchResult}
+              <li class="list-group-item">
+                <a href="/matches/{searchResult}">Match {searchResult}</a>
+              </li>
+            {/each}
+          </ul>
+        </div>
       </div>
       <div class="col p-0">
         <ul class="navbar-nav align-items-center justify-content-end">
