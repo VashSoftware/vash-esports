@@ -38,7 +38,7 @@
         >
         <h3>Grand Finals</h3>
       </div>
-      <div class="col text-end">
+      <div class="col text-center">
         <a
           class="btn btn-primary"
           href="https://twitch.tv/ces_live"
@@ -49,10 +49,11 @@
       </div>
     </div>
 
-    <div class="row align-items-center">
+    <div class="row align-items-center text-center">
       <div class="col">
         <a
           href="/teams/{data.match.match_participants[0].participants.teams.id}"
+          
         >
           <img
             src="https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/team_icons/{data
@@ -61,8 +62,15 @@
             alt="Team Icon"
             class="w-8 h-8 mr-2"
           />
-          <h2>{data.match.match_participants[0].participants.teams.name}</h2>
+          <h2 >{data.match.match_participants[0].participants.teams.name}</h2>
         </a>
+
+        <h2>Team Members</h2>
+        <ul class="list-group">
+          {#each data.match.match_participants[0].participants.teams.team_members as teamMember}
+            <li class="list-group-item">{teamMember.user_profiles.name}</li>
+          {/each}
+        </ul>
       </div>
       <div class="col text-center">
         {#if data.match.ongoing}
@@ -73,7 +81,7 @@
             .match_participants[1].points}
         </h1>
       </div>
-      <div class="col text-end">
+      <div class="col">
         <a
           href="/teams/{data.match.match_participants[1].participants.teams.id}"
         >
@@ -86,14 +94,17 @@
           />
           <h2>{data.match.match_participants[1].participants.teams.name}</h2></a
         >
+
+        <h2>Team Members</h2>
+        <ul class="list-group">
+          {#each data.match.match_participants[1].participants.teams.team_members as teamMember}
+            <li class="list-group-item">{teamMember.user_profiles.name}</li>
+          {/each}
+        </ul>
       </div>
     </div>
   </div>
 </div>
-
-<!-- <h2>Votes</h2>
-Team 1: 90%
-Team 2: 10% -->
 
 <div class="py-3 text-center">
   <div><h2>Community Predictions</h2></div>
