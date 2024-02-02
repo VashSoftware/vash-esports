@@ -63,7 +63,7 @@
 <h2>Matches</h2>
 {#each data.event.rounds as round}
 <div class="table-responsive">
-  <table class="table">
+  <table class="table table-hover">
     <thead>
       <tr>
         <th>Team 1</th>
@@ -74,7 +74,8 @@
     </thead>
     <tbody>
       {#each round.matches as match}
-        <tr class="">
+        <tr role="button" on:click={() =>
+          goto(`/matches/${match.id}`)}>
           <td>{match.match_participants[0].participants.teams.name}</td>
           <td>{match.match_participants[1].participants.teams.name}</td>
           <!-- TODO: Turn start time into a countdown when within 24 hours and show date on hover tooltip -->
