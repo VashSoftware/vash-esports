@@ -12,8 +12,6 @@ export const load = async ({ locals }) => {
     return locals.user?.id;
   };
 
-  console.log(locals.user);
-
   return {
     isLoggedIn: isLoggedIn(),
     userPictureUrl: userPictureUrl.data.publicUrl,
