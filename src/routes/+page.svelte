@@ -11,7 +11,7 @@
 
 <div class="py-4">
   <div class="text-center">
-    <a class="text-body" href="/matches"><h3>Ongoing Matches</h3></a>
+    <h3><a class="text-body" href="/matches">Ongoing Matches</a></h3>
   </div>
   <div class="table-responsive">
     <table class="table table-hover">
@@ -30,8 +30,7 @@
           <tr
             role="button"
             class="align-self-center"
-            on:click={() =>
-              goto(`/matches/${match.id}`)}
+            on:click={() => goto(`/matches/${match.id}`)}
           >
             <td>{match.rounds.events.name}</td>
             <td
@@ -58,7 +57,7 @@
 
 <div class="py-4">
   <div class="text-center">
-    <a class="text-body" href="/events"><h3><u>Ongoing events</u></h3></a>
+    <h3><a class="text-body" href="/events"><u>Ongoing events</u></a></h3>
   </div>
   <div class="table-responsive">
     <table class="table table-hover">
@@ -72,10 +71,7 @@
       </thead>
       <tbody>
         {#each data.events as event}
-          <tr
-            role="button"
-            class="align-self-center"
-          >
+          <tr role="button" class="align-self-center">
             <td><a href="/events/{event.id}">{event.organisations?.name}</a></td
             >
             <td><a href="/events/{event.id}">{event.name}</a></td>
