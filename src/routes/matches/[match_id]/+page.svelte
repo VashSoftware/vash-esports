@@ -49,10 +49,11 @@
       </div>
     </div>
 
-    <div class="row align-items-center">
+    <div class="row align-items-center text-center">
       <div class="col">
         <a
           href="/teams/{data.match.match_participants[0].participants.teams.id}"
+          
         >
           <img
             src="https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/team_icons/{data
@@ -61,7 +62,7 @@
             alt="Team Icon"
             class="w-8 h-8 mr-2"
           />
-          <h2>{data.match.match_participants[0].participants.teams.name}</h2>
+          <h2 >{data.match.match_participants[0].participants.teams.name}</h2>
         </a>
       </div>
       <div class="col text-center">
@@ -73,7 +74,7 @@
             .match_participants[1].points}
         </h1>
       </div>
-      <div class="col text-end">
+      <div class="col">
         <a
           href="/teams/{data.match.match_participants[1].participants.teams.id}"
         >
