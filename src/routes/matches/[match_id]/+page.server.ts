@@ -46,7 +46,6 @@ export const actions = {
       .select("*")
       .eq("match_id", params.match_id)
       .eq("user_id", locals.user.id);
-    console.log(existingPrediction);
     if (existingPrediction.data.length > 0) {
       return false;
     }
