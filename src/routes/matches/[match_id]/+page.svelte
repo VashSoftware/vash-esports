@@ -28,23 +28,23 @@
 
 <div class="py-5">
   <div>
-    <div class="row text-center">
-      <div class="col"></div>
-      <div class="col">
-        <a href="/events/{data.match.rounds.events.id}">
-          <h2>{data.match.rounds.events.name}</h2></a
-        >
-        <h3>Grand Finals</h3>
-      </div>
-      <div class="col text-center">
-        <a
-          class="btn btn-primary"
-          href="https://twitch.tv/ces_live"
-          role="button"
-          style="background-color: #6441a5; border: 2px solid #6441a5;"
-          >Watch on Twitch</a
-        >
-      </div>
+    <div class="text-center">
+      <a href="/events/{data.match.rounds.events.id}">
+        <h2>{data.match.rounds.events.name}</h2></a
+      >
+      <h3>Grand Finals</h3>
+    </div>
+
+    <div class="twitch-embed">
+      <iframe
+        src="https://player.twitch.tv/?channel={'mrekk'}&parent=9pw2ggfr-5173.euw.devtunnels.ms"
+        class="w-100"
+        height="525"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen={true}>
+        title='Twitch Embed'
+      </iframe>
     </div>
 
     <div class="row align-items-center text-center">
