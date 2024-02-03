@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
+  import { enhance } from "$app/forms";
 
   export let data;
 
@@ -15,17 +15,15 @@
       data.match.match_participants[1].participants.id
   ).length;
 
-  $: participant1PredictionPercentage = (
+  $: participant1PredictionPercentage =
     (participant1Predictions /
       (participant1Predictions + participant2Predictions)) *
-    100
-  );
+    100;
 
-  $: participant2PredictionPercentage = (
+  $: participant2PredictionPercentage =
     (participant2Predictions /
       (participant1Predictions + participant2Predictions)) *
-    100
-  );
+    100;
 </script>
 
 <div class="py-5">
@@ -53,7 +51,6 @@
       <div class="col">
         <a
           href="/teams/{data.match.match_participants[0].participants.teams.id}"
-          
         >
           <img
             src="https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/team_icons/{data
@@ -62,7 +59,7 @@
             alt="Team Icon"
             class="w-8 h-8 mr-2"
           />
-          <h2 >{data.match.match_participants[0].participants.teams.name}</h2>
+          <h2>{data.match.match_participants[0].participants.teams.name}</h2>
         </a>
 
         <h2>Team Members</h2>
@@ -77,7 +74,13 @@
           <b class="text-danger">(LIVE)</b>
         {/if}
         <h1>
-          {data.match.match_maps.filter((match_map) => match_map.scores[0]?.score > match_map.scores[1]?.score).length} - {data.match.match_maps.filter((match_map) => match_map.scores[1]?.score > match_map.scores[0]?.score).length}
+          {data.match.match_maps.filter(
+            (match_map) =>
+              match_map.scores[0]?.score > match_map.scores[1]?.score
+          ).length} - {data.match.match_maps.filter(
+            (match_map) =>
+              match_map.scores[1]?.score > match_map.scores[0]?.score
+          ).length}
         </h1>
       </div>
       <div class="col">
@@ -111,10 +114,18 @@
 <div class="row">
   <div class="col text-end">
     <form method="post" use:enhance>
-      <input type="hidden" name="participantId" value="{data
-        .match.match_participants[0].participants.id}" />
-      <button type="submit" class="btn btn-primary btn-lg">Vote for {data
-        .match.match_participants[0].participants.teams.name}</button>
+      <input
+        type="hidden"
+        name="participantId"
+        value={data.match.match_participants[0].participants.id}
+      />
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg"
+        disabled={data.match.match_predictions.filter((prediction) => prediction.user_id === data.user.id).length > 0}
+        >Vote for {data.match.match_participants[0].participants.teams
+          .name}</button
+      >
     </form>
   </div>
   <div class="col">
@@ -128,7 +139,13 @@
         aria-valuemax="100"
         style="width: {participant1PredictionPercentage}%; height: 50px"
       >
-        <div class="progress-bar fs-5"><b>{participant1Predictions} ({participant1PredictionPercentage.toFixed(1) }%)</b></div>
+        <div class="progress-bar fs-5">
+          <b
+            >{participant1Predictions} ({participant1PredictionPercentage.toFixed(
+              1
+            )}%)</b
+          >
+        </div>
       </div>
       <div
         class="progress"
@@ -139,17 +156,28 @@
         aria-valuemax="100"
         style="width:{participant2PredictionPercentage}%; height: 50px"
       >
-        <div class="progress-bar bg-danger fs-5"><b>{participant2Predictions} ({participant2PredictionPercentage.toFixed(1) }%)</b></div>
+        <div class="progress-bar bg-danger fs-5">
+          <b
+            >{participant2Predictions} ({participant2PredictionPercentage.toFixed(
+              1
+            )}%)</b
+          >
+        </div>
       </div>
     </div>
   </div>
   <div class="col">
     <div class="col">
       <form method="post" use:enhance>
-        <input type="hidden" name="participantId" value="{data
-          .match.match_participants[1].participants.id}" />
-        <button type="submit" class="btn btn-danger btn-lg">Vote for {data
-          .match.match_participants[1].participants.teams.name}</button>
+        <input
+          type="hidden"
+          name="participantId"
+          value={data.match.match_participants[1].participants.id}
+        />
+        <button type="submit" class="btn btn-danger btn-lg" disabled={data.match.match_predictions.filter((prediction) => prediction.user_id === data.user.id).length > 0}
+          >Vote for {data.match.match_participants[1].participants.teams
+            .name}</button
+        >
       </form>
     </div>
   </div>

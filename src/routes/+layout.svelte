@@ -4,7 +4,11 @@
 
   export let data: LayoutData;
 
+  let searchResults: string[] = [];
+
   function search(event: InputEvent) {
+    
+    
     console.log(event)
   }
 </script>
@@ -36,7 +40,7 @@
             > -->
           </div>
           <ul class="list-group position-absolute w-100 ">
-            {#each [1,2,3] as searchResult}
+            {#each searchResults as searchResult}
               <li class="list-group-item">
                 <a href="/matches/{searchResult}">Match {searchResult}</a>
               </li>
