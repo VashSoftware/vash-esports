@@ -4,7 +4,12 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const { data, error } = await locals.supabase
     .from("matches")
     .select(
-      `*, rounds ( best_of, events (id, name)), match_participants(points, participants(id, teams(id, name, team_members(*, user_profiles(*))))), match_maps(maps(*, mapsets(*)), scores(*)), match_predictions(*)`
+      `*,
+      rounds ( best_of, events (id, name)),
+      match_participants(points, participants(id, teams(id, name, team_members(*, user_profiles(*))))),
+      match_maps(maps(*, mapsets(*)),
+      scores(*)),
+      match_predictions(*)`
     )
     .eq("id", params.match_id)
     .single();
