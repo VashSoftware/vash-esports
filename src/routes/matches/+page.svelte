@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+
   export let data;
 </script>
 
@@ -6,8 +8,9 @@
   <h1>Matches</h1>
 </div>
 
+<h2>January 1, 2024</h2>
 <div class="table-responsive">
-  <table class="table">
+  <table class="table table-hover">
     <thead>
       <tr>
         <th scope="col">Event</th>
@@ -17,7 +20,7 @@
     </thead>
     <tbody>
       {#each data.matches as match}
-        <tr class="">
+        <tr role="button" on:click={() => goto(`/matches/${match.id}`)}>
           <td>{match.rounds.events.name}</td>
           <td>{match.match_participants[0].participants.teams.name}</td>
           <td>{match.match_participants[1].participants.teams.name}</td>

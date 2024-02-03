@@ -77,8 +77,7 @@
           <b class="text-danger">(LIVE)</b>
         {/if}
         <h1>
-          {data.match.match_participants[0].points} - {data.match
-            .match_participants[1].points}
+          {data.match.match_maps.filter((match_map) => match_map.scores[0]?.score > match_map.scores[1]?.score).length} - {data.match.match_maps.filter((match_map) => match_map.scores[1]?.score > match_map.scores[0]?.score).length}
         </h1>
       </div>
       <div class="col">
