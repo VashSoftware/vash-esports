@@ -3,7 +3,8 @@
 </script>
 
 <div class="py-5 row">
-  <div class="col">
+  <div class="col d-flex align-items-center">
+    <img src={data.teamPicture.data.publicUrl} alt="Team icon" class="rounded me-4">
     <h1>{data.team.name}</h1>
   </div>
 
