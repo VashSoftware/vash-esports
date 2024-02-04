@@ -4,7 +4,7 @@ export async function load({ params, locals }) {
   const event = await locals.supabase
     .from("events")
     .select(
-      `*, participants(*, teams (*, team_members ( user_profiles (name)))), rounds (matches(*, match_participants(participants(teams(name)))))`
+      `*, participants(*, teams (*, team_members ( user_profiles (name)))), rounds (matches(*, match_participants(participants(teams(name))))), organisations(*)`
     )
     .eq("id", params.event_id)
     .single();
