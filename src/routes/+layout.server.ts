@@ -13,6 +13,7 @@ export const load = async ({ locals }) => {
   };
 
   return {
+    user: locals.user,
     isLoggedIn: isLoggedIn(),
     userPictureUrl: userPictureUrl.data.publicUrl,
   };
