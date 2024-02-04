@@ -9,12 +9,29 @@
     <img src={data.userPictureUrl} height="128" class="rounded-circle me-4" />
     <div>
       <h1>{data.user?.name}</h1>
-      <div class="d-flex gap-2 align-items-center">
-        <div>Organisations:</div>
-        
-        {#each data.organisationPublicUrls as organisation}
-          <img height={32} class="rounded" src={organisation.data.publicUrl}>
-        {/each}
+      <div class="d-flex gap-4">
+        <div class="d-flex gap-2 align-items-center">
+          <div>Organisations:</div>
+
+          {#each data.organisationPublicUrls as organisation}
+            <img
+              height={32}
+              class="rounded"
+              src={organisation.data.publicUrl}
+            />
+          {/each}
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+          <div>Teams:</div>
+
+          {#each data.teamPublicUrls as team}
+            <img
+              height={32}
+              class="rounded"
+              src={team.data.publicUrl}
+            />
+          {/each}
+        </div>
       </div>
     </div>
   </div>

@@ -19,9 +19,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     organisationPublicUrls.push(organisationPublicUrl);
   }
 
+  let teamPublicUrls = [];
+  for (let i = 0; i < data?.team_members.length; i++) {
+    const teamPublicUrl = await locals.supabase.storage
+      .from("team_icons")
+      .getPublicUrl(data.team_members[i].team_id);
+    teamPublicUrls.push(teamPublicUrl);
+  }
+
   return {
     user: data,
     userPictureUrl: userPictureUrl.data.publicUrl,
     organisationPublicUrls: organisationPublicUrls,
+    teamPublicUrls: teamPublicUrls,
   };
 };
