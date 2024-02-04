@@ -7,7 +7,33 @@
 
   <div class="col d-flex align-items-center">
     <img src={data.userPictureUrl} height="128" class="rounded-circle me-4" />
-    <h1>Stan</h1>
+    <div>
+      <h1>{data.user?.name}</h1>
+      <div class="d-flex gap-4">
+        <div class="d-flex gap-2 align-items-center">
+          <div>Organisations:</div>
+
+          {#each data.organisationPublicUrls as organisation}
+            <img
+              height={32}
+              class="rounded"
+              src={organisation.data.publicUrl}
+            />
+          {/each}
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+          <div>Teams:</div>
+
+          {#each data.teamPublicUrls as team}
+            <img
+              height={32}
+              class="rounded"
+              src={team.data.publicUrl}
+            />
+          {/each}
+        </div>
+      </div>
+    </div>
   </div>
   <div class="col">
     <div class="text-end">
@@ -21,40 +47,4 @@
       <a href="/account" class="btn btn-secondary"> Manage </a>
     </div>
   </div>
-</div>
-
-<h2>Organisations ({data.user.organisation_members.length})</h2>
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each data.user.organisation_members as organisation}
-        <tr class="">
-          <td>{organisation.name}</td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</div>
-
-<h2>Organisations ({data.user.organisation_members.length})</h2>
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each data.user.organisation_members as organisation}
-        <tr class="">
-          <td>{organisation.name}</td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
 </div>
