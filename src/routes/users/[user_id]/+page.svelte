@@ -5,8 +5,8 @@
 <div class="row align-items-center py-5">
   <img src="image source" class="img-fluid rounded-top" alt="" />
 
-  <div class="col">
-    <img src={data.userPictureUrl} height=256/>
+  <div class="col d-flex align-items-center">
+    <img src={data.userPictureUrl} height="128" class="rounded-circle me-4" />
     <h1>Stan</h1>
   </div>
   <div class="col">

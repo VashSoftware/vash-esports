@@ -63,7 +63,7 @@
             <li class="nav-item ms-2">
               <a class="nav-link" href="/users/1"
                 ><img
-                  class="rounded"
+                  class="rounded-circle"
                   height={64}
                   src={data.userPictureUrl}
                   alt="User"

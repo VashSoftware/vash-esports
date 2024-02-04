@@ -4,7 +4,7 @@
 
 <div class="py-5 row">
   <div class="col d-flex align-items-center">
-    <img src={data.teamPicture.data.publicUrl} alt="Team icon" class="rounded me-4">
+    <img src={data.teamPicture.data.publicUrl} height="128" alt="Team icon" class="rounded me-4">
     <h1>{data.team.name}</h1>
   </div>
 
