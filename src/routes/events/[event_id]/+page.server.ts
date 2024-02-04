@@ -23,8 +23,13 @@ export async function load({ params, locals }) {
     participantIcons = [...participantIcons, publicUrl];
   }
 
+  const eventBanner = await locals.supabase.storage
+    .from("event_banners")
+    .getPublicUrl(event.data.id);
+
   return {
     event: event.data,
     participantIcons: participantIcons,
+    eventBanner,
   };
 }

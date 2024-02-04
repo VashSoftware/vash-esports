@@ -5,20 +5,28 @@
   export let data;
 </script>
 
-<div class="row py-5">
-  <div class="col">
-    <h1>{data.event.name}</h1>
-  </div>
+<div class="row pb-5" style="position: relative;">
+  <img
+    src={data.eventBanner.data.publicUrl}
+    alt="Match map cover"
+    style="filter: blur(2px); object-fit: cover"
+  />
 
-  <div class="col text-end">
-    <button
-      class="btn btn-lg btn-primary"
-      on:click={() => goto($page.url.pathname + "/register")}>Register</button
-    >
-    <button
-      class="btn btn-lg btn-secondary"
-      on:click={() => goto($page.url.pathname + "/manage")}>Manage</button
-    >
+  <div class="row align-items-center" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 16px #000000;">
+    <div class="col mx-5">
+      <h1>{data.event.name}</h1>
+    </div>
+
+    <div class="col text-end">
+      <button
+        class="btn btn-lg btn-primary"
+        on:click={() => goto($page.url.pathname + "/register")}>Register</button
+      >
+      <button
+        class="btn btn-lg btn-secondary"
+        on:click={() => goto($page.url.pathname + "/manage")}>Manage</button
+      >
+    </div>
   </div>
 </div>
 
@@ -62,27 +70,26 @@
 
 <h2>Matches</h2>
 {#each data.event.rounds as round}
-<div class="table-responsive">
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Team 1</th>
-        <th>Team 2</th>
-        <th>Start Time</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each round.matches as match}
-        <tr role="button" on:click={() =>
-          goto(`/matches/${match.id}`)}>
-          <td>{match.match_participants[0].participants.teams.name}</td>
-          <td>{match.match_participants[1].participants.teams.name}</td>
-          <!-- TODO: Turn start time into a countdown when within 24 hours and show date on hover tooltip -->
-          <td>{new Date(match.start_time).toLocaleString()}</td>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Team 1</th>
+          <th>Team 2</th>
+          <th>Start Time</th>
+          <th></th>
         </tr>
-      {/each}
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        {#each round.matches as match}
+          <tr role="button" on:click={() => goto(`/matches/${match.id}`)}>
+            <td>{match.match_participants[0].participants.teams.name}</td>
+            <td>{match.match_participants[1].participants.teams.name}</td>
+            <!-- TODO: Turn start time into a countdown when within 24 hours and show date on hover tooltip -->
+            <td>{new Date(match.start_time).toLocaleString()}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 {/each}
