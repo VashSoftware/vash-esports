@@ -8,15 +8,13 @@
     <h1>{data.team.name}</h1>
   </div>
 
-  <div class="col text-end">
-    <div class="col">
-      <form method="post">
-        <button class="btn btn-primary" type="submit">Request to Join</button>
-      </form>
-    </div>
+  <div class="col text-end d-flex justify-content-end align-items-center">
+    <form method="post">
+      <button class="btn btn-primary mx-3" type="submit">Request to Join</button>
+    </form>
 
     <a
-      class="col btn btn-secondary"
+      class="btn btn-secondary"
       href="/teams/{data.team.id}/manage"
       role="button">Manage</a
     >
