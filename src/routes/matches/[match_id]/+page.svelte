@@ -35,16 +35,33 @@
       <h3>Grand Finals</h3>
     </div>
 
-    <div class="twitch-embed">
-      <iframe
-        src="https://player.twitch.tv/?channel={'mrekk'}&parent=9pw2ggfr-5173.euw.devtunnels.ms"
-        class="w-100"
-        height="525"
-        frameborder="0"
-        scrolling="no"
-        allowfullscreen={true}>
-        title='Twitch Embed'
-      </iframe>
+    <div class="row py-5">
+      <div class="col-8">
+        <iframe
+          src="https://player.twitch.tv/?channel={data.match.rounds.events
+            .event_links[0].link_param}&parent=localhost"
+          class="w-100 rounded"
+          height="525"
+          frameborder="0"
+          scrolling="no"
+          allowfullscreen={true}
+          title="Twitch Embed"
+        >
+        </iframe>
+      </div>
+      <div class="col">
+        <h2>Live Chat</h2>
+
+        {#each [1,2,3,4,5] as message}
+          <div class="py-1">
+            <b>Username:</b> {message}
+          </div>
+        {/each}
+        <div>
+          <input type="text" class="form-control" placeholder="Chat" />
+          <button class="btn btn-primary">Send</button>
+        </div>
+      </div>
     </div>
 
     <div class="row align-items-center text-center">
@@ -122,7 +139,9 @@
       <button
         type="submit"
         class="btn btn-primary btn-lg"
-        disabled={data.match.match_predictions.filter((prediction) => prediction.user_id === data.user.id).length > 0}
+        disabled={data.match.match_predictions.filter(
+          (prediction) => prediction.user_id === data.user.id
+        ).length > 0}
         >Vote for {data.match.match_participants[0].participants.teams
           .name}</button
       >
@@ -174,7 +193,12 @@
           name="participantId"
           value={data.match.match_participants[1].participants.id}
         />
-        <button type="submit" class="btn btn-danger btn-lg" disabled={data.match.match_predictions.filter((prediction) => prediction.user_id === data.user.id).length > 0}
+        <button
+          type="submit"
+          class="btn btn-danger btn-lg"
+          disabled={data.match.match_predictions.filter(
+            (prediction) => prediction.user_id === data.user.id
+          ).length > 0}
           >Vote for {data.match.match_participants[1].participants.teams
             .name}</button
         >

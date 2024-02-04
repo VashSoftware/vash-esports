@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     .from("matches")
     .select(
       `*,
-      rounds ( best_of, events (id, name)),
+      rounds ( best_of, events (id, name, event_links(*, platforms(*)))),
       match_participants(points, participants(id, teams(id, name, team_members(*, user_profiles(*))))),
       match_maps(maps(*, mapsets(*)),
       scores(*)),
@@ -13,6 +13,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     )
     .eq("id", params.match_id)
     .single();
+
+  console.log(error);
 
   let teamIcons = [];
   for (let i = 0; i < data.match_participants; i++) {
