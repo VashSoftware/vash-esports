@@ -10,9 +10,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     .eq("id", params.team_id)
     .single();
 
-  console.log(data);
+  const teamPicture = await locals.supabase.storage
+    .from("team_icons")
+    .getPublicUrl(data.id);
+
+  console.log(teamPicture);
   return {
     team: data,
+    teamPicture,
   };
 };
 
