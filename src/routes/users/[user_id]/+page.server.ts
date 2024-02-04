@@ -3,7 +3,9 @@ import type { PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({ locals, params }) => {
   const { data, error } = await locals.supabase
     .from("user_profiles")
-    .select("*, organisation_members(*), team_members(*)")
+    .select(
+      "*, organisation_members(*, organisations(*)), team_members(*, teams(*))"
+    )
     .eq("id", params.user_id)
     .single();
 

@@ -13,23 +13,26 @@
         <div class="d-flex gap-2 align-items-center">
           <div>Organisations:</div>
 
-          {#each data.organisationPublicUrls as organisation}
-            <img
-              height={32}
-              class="rounded"
-              src={organisation.data.publicUrl}
-            />
+          {#each data.organisationPublicUrls as organisation, i}
+            <a
+              href="/organisations/{data.user.organisation_members[i]
+                .organisations.id}"
+            >
+              <img
+                height={32}
+                class="rounded"
+                src={organisation.data.publicUrl}
+              /></a
+            >
           {/each}
         </div>
         <div class="d-flex gap-2 align-items-center">
           <div>Teams:</div>
 
-          {#each data.teamPublicUrls as team}
-            <img
-              height={32}
-              class="rounded"
-              src={team.data.publicUrl}
-            />
+          {#each data.teamPublicUrls as team, i}
+            <a href="/teams/{data.user.team_members[i].teams.id}">
+              <img height={32} class="rounded" src={team.data.publicUrl} /></a
+            >
           {/each}
         </div>
       </div>
