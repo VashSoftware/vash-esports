@@ -39,7 +39,7 @@
       <div class="col-8">
         <iframe
           src="https://player.twitch.tv/?channel={data.match.rounds.events
-            .event_links[0].link_param}&parent=localhost"
+            .event_links[0].link_param}&parent={data.hostname}"
           class="w-100 rounded"
           height="525"
           frameborder="0"

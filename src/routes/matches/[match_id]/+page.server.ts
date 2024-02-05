@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, url }) => {
   const { data, error } = await locals.supabase
     .from("matches")
     .select(
@@ -16,15 +16,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   console.log(error);
 
-  let teamIcons = [];
-  for (let i = 0; i < data.match_participants; i++) {
-    const teamIcon = await locals.supabase.storage
-      .from("team_icons")
-      .getPublicUrl(data.match_participants[i].participants.teams.id);
-
-    teamIcons = [...teamIcons, teamIcon];
-  }
-
   const changes = await locals.supabase
     .channel("schema-db-changes")
     .on(
@@ -39,7 +30,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   return {
     match: data,
-    teamIcons: [],
+    hostname: url.hostname,
   };
 };
 
