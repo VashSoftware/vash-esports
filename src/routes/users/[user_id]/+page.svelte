@@ -76,6 +76,31 @@
 
 <h2>Events Played</h2>
 
+
 <h2>Pinned Plays</h2>
 
 <h2>Top Plays</h2>
+<div
+  class="table-responsive"
+>
+  <table
+    class="table"
+  >
+    <thead>
+      <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+        <th>Column 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each data.userScores as score}
+        <tr>
+          <td>{score.score}</td>
+          <td>{score.accuracy}</td>
+          <td>{score.max_combo}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</div>

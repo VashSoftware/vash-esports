@@ -9,6 +9,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     .eq("id", params.user_id)
     .single();
 
+  const userScores = await locals.supabase
+    .from("scores")
+    .select(
+      "*, match_participants(*, participants(*, teams(*, team_members(*, user_profiles(*)))))"
+    )
+    .eq(
+      "match_participants.participants.teams.team_members.user_id",
+      params.user_id
+    );
+
+  console.log(userScores);
+
   const userPictureUrl = await locals.supabase.storage
     .from("user_pictures")
     .getPublicUrl(params.user_id);
@@ -34,5 +46,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     userPictureUrl: userPictureUrl.data.publicUrl,
     organisationPublicUrls: organisationPublicUrls,
     teamPublicUrls: teamPublicUrls,
+    userScores: userScores.data,
   };
 };
