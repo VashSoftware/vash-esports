@@ -31,7 +31,6 @@
     "zod": "^3.22.1"
   },
   "dependencies": {
-    "@picocss/pico": "^1.5.10",
     "@popperjs/core": "^2.11.8",
     "@supabase/ssr": "^0.0.10",
     "@supabase/supabase-js": "^2.33.1",
