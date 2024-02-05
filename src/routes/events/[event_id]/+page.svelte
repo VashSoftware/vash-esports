@@ -41,6 +41,8 @@
 
 <div class="my-3">
   <h2>Information</h2>
+  <p>{data.event.description}</p>
+
   <div class="row row-cols-4">
     <div class="col">
       <div class="card mb-3">
@@ -96,7 +98,7 @@
           <div class="col-md-8">
             <div class="card-body">
               <h6 class="card-title">Entry Fee</h6>
-              <h5 class="card-text">$1.99</h5>
+              <h5 class="card-text">Free</h5>
             </div>
           </div>
         </div>
