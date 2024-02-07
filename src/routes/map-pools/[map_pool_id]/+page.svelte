@@ -2,11 +2,14 @@
   export let data;
 </script>
 
-<h1>Map Pool 1</h1>
+<div class="my-5">
+  <h1>Map Pool 1</h1>
+  <p>{data.mapPool.description}</p>
+</div>
 
 <h2>Maps</h2>
 <div class="table-responsive">
-  <table class="table table-primary">
+  <table class="table">
     <thead>
       <tr>
         <th scope="col">Name</th>
@@ -27,4 +30,14 @@
       </tr>
     </tbody>
   </table>
+</div>
+
+<div class="text-center">
+  <h3>Add Map</h3>
+  <form method="post">
+    <label for="mapId" class="form-label">Map ID</label>
+    <input class="form-control" name="mapId" type="text" />
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 </div>
