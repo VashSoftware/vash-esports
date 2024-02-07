@@ -4,12 +4,24 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
   const match = await locals.supabase
     .from("matches")
     .select(
-      "*, rounds (*, map_pools(*, map_pool_maps(*, maps(*, mapsets(*)), map_pool_map_mods(*))))"
+      `*, 
+      rounds (*, 
+        map_pools(*, 
+            map_pool_maps(*, 
+                maps(*, 
+                    mapsets(*)), 
+                map_pool_map_mods(*)))), 
+      match_participants(*,
+        match_participant_players(*, 
+            team_members(*, 
+                user_profiles(*))),
+        participants(*, 
+            teams(*))))`
     )
     .eq("id", params.match_id)
     .single();
 
-  console.log(match);
+  console.log(match.data.match_participants[0].match_participant_players);
 
   return {
     match: match.data,
