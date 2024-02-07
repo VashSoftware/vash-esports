@@ -28,11 +28,22 @@
 
 <div class="py-5">
   <div>
-    <div class="text-center">
-      <a href="/events/{data.match.rounds.events.id}">
-        <h2>{data.match.rounds.events.name}</h2></a
-      >
-      <h3>Grand Finals</h3>
+    <div class="row align-items-center">
+      <div class="col"></div>
+      <div class="col">
+        <div class="text-center">
+          <a href="/events/{data.match.rounds.events.id}">
+            <h2>{data.match.rounds.events.name}</h2></a
+          >
+          <h3>Grand Finals</h3>
+        </div>
+      </div>
+      <div class="col d-flex justify-content-end gap-3">
+        <a href="/matches/{data.match.id}/play" class="btn btn-primary">Play</a>
+        <form action="?/addToCalendar" method="post">
+          <button type="submit" class="btn btn-secondary">Add to Calendar</button>
+        </form>
+      </div>
     </div>
 
     <div class="row py-5">
@@ -52,9 +63,10 @@
       <div class="col">
         <h2>Live Chat</h2>
 
-        {#each [1,2,3,4,5] as message}
+        {#each [1, 2, 3, 4, 5] as message}
           <div class="py-1">
-            <b>Username:</b> {message}
+            <b>Username:</b>
+            {message}
           </div>
         {/each}
         <div>
@@ -130,7 +142,7 @@
 </div>
 <div class="row">
   <div class="col text-end">
-    <form method="post" use:enhance>
+    <form action="?/addPrediction" method="post" use:enhance>
       <input
         type="hidden"
         name="participantId"
@@ -187,7 +199,7 @@
   </div>
   <div class="col">
     <div class="col">
-      <form method="post" use:enhance>
+      <form action="?/addPrediction" method="post" use:enhance>
         <input
           type="hidden"
           name="participantId"

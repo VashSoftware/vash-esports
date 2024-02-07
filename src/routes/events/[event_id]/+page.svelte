@@ -41,6 +41,8 @@
 
 <div class="my-3">
   <h2>Information</h2>
+  <p>{data.event.description}</p>
+
   <div class="row row-cols-4">
     <div class="col">
       <div class="card mb-3">
@@ -96,7 +98,7 @@
           <div class="col-md-8">
             <div class="card-body">
               <h6 class="card-title">Entry Fee</h6>
-              <h5 class="card-text">$1.99</h5>
+              <h5 class="card-text">Free</h5>
             </div>
           </div>
         </div>
@@ -223,29 +225,37 @@
 </div>
 
 <div class="my-3">
-  <h2>Matches</h2>
+  <h2>Rounds</h2>
   {#each data.event.rounds as round}
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th>Team 1</th>
-            <th>Team 2</th>
-            <th>Start Time</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each round.matches as match}
-            <tr role="button" on:click={() => goto(`/matches/${match.id}`)}>
-              <td>{match.match_participants[0].participants.teams.name}</td>
-              <td>{match.match_participants[1].participants.teams.name}</td>
-              <!-- TODO: Turn start time into a countdown when within 24 hours and show date on hover tooltip -->
-              <td>{new Date(match.start_time).toLocaleString()}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title d-flex justify-content-between mx-1">
+          <h3>Grand Finals</h3>
+          <a href="/map-pools/{round.map_pools.id}" role="button" class="btn btn-primary">Go to Map Pool</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Team 1</th>
+                <th>Team 2</th>
+                <th>Start Time</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each round.matches as match}
+                <tr role="button" on:click={() => goto(`/matches/${match.id}`)}>
+                  <td>{match.match_participants[0].participants.teams.name}</td>
+                  <td>{match.match_participants[1].participants.teams.name}</td>
+                  <!-- TODO: Turn start time into a countdown when within 24 hours and show date on hover tooltip -->
+                  <td>{new Date(match.start_time).toLocaleString()}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   {/each}
 </div>

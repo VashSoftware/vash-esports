@@ -14,8 +14,6 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .eq("id", params.match_id)
     .single();
 
-  console.log(error);
-
   const changes = await locals.supabase
     .channel("schema-db-changes")
     .on(
@@ -35,7 +33,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 };
 
 export const actions = {
-  default: async ({ locals, params, request }) => {
+  addPrediction: async ({ locals, params, request }) => {
     const formData = await request.formData();
     const teamId = formData.get("participantId");
 
@@ -53,5 +51,38 @@ export const actions = {
       user_id: locals.user.id,
       winning_participant_id: teamId,
     });
+  },
+  addToCalendar: async ({ locals, params }) => {
+    const match = await locals.supabase
+      .from("matches")
+      .select("*, rounds(*, events(*))")
+      .eq("id", params.match_id)
+      .single();
+
+    const icsData = `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Vash Software//Vash Esports//EN
+BEGIN:VEVENT
+UID:${params.match_id}@example.com
+SUMMARY:OWC2024: macdobald borgar vs evil macdobald borgar
+DTSTAMP:20240207T000000Z${match.data.rounds.events.start_time}
+DTSTART:20240208T170000Z${match.data.rounds.events.start_time + 1}
+DTEND:20240208T180000Z
+DESCRIPTION:This is an automatically generated event from Vash Esports.
+END:VEVENT
+END:VCALENDAR
+`.trim();
+
+    const matchCalendarEvent = await locals.supabase
+      .from("match_calendar_events")
+      .insert([{}])
+      .select("*");
+
+    const icsFile = await locals.supabase.storage
+      .from("match_calendar_events")
+      .upload(`Vash Esports Event.ics`, icsData);
+
+    console.log(icsFile);
   },
 } satisfies Actions;
