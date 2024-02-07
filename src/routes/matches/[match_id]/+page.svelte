@@ -38,9 +38,10 @@
           <h3>Grand Finals</h3>
         </div>
       </div>
-      <div class="col text-end">
+      <div class="col d-flex justify-content-end gap-3">
+        <a href="/matches/{data.match.id}/play" class="btn btn-primary">Play</a>
         <form action="?/addToCalendar" method="post">
-          <button type="submit" class="btn btn-primary">Add to Calendar</button>
+          <button type="submit" class="btn btn-secondary">Add to Calendar</button>
         </form>
       </div>
     </div>
