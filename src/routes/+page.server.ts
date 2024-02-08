@@ -4,7 +4,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   const matches = await locals.supabase
     .from("matches")
     .select(
-      `*, rounds (name, events (id, name)), match_participants (points, participants (teams (name))), spectators(count)`
+      `*, rounds (name, events (id, name)), match_participants (participants (teams (name))), spectators(count), match_maps(*, scores(*))`
     )
     .eq("ongoing", true)
     .is("spectators.stopped_at", null);
