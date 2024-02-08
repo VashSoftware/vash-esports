@@ -47,15 +47,26 @@
           {/each}
         </div>
       </div>
-      {#each data.user.user_badges as badge}
-        <img src="https://assets.ppy.sh/profile-badges/ceso-2021.png" alt="" />
-      {/each}
-      {#each data.user.user_badges as badge}
-      <img src="https://assets.ppy.sh/profile-badges/ceso-2021.png" alt="" />
-    {/each}
-    {#each data.user.user_badges as badge}
-    <img src="https://assets.ppy.sh/profile-badges/ceso-2021.png" alt="" />
-  {/each}
+      <div class="d-flex gap-2 my-2">
+        {#each data.user.user_badges as badge}
+          <img
+            src="https://assets.ppy.sh/profile-badges/ceso-2021.png"
+            alt=""
+          />
+        {/each}
+        {#each data.user.user_badges as badge}
+          <img
+            src="https://assets.ppy.sh/profile-badges/ceso-2021.png"
+            alt=""
+          />
+        {/each}
+        {#each data.user.user_badges as badge}
+          <img
+            src="https://assets.ppy.sh/profile-badges/ceso-2021.png"
+            alt=""
+          />
+        {/each}
+      </div>
     </div>
   </div>
   <div class="col">
@@ -76,16 +87,11 @@
 
 <h2>Events Played</h2>
 
-
 <h2>Pinned Plays</h2>
 
 <h2>Top Plays</h2>
-<div
-  class="table-responsive"
->
-  <table
-    class="table"
-  >
+<div class="table-responsive">
+  <table class="table">
     <thead>
       <tr>
         <th>Column 1</th>
