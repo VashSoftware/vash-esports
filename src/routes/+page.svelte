@@ -41,9 +41,19 @@
             <td class="text-center"
               >{match.match_participants[0].participants.teams.name}</td
             >
-            <td class="text-center">{match.match_participants[0].points}</td>
+            <td class="text-center"
+              >{match.match_maps.filter(
+                (match_map) =>
+                  match_map.scores[0]?.score > match_map.scores[1]?.score
+              ).length}</td
+            >
             <td class="text-center">-</td>
-            <td class="text-center">{match.match_participants[1].points}</td>
+            <td class="text-center"
+              >{match.match_maps.filter(
+                (match_map) =>
+                  match_map.scores[1]?.score > match_map.scores[0]?.score
+              ).length}</td
+            >
             <td class="text-center"
               >{match.match_participants[1].participants.teams.name}</td
             >

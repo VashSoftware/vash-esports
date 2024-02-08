@@ -1,13 +1,13 @@
 import {
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY,
-} from "$env/static/private";
+  PUBLIC_SUPABASE_URL,
+  PUBLIC_SUPABASE_ANON_KEY,
+} from "$env/static/public";
 import { createServerClient } from "@supabase/ssr";
 
 export const handle = async ({ event, resolve }) => {
   event.locals.supabase = createServerClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY,
+    PUBLIC_SUPABASE_URL,
+    PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         get: (key) => event.cookies.get(key),
@@ -23,7 +23,7 @@ export const handle = async ({ event, resolve }) => {
 
   const session = await event.locals.supabase.auth.getSession();
   if (session.data.session) {
-      const user = await event.locals.supabase
+    const user = await event.locals.supabase
       .from("user_profiles")
       .select("*")
       .eq("user_id", session.data.session.user.id)

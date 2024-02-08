@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .select(
       `*,
       rounds ( best_of, events (id, name, event_links(*, platforms(*)))),
-      match_participants(points, participants(id, teams(id, name, team_members(*, user_profiles(*))))),
+      match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
       match_maps(maps(*, mapsets(*)),
       scores(*)),
       match_predictions(*)`

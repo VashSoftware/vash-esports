@@ -24,7 +24,7 @@
 <h2>Team Members</h2>
 <ul>
   {#each data.team.team_members as teamMember}
-    <li>{teamMember.user_profiles.name}</li>
+    <li><a href="/users/{teamMember.user_profiles.id}">{teamMember.user_profiles.name}</a></li>
   {/each}
 </ul>
 

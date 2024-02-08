@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { writable } from "svelte/store";
+
+  const match = writable({});
+
   export let data;
 
   const getStatusIcon = (status: string) => {
@@ -15,6 +19,17 @@
         return "🎮";
     }
   };
+
+  const channels = data.supabase
+    .channel("custom-all-channel")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "matches" },
+      (payload) => {
+        console.log("Change received!", payload);
+      }
+    )
+    .subscribe();
 </script>
 
 <div class="my-5">
@@ -55,19 +70,34 @@
         {data.match.match_participants[1].participants.teams.name}
       </h2>
 
-      {#each data.match.match_participants[1].match_participant_players as player}
-        <div class="card">
-          <div class="row">
-            <div class="col text-start">
-              {player.team_members.user_profiles.name}
-            </div>
-            <div class="col">
-              {player.status}
-              {getStatusIcon(player.status)}
+      <div class="d-flex gap-3">
+        {#each data.match.match_participants[0].match_participant_players as player}
+          <div class="card col p-2">
+            <div class="row">
+              <div class="col text-start">
+                {player.team_members.user_profiles.name}
+              </div>
+              <div class="col text-end">
+                {player.status}
+                {getStatusIcon(player.status)}
+              </div>
             </div>
           </div>
-        </div>
-      {/each}
+        {/each}
+        {#each data.match.match_participants[0].match_participant_players as player}
+          <div class="card col p-2">
+            <div class="row">
+              <div class="col text-start">
+                {player.team_members.user_profiles.name}
+              </div>
+              <div class="col text-end">
+                {player.status}
+                {getStatusIcon(player.status)}
+              </div>
+            </div>
+          </div>
+        {/each}
+      </div>
     </div>
   </div>
 
