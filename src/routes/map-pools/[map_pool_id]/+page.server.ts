@@ -5,7 +5,10 @@ import { OSU_CLIENT_ID, OSU_CLIENT_SECRET } from "$env/static/private";
 export const load: PageServerLoad = async ({ locals, params, url }) => {
   const mapPool = await locals.supabase
     .from("map_pools")
-    .select(`*`)
+    .select(
+      `*,
+            map_pool_maps(*, maps(*, mapsets(*)))`
+    )
     .eq("id", params.map_pool_id)
     .single();
 
@@ -23,6 +26,17 @@ export const actions = {
 
     const osuMap = await v2.beatmap.id.details(mapId);
 
+    if (!osuMap) {
+      return;
+    }
+
     console.log(osuMap);
+
+    await locals.supabase.from("mapsets").upsert({
+      osu_id: osuMap.beatmapset_id,
+      artist: osuMap.beatmapset.artist,
+      title: osuMap.beatmapset.title,
+      bpm: osuMap.bpm,
+    });
   },
 } satisfies Actions;

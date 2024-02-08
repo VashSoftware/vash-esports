@@ -12,22 +12,33 @@
   <table class="table">
     <thead>
       <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Column 2</th>
-        <th scope="col">Column 3</th>
+        <th>Banner</th>
+        <th>Artist - Title [Difficulty]</th>
+        <th>Mapper</th>
+        <th>Star Rating</th>
+        <th>BPM</th>
+        <th>Time</th>
+        <th>CS</th>
+        <th>AR</th>
+        <th>OD</th>
+        <th>Notes</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="">
-        <td scope="row">R1C1</td>
-        <td>R1C2</td>
-        <td>R1C3</td>
-      </tr>
-      <tr class="">
-        <td scope="row">Item</td>
-        <td>Item</td>
-        <td>Item</td>
-      </tr>
+      {#each data.mapPool.map_pool_maps as map}
+        <tr class="">
+          <td><img src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets.osu_id}/covers/cover@2x.jpg" height="32" alt="Map Banner" /></td>
+          <td>{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps.difficulty_name}]</td>
+          <td>{map.maps.mapper_name}</td>
+          <td>{map.maps.star_rating}</td>
+          <td>{map.maps.mapsets.bpm}</td>
+          <td>{map.maps.mapsets.time}</td>
+          <td>{map.maps.circle_size}</td>
+          <td>{map.maps.approach_rate}</td>
+          <td>{map.maps.overall_difficulty}</td>
+          <td>{map.notes}</td>
+        </tr>
+      {/each}
     </tbody>
   </table>
 </div>
