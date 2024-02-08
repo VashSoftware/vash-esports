@@ -50,19 +50,19 @@
       <div class="d-flex gap-2 my-2">
         {#each data.user.user_badges as badge}
           <img
-            src="https://assets.ppy.sh/profile-badges/ceso-2021.png"
+            src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
             alt=""
           />
         {/each}
         {#each data.user.user_badges as badge}
           <img
-            src="https://assets.ppy.sh/profile-badges/ceso-2021.png"
+            src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
             alt=""
           />
         {/each}
         {#each data.user.user_badges as badge}
           <img
-            src="https://assets.ppy.sh/profile-badges/ceso-2021.png"
+            src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
             alt=""
           />
         {/each}
