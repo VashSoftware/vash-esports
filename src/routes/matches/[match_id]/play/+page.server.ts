@@ -5,23 +5,22 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .from("matches")
     .select(
       `*, 
-      rounds (*, 
-        map_pools(*, 
-            map_pool_maps(*, 
-                maps(*, 
-                    mapsets(*)), 
-                map_pool_map_mods(*)))), 
-      match_participants(*,
-        match_participant_players(*, 
-            team_members(*, 
-                user_profiles(*))),
-        participants(*, 
-            teams(*))))`
+  rounds (*, 
+    map_pools(*, 
+        map_pool_maps(*, 
+            maps(*, 
+                mapsets(*)), 
+            map_pool_map_mods(*)))), 
+  match_participants(*,
+    match_participant_players(*,
+      match_participant_player_states(*),   
+        team_members(*, 
+            user_profiles(*))),
+    participants(*, 
+        teams(*))))`
     )
     .eq("id", params.match_id)
     .single();
-
-  console.log(match.data.match_participants[0].match_participant_players);
 
   return {
     match: match.data,

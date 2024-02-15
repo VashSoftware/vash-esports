@@ -1,20 +1,11 @@
 import { dev } from "$app/environment";
 import { inject } from "@vercel/analytics";
+import type { LayoutServerLoad } from "./$types";
 
 inject({ mode: dev ? "development" : "production" });
 
-export const load = async ({ locals }) => {
-  const userPictureUrl = await locals.supabase.storage
-    .from("user_pictures")
-    .getPublicUrl(locals.user?.id);
-
-  const isLoggedIn = () => {
-    return locals.user?.id;
-  };
-
+export const load: LayoutServerLoad = async ({ locals: { getSession } }) => {
   return {
-    user: locals.user,
-    isLoggedIn: isLoggedIn(),
-    userPictureUrl: userPictureUrl.data.publicUrl,
+    session: await getSession(),
   };
 };
