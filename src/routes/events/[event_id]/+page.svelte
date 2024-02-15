@@ -17,7 +17,7 @@
 </svelte:head>
 
 <div class="row pb-5" style="position: relative;">
-  <img
+  <img godulib
     src={data.eventBanner.data.publicUrl}
     alt="Match map cover"
     style="filter: blur(2px); object-fit: cover"
