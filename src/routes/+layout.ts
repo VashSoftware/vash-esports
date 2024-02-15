@@ -34,7 +34,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const userPictureUrl = await supabase.storage
     .from("user_pictures")
-    .getPublicUrl(session.user?.id);
+    .getPublicUrl(session?.user.id);
 
   return { supabase, session, userPictureUrl: userPictureUrl.data.publicUrl };
 };
