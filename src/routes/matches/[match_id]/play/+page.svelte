@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-
   export let data;
 
   $: match = data.match;
@@ -52,25 +50,107 @@
         {match.match_participants[0].participants.teams.name}
       </h2>
 
-      <div class="d-flex gap-3">
+      <div class="row row-cols-2">
         {#each match?.match_participants[0].match_participant_players as player}
-          <div class="card col p-2">
-            <div class="row">
-              <div class="col">{player.team_members.user_profiles.name}</div>
-              <div class="col text-end">
-                {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
               </div>
             </div>
           </div>
         {/each}
         {#each match?.match_participants[0].match_participant_players as player}
-          <div class="card col p-2">
-            <div class="row">
-              <div class="col">{player.team_members.user_profiles.name}</div>
-              <div class="col text-end">
-                {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+        {#each match?.match_participants[0].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+        {#each match?.match_participants[0].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+        {#each match?.match_participants[0].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+        {#each match?.match_participants[0].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+        {#each match?.match_participants[0].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
+              </div>
+            </div>
+          </div>
+        {/each}
+        {#each match?.match_participants[0].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
               </div>
             </div>
           </div>
@@ -92,7 +172,7 @@
               </div>
               <div class="col text-end">
                 {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>
@@ -105,7 +185,7 @@
               </div>
               <div class="col text-end">
                 {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>

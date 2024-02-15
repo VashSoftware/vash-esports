@@ -3,8 +3,6 @@
 
   export let data;
 
-  console.log(data);
-
   $: participant1Predictions = data.match.match_predictions.filter(
     (prediction) =>
       prediction.winning_participant_id ===
@@ -144,24 +142,27 @@
 <div class="py-3 text-center">
   <div><h2>Community Predictions</h2></div>
 </div>
+
 <div class="row">
   <div class="col text-end">
-    <form action="?/addPrediction" method="post" use:enhance>
-      <input
-        type="hidden"
-        name="participantId"
-        value={data.match.match_participants[0].participants.id}
-      />
-      <button
-        type="submit"
-        class="btn btn-primary btn-lg"
-        disabled={data.match.match_predictions.filter(
-          (prediction) => prediction.user_id === data.session.user.id
-        ).length > 0}
-        >Vote for {data.match.match_participants[0].participants.teams
-          .name}</button
-      >
-    </form>
+    {#if data.session}
+      <form action="?/addPrediction" method="post" use:enhance>
+        <input
+          type="hidden"
+          name="participantId"
+          value={data.match.match_participants[0].participants.id}
+        />
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg"
+          disabled={data.match.match_predictions.filter(
+            (prediction) => prediction.user_id === data.session.user.id
+          ).length > 0}
+          >Vote for {data.match.match_participants[0].participants.teams
+            .name}</button
+        >
+      </form>
+    {/if}
   </div>
   <div class="col">
     <div class="progress-stacked" style="height: 48px">
@@ -203,22 +204,24 @@
   </div>
   <div class="col">
     <div class="col">
-      <form action="?/addPrediction" method="post" use:enhance>
-        <input
-          type="hidden"
-          name="participantId"
-          value={data.match.match_participants[1].participants.id}
-        />
-        <button
-          type="submit"
-          class="btn btn-danger btn-lg"
-          disabled={data.match.match_predictions.filter(
-            (prediction) => prediction.user_id === data.session.user.id
-          ).length > 0}
-          >Vote for {data.match.match_participants[1].participants.teams
-            .name}</button
-        >
-      </form>
+      {#if data.session}
+        <form action="?/addPrediction" method="post" use:enhance>
+          <input
+            type="hidden"
+            name="participantId"
+            value={data.match.match_participants[1].participants.id}
+          />
+          <button
+            type="submit"
+            class="btn btn-danger btn-lg"
+            disabled={data.match.match_predictions.filter(
+              (prediction) => prediction.user_id === data.session.user.id
+            ).length > 0}
+            >Vote for {data.match.match_participants[1].participants.teams
+              .name}</button
+          >
+        </form>
+      {/if}
     </div>
   </div>
 </div>
