@@ -59,7 +59,7 @@
               <div class="col">{player.team_members.user_profiles.name}</div>
               <div class="col text-end">
                 {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>
@@ -70,7 +70,7 @@
               <div class="col">{player.team_members.user_profiles.name}</div>
               <div class="col text-end">
                 {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>
@@ -92,7 +92,7 @@
               </div>
               <div class="col text-end">
                 {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>
@@ -105,7 +105,7 @@
               </div>
               <div class="col text-end">
                 {player.match_participant_player_states.name}
-                <!-- {getStatusIcon(player.status)} -->
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>
