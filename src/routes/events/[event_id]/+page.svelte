@@ -8,9 +8,12 @@
 <svelte:head>
   <title>{data.event.name} | Vash Esports</title>
   <meta name="description" content={data.event.description} />
+  <meta name="og:url" content={$page.url.href} />
   <meta name="og:title" content={data.event.name} />
   <meta name="og:description" content={data.event.description} />
   <meta name="og:image" content={data.eventBanner.data.publicUrl} />
+
+  <meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <div class="row pb-5" style="position: relative;">
