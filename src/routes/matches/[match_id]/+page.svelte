@@ -3,6 +3,8 @@
 
   export let data;
 
+  console.log(data);
+
   $: participant1Predictions = data.match.match_predictions.filter(
     (prediction) =>
       prediction.winning_participant_id ===
@@ -41,7 +43,9 @@
       <div class="col d-flex justify-content-end gap-3">
         <a href="/matches/{data.match.id}/play" class="btn btn-primary">Play</a>
         <form action="?/addToCalendar" method="post">
-          <button type="submit" class="btn btn-secondary">Add to Calendar</button>
+          <button type="submit" class="btn btn-secondary"
+            >Add to Calendar</button
+          >
         </form>
       </div>
     </div>
@@ -152,7 +156,7 @@
         type="submit"
         class="btn btn-primary btn-lg"
         disabled={data.match.match_predictions.filter(
-          (prediction) => prediction.user_id === data.user.id
+          (prediction) => prediction.user_id === data.session.user.id
         ).length > 0}
         >Vote for {data.match.match_participants[0].participants.teams
           .name}</button
@@ -209,7 +213,7 @@
           type="submit"
           class="btn btn-danger btn-lg"
           disabled={data.match.match_predictions.filter(
-            (prediction) => prediction.user_id === data.user.id
+            (prediction) => prediction.user_id === data.session.user.id
           ).length > 0}
           >Vote for {data.match.match_participants[1].participants.teams
             .name}</button

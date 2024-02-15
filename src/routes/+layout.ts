@@ -32,5 +32,15 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  return { supabase, session };
+  const user = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("user_id", session?.user.id)
+    .single();
+
+  const userPictureUrl = await supabase.storage
+    .from("user_pictures")
+    .getPublicUrl(user.data?.id);
+
+  return { supabase, session, userPictureUrl: userPictureUrl.data.publicUrl };
 };

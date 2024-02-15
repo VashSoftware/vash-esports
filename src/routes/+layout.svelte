@@ -3,6 +3,7 @@
   import type { LayoutData } from "./$types";
 
   export let data: LayoutData;
+  console.log(data);
 
   let searchResults: string[] = [];
 
@@ -55,7 +56,7 @@
       </div>
       <div class="col p-0">
         <ul class="navbar-nav align-items-center justify-content-end">
-          {#if data.isLoggedIn}
+          {#if data.session?.user}
             <li class="nav-item">
               <a class="nav-link" href="/events">Events</a>
             </li>
@@ -94,7 +95,7 @@
     <slot />
   </div>
 
-  <footer class="container-fluid mt-auto bg-dark-subtle ">
+  <footer class="container-fluid mt-auto bg-dark-subtle">
     <div class="container">
       <div class="row text-center my-3">
         <div class="col"></div>
