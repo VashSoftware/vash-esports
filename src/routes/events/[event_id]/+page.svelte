@@ -5,6 +5,14 @@
   export let data;
 </script>
 
+<svelte:head>
+  <title>{data.event.name} | Vash Esports</title>
+  <meta name="description" content={data.event.description} />
+  <meta name="og:title" content={data.event.name} />
+  <meta name="og:description" content={data.event.description} />
+  <meta name="og:image" content={data.eventBanner.data.publicUrl} />
+</svelte:head>
+
 <div class="row pb-5" style="position: relative;">
   <img
     src={data.eventBanner.data.publicUrl}
@@ -231,7 +239,11 @@
       <div class="card-body">
         <div class="card-title d-flex justify-content-between mx-1">
           <h3>Grand Finals</h3>
-          <a href="/map-pools/{round.map_pools.id}" role="button" class="btn btn-primary">Go to Map Pool</a>
+          <a
+            href="/map-pools/{round.map_pools.id}"
+            role="button"
+            class="btn btn-primary">Go to Map Pool</a
+          >
         </div>
         <div class="table-responsive">
           <table class="table table-hover">
