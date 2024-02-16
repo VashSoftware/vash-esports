@@ -28,5 +28,16 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 };
 
 export const actions = {
-  addPrediction: async ({ locals, params, request }) => {},
+  banMap: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    const mapId = formData.get("map-id");
+
+    const matchBan = await locals.supabase
+      .from("match_bans")
+      .insert([{ match_id: params.match_id, map_pool_map_id: mapId }])
+      .select("*");
+
+    console.log(matchBan);
+  },
 } satisfies Actions;
