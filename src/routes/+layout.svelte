@@ -13,9 +13,9 @@
     //   match.id.includes((event.target as HTMLInputElement).value)
     // );
 
-    // const foundEvents = data.events.filter((vashEvent) =>
-    //   vashEvent.name.includes(event.target.value)
-    // );
+    const foundEvents = data.events.filter((vashEvent) =>
+      vashEvent.name.toLowerCase().includes(event.target.value.toLowerCase())
+    );
 
     const foundUsers = data.users.filter((user) =>
       user.name.toLowerCase().includes(event.target.value.toLowerCase())
@@ -33,7 +33,7 @@
 
     searchResults = [
       // ...foundMatches,
-      // ...foundEvents,
+      ...foundEvents,
       ...foundUsers,
       ...foundTeams,
       ...foundOrganisations,
