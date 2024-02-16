@@ -8,11 +8,13 @@ Next-Gen Esports Platform
 - (🔨 ONGOING) Event schedules, teams list, map pools and more 
 - (🔨 ONGOING) View matches with live info and streams
 - (🔨 ONGOING) Fully automarically refereed matches
+- (🔨 ONGOING) Notifications and scheduling for matches in your own apps
 - (⌛ UPCOMING) Commentator dashboard with realtime data and statistics
 - (⌛ UPCOMING) Connect with others in discussions, chat and DMs
 - (⌛ UPCOMING) Statistics and leaderboards/ladders
 - (⌛ UPCOMING) Custom Battle Royale mode 
-- (⌛ UPCOMING) Quick play ranked matches 
+- (⌛ UPCOMING) Quick play ranked matches
+
 
 ## Running
 1. Clone the repository
