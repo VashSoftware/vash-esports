@@ -4,6 +4,10 @@
   export let data;
 </script>
 
+<svelte:head>
+  <title>Vash Esports</title>
+</svelte:head>
+
 <div class="text-center py-5">
   <h1><b>Vash Esports</b></h1>
   <h3>Next-Gen osu! Events Platform</h3>
