@@ -45,6 +45,7 @@
     .subscribe();
 </script>
 
+This match is being broadcasted on the following official channels:
 <div class="my-5">
   <div class="row my-5">
     <div class="col">
@@ -95,6 +96,42 @@
   </div>
 
   <h2 class="my-5">Phase 0: Preparation</h2>
+  <div class="py-4">
+    <h3 class="text-center my-4">Rolls</h3>
+    <div class="progress-stacked">
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Segment one"
+        aria-valuenow="15"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style="width: {(match.match_participants[0].roll /
+          (match.match_participants[0].roll +
+            match.match_participants[1].roll)) *
+          100}%"
+      >
+        <div class="progress-bar">{match.match_participants[0].roll}</div>
+      </div>
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Segment two"
+        aria-valuenow="30"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style="width: {(match.match_participants[1].roll /
+          (match.match_participants[0].roll +
+            match.match_participants[1].roll)) *
+          100}%"
+      >
+        <div class="progress-bar bg-success">
+          {match.match_participants[1].roll}
+        </div>
+      </div>
+    </div>
+  </div>
+
   <h3 class="text-center">macdobald borgar has to ban a map.</h3>
   <div class="row">
     {#each match.rounds.map_pools.map_pool_maps as map}
