@@ -1,26 +1,28 @@
 <script lang="ts">
+  import { page } from "$app/stores";
+
   export let data;
+
+  // console.log(data);
 </script>
 
 <svelte:head>
-  <title>{data.user.name} | Vash Esports</title>
+  <title>{data.user?.name} | Vash Esports</title>
   <meta
     name="description"
-    content="View {data.user.name}'s profile on Vash Esports"
+    content="View {data.user?.name}'s profile on Vash Esports"
   />
-  <meta property="og:title" content="{data.user.name} | Vash Esports" />
+  <meta property="og:title" content="{data.user?.name} | Vash Esports" />
   <meta
     property="og:description"
-    content="View {data.user.name}'s profile on Vash Esports"
+    content="View {data.user?.name}'s profile on Vash Esports"
   />
   <meta property="og:image" content={data.userPictureUrl} />
-  <meta property="og:url" content={window.location.href} />
+  <meta property="og:url" content={$page.url.href} />
   <meta property="og:type" content="profile" />
 </svelte:head>
 
 <div class="row align-items-center py-5">
-  <img src="image source" class="img-fluid rounded-top" alt="" />
-
   <div class="col d-flex align-items-center">
     <img
       src={data.userPictureUrl}
