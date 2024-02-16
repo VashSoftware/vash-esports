@@ -9,6 +9,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     .eq("id", params.user_id)
     .single();
 
+  // console.log(error);
+
   const userScores = await locals.supabase
     .from("scores")
     .select(
@@ -19,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
       params.user_id
     );
 
-  console.log(userScores);
+  // console.log(userScores);
 
   const userPictureUrl = await locals.supabase.storage
     .from("user_pictures")
