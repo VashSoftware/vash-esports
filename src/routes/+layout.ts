@@ -49,5 +49,21 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     .from("user_pictures")
     .getPublicUrl(user.data?.id);
 
-  return { supabase, session, userPictureUrl: userPictureUrl.data.publicUrl };
+  const events = await supabase.from("events").select("*");
+  const matches = await supabase.from("matches").select("*");
+  const users = await supabase.from("user_profiles").select("*");
+  const teams = await supabase.from("teams").select("*");
+  const organisations = await supabase.from("organisations").select("*");
+
+  return {
+    supabase,
+    session,
+    userPictureUrl: userPictureUrl.data.publicUrl,
+    user,
+    events: events.data,
+    matches: matches.data,
+    users: users.data,
+    teams: teams.data,
+    organisations: organisations.data,
+  };
 };
