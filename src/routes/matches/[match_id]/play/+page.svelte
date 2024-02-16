@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
+
   export let data;
 
   $: match = data.match;
@@ -114,7 +116,10 @@
                 <div class="card-title">
                   {map.maps.mapsets.artist} - {map.maps.mapsets.title}
                 </div>
-                <button class="btn btn-danger">Ban</button>
+                <form method="post" action="?/banMap" use:enhance>
+                  <input type="hidden" name="map-id" value="1" />
+                  <button type="submit" class="btn btn-danger">Ban</button>
+                </form>
               </div>
             </div>
           </div>
