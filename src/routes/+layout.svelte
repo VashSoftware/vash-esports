@@ -4,10 +4,40 @@
 
   export let data: LayoutData;
 
-  let searchResults: string[] = [];
+  let searchQuery = "";
 
-  function search(event: InputEvent) {
-    console.log(event);
+  let searchResults = [];
+
+  async function search(event: Event) {
+    // const foundMatches = data.matches.filter((match) =>
+    //   match.id.includes((event.target as HTMLInputElement).value)
+    // );
+
+    // const foundEvents = data.events.filter((vashEvent) =>
+    //   vashEvent.name.includes(event.target.value)
+    // );
+
+    const foundUsers = data.users.filter((user) =>
+      user.name.includes(event.target.value)
+    );
+
+    const foundTeams = data.teams.filter((team) =>
+      team.name.includes(event.target.value)
+    );
+
+    const foundOrganisations = data.organisations.filter((organisation) =>
+      organisation.name.includes(event.target.value)
+    );
+
+    searchResults = [
+      // ...foundMatches,
+      // ...foundEvents,
+      ...foundUsers,
+      ...foundTeams,
+      ...foundOrganisations,
+    ];
+
+    console.log(searchResults);
   }
 </script>
 
@@ -27,6 +57,7 @@
               type="search"
               class="form-control"
               placeholder="Search"
+              bind:value={searchQuery}
               on:input={search}
             />
             <!-- <button type="submit" class="btn btn-secondary"
@@ -45,11 +76,12 @@
             > -->
           </div>
           <ul class="list-group position-absolute w-100">
-            {#each searchResults as searchResult}
-              <li class="list-group-item">
-                <a href="/matches/{searchResult}">Match {searchResult}</a>
-              </li>
-            {/each}
+            {#if searchQuery.length > 0}
+              {#each searchResults as searchResult}
+                <li class="list-group-item">
+                  <a href="/matches/{searchResult.id}">{searchResult.name}</a>
+                </li>
+              {/each}{/if}
           </ul>
         </div>
       </div>
