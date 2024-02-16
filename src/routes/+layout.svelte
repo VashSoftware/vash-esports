@@ -13,25 +13,27 @@
     //   match.id.includes((event.target as HTMLInputElement).value)
     // );
 
-    // const foundEvents = data.events.filter((vashEvent) =>
-    //   vashEvent.name.includes(event.target.value)
-    // );
+    const foundEvents = data.events.filter((vashEvent) =>
+      vashEvent.name.toLowerCase().includes(event.target.value.toLowerCase())
+    );
 
     const foundUsers = data.users.filter((user) =>
-      user.name.includes(event.target.value)
+      user.name.toLowerCase().includes(event.target.value.toLowerCase())
     );
 
-    const foundTeams = data.teams.filter((team) =>
-      team.name.includes(event.target.value)
-    );
+    const foundTeams = data.teams
+      .filter((team) =>
+        team.name.toLowerCase().includes(event.target.value.toLowerCase())
+      )
+      .filter((team) => team.is_personal_team === false);
 
     const foundOrganisations = data.organisations.filter((organisation) =>
-      organisation.name.includes(event.target.value)
+      organisation.name.toLowerCase().includes(event.target.value.toLowerCase())
     );
 
     searchResults = [
       // ...foundMatches,
-      // ...foundEvents,
+      ...foundEvents,
       ...foundUsers,
       ...foundTeams,
       ...foundOrganisations,

@@ -39,21 +39,31 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const user = await supabase
+  const userPromise = supabase
     .from("user_profiles")
     .select("*")
     .eq("user_id", session?.user.id)
     .single();
 
+  const eventsPromise = supabase.from("events").select("*");
+  const matchesPromise = supabase.from("matches").select("*");
+  const usersPromise = supabase.from("user_profiles").select("*");
+  const teamsPromise = supabase.from("teams").select("*");
+  const organisationsPromise = supabase.from("organisations").select("*");
+
+  const [user, events, matches, users, teams, organisations] =
+    await Promise.all([
+      userPromise,
+      eventsPromise,
+      matchesPromise,
+      usersPromise,
+      teamsPromise,
+      organisationsPromise,
+    ]);
+
   const userPictureUrl = await supabase.storage
     .from("user_pictures")
     .getPublicUrl(user.data?.id);
-
-  const events = await supabase.from("events").select("*");
-  const matches = await supabase.from("matches").select("*");
-  const users = await supabase.from("user_profiles").select("*");
-  const teams = await supabase.from("teams").select("*");
-  const organisations = await supabase.from("organisations").select("*");
 
   return {
     supabase,
