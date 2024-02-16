@@ -3,6 +3,8 @@
 
   export let data;
 
+  console.log(data);
+
   $: participant1Predictions = data.match.match_predictions.filter(
     (prediction) =>
       prediction.winning_participant_id ===
@@ -25,6 +27,13 @@
       (participant1Predictions + participant2Predictions)) *
     100;
 </script>
+
+<svelte:head>
+  <title
+    >{data.match.match_participants[0].participants.teams.name} - {data.match
+      .match_participants[1].participants.teams.name} | Vash Esports</title
+  >
+</svelte:head>
 
 <div class="py-5">
   <div>
@@ -51,8 +60,9 @@
     <div class="row py-5">
       <div class="col-8">
         <iframe
-          src="https://player.twitch.tv/?channel={data.match.rounds.events
-            .event_links[0].link_param}&parent={data.hostname}"
+          src="https://player.twitch.tv/?channel={data.match.rounds.events.event_links.filter(
+            (event_link) => event_link.platforms.id == 4
+          )[0].link_param}&parent={data.hostname}"
           class="w-100 rounded"
           height="525"
           frameborder="0"
@@ -156,7 +166,8 @@
           type="submit"
           class="btn btn-primary btn-lg"
           disabled={data.match.match_predictions.filter(
-            (prediction) => prediction.user_id === data.session.user.id
+            (prediction) =>
+              prediction.user_profiles.user_id === data.session.user.id
           ).length > 0}
           >Vote for {data.match.match_participants[0].participants.teams
             .name}</button
@@ -215,7 +226,8 @@
             type="submit"
             class="btn btn-danger btn-lg"
             disabled={data.match.match_predictions.filter(
-              (prediction) => prediction.user_id === data.session.user.id
+              (prediction) =>
+                prediction.user_profiles.user_id === data.session.user.id
             ).length > 0}
             >Vote for {data.match.match_participants[1].participants.teams
               .name}</button

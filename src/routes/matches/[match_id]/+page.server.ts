@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
       match_maps(maps(*, mapsets(*)),
       scores(*)),
-      match_predictions(*)`
+      match_predictions(*, user_profiles(*))`
     )
     .eq("id", params.match_id)
     .single();
