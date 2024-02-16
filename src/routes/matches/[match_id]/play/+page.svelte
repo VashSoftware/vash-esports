@@ -93,7 +93,35 @@
   </div>
 
   <h2 class="my-5">Phase 0: Preparation</h2>
-  - Waiting for players - Count current players - Bans
+  <h3 class="text-center">macdobald borgar has to ban a map.</h3>
+  <div class="row">
+    {#each match.rounds.map_pools.map_pool_maps as map}
+      <div class="col p-2">
+        <div class=" card mb-3">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img
+                src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
+                  .osu_id}/covers/cover@2x.jpg"
+                class="img-fluid rounded-start"
+                alt="osu! mapset cover"
+              />
+            </div>
+            <div class="col-md-8">
+              <div
+                class="card-body d-flex align-items-center justify-content-between"
+              >
+                <div class="card-title">
+                  {map.maps.mapsets.artist} - {map.maps.mapsets.title}
+                </div>
+                <button class="btn btn-danger">Ban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {/each}
+  </div>
 
   <h2 class="my-5">Phase 1: Playing</h2>
   <h2>Map pool</h2>
