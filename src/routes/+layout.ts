@@ -51,7 +51,12 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   const teamsPromise = supabase.from("teams").select("*");
   const organisationsPromise = supabase.from("organisations").select("*");
 
-  const [user, events, matches, users, teams, organisations] =
+  const notificationsPromise = supabase
+    .from("notification_recipients")
+    .select("*, notifications(*)")
+    .order("created_at", { ascending: false });
+
+  const [user, events, matches, users, teams, organisations, notifications] =
     await Promise.all([
       userPromise,
       eventsPromise,
@@ -59,6 +64,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
       usersPromise,
       teamsPromise,
       organisationsPromise,
+      notificationsPromise,
     ]);
 
   const userPictureUrl = await supabase.storage
@@ -75,5 +81,6 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     users: users.data,
     teams: teams.data,
     organisations: organisations.data,
+    notifications: notifications.data,
   };
 };
