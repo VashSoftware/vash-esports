@@ -123,11 +123,24 @@
                 </g>
               </svg>
 
-              <ul class="dropdown-menu" style="left: unset !important">
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                style="min-width: 350px; width: fit-content; "
+              >
                 {#each data.notifications as notification}
-                  <li>
-                    <a class="dropdown-item" href={notification.href}
-                      >{notification.title}</a
+                  <li><hr class="dropdown-divider" /></li>
+                  <li
+                    class="dropdown-item d-flex m-2 align-items-center justify-content-between"
+                  >
+                    <div>
+                      <h5>
+                        {notification.notifications.title}
+                      </h5>
+                      <p>{notification.notifications.description}</p>
+                    </div>
+                    <a
+                      class="btn btn-primary"
+                      href={notification.notifications.href}>Go</a
                     >
                   </li>
                 {/each}
