@@ -3,8 +3,6 @@
 
   export let data;
 
-  let newMap = null;
-
   async function getMap(id) {
     const response = await fetch(`/api/maps`, {
       method: "POST",
@@ -71,59 +69,36 @@
           <td>{map.maps.star_rating}</td>
           <td>{map.maps.mapsets.bpm}</td>
           <td>{map.maps.mapsets.time}</td>
-          <td
-            >{map.maps.circle_size} | {newMap?.maps.approach_rate} |
-            {newMap?.maps.overall_difficulty}</td
-          >
+          <td>{map.maps.circle_size}</td>
           <td>{map.notes}</td>
         </tr>
       {/each}
-      <tr class="">
-        <td></td>
-        <td
-          ><form action="?/addMap" method="post" use:enhance>
-            <input
-              type="text"
-              class="form-control-plaintext"
-              placeholder="Enter osu! map ID / link"
-              on:input={debounce}
-            />
-          </form>
-        </td>
-        <td
-          >{#if newMap}
-            <img
-              src="https://assets.ppy.sh/beatmaps/{1}/covers/cover@2x.jpg"
-              height="32"
-              alt="Map Banner"
-            />
-          {/if}
-        </td>
-        <td
-          >{#if newMap}{newMap?.maps.mapsets.artist} - {newMap?.maps.mapsets
-              .title} [{newMap?.maps.difficulty_name}]{/if}</td
-        >
-        <td
-          >{#if newMap}{newMap?.maps.mapper_name}{/if}</td
-        >
-        <td
-          >{#if newMap}{newMap?.maps.star_rating}{/if}</td
-        >
-        <td
-          >{#if newMap}{newMap?.maps.mapsets.bpm}{/if}</td
-        >
-        <td
-          >{#if newMap}{newMap?.maps.mapsets.time}{/if}</td
-        >
-        <td
-          >{#if newMap}{newMap?.maps.circle_size} | {newMap?.maps.approach_rate}
-            |
-            {newMap?.maps.overall_difficulty}{/if}</td
-        >
-        <td
-          >{#if newMap}{newMap?.notes}{/if}</td
-        >
-      </tr>
     </tbody>
   </table>
+
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Enter osu! map ID / link"
+    on:input={debounce}
+  />
+
+  <form action="?/addMap" method="post" use:enhance>
+    <input type="hidden" name="mapId" value="2">
+    
+    <div class="card my-3" style="width: 18rem;">
+      <img
+        src="https://assets.ppy.sh/beatmaps/601135/covers/cover@2x.jpg"
+        class="card-img-top"
+      />
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">
+          Some quick example text to build on the card title and make up the
+          bulk of the card's content.
+        </p>
+        <button type="submit" class="btn btn-primary">Add to Map Pool</button>
+      </div>
+    </div>
+  </form>
 </div>
