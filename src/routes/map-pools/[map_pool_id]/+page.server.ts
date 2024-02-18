@@ -18,25 +18,25 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 };
 
 export const actions = {
-  default: async ({ locals, params, request }) => {
-    const formData = await request.formData();
-    const mapId = formData.get("mapId");
+  addMap: async ({ locals, params, request }) => {
+    // const formData = await request.formData();
+    // const mapId = formData.get("mapId");
 
-    await auth.login(OSU_CLIENT_ID, OSU_CLIENT_SECRET, ["public"]);
+    // await auth.login(OSU_CLIENT_ID, OSU_CLIENT_SECRET, ["public"]);
 
-    const osuMap = await v2.beatmap.id.details(mapId);
+    // const osuMap = await v2.beatmap.id.details(mapId);
 
-    if (!osuMap) {
-      return;
-    }
+    // if (!osuMap) {
+    //   return;
+    // }
 
-    console.log(osuMap);
+    console.log("hello");
 
-    await locals.supabase.from("mapsets").upsert({
-      osu_id: osuMap.beatmapset_id,
-      artist: osuMap.beatmapset.artist,
-      title: osuMap.beatmapset.title,
-      bpm: osuMap.bpm,
-    });
+    // await locals.supabase.from("mapsets").upsert({
+    //   osu_id: osuMap.beatmapset_id,
+    //   artist: osuMap.beatmapset.artist,
+    //   title: osuMap.beatmapset.title,
+    //   bpm: osuMap.bpm,
+    // });
   },
 } satisfies Actions;
