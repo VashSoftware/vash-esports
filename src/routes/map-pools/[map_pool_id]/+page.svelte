@@ -6,7 +6,13 @@
   let newMap = null;
 
   async function getMap(id) {
-    const response = await fetch(`/api/maps?id=${id}`);
+    const response = await fetch(`/api/maps`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
     const data = await response.json();
 
     return data;
