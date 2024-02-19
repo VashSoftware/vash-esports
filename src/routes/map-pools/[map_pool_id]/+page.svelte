@@ -28,8 +28,12 @@
   }
 </script>
 
-<div class="my-5">
-  <h1>Map Pool 1</h1>
+<a href="/map-pools" type="button" class="btn btn-secondary my-4"
+  >Back to Map Pools</a
+>
+
+<div class="mb-4">
+  <h1>{data.mapPool.name || `Map Pool ${data.mapPool.id}`}</h1>
   <p>{data.mapPool.description}</p>
 </div>
 
@@ -85,27 +89,38 @@
     on:input={debounce}
   />
 
-  <h2 class="mt-3">Found Maps:</h2>
-  {#each found_maps as map}
-    <form action="?/addMap" method="post" use:enhance>
-      <input type="hidden" name="mapId" value={map.id} />
+  {#if found_maps.length > 0}
+    <h2 class="mt-3">Found Maps:</h2>
+  {/if}
 
-      <div class="card my-3" style="width: 18rem;">
-        <img
-          src="https://assets.ppy.sh/beatmaps/{map.mapsets
-            .osu_id}/covers/cover@2x.jpg"
-          class="card-img-top"
-        />
-        <div class="card-body">
-          <h5 class="card-title">
-            {map.mapsets.artist} - {map.mapsets.title}
-          </h5>
-          <p class="card-text">
-            Mapped by {map.mapsets.creator}
-          </p>
-          <button type="submit" class="btn btn-primary">Add to Map Pool</button>
+  <div class="row row-cols-4 gap-3 mx-0">
+    {#each found_maps as map}
+      <form class="col" action="?/addMap" method="post" use:enhance>
+        <input type="hidden" name="mapId" value={map.id} />
+
+        <div class="card py-3">
+          <img
+            src="https://assets.ppy.sh/beatmaps/{map.mapsets
+              .osu_id}/covers/cover.jpg"
+            class="card-img-top"
+            alt="Map Banner"
+          />
+          <div class="card-body">
+            <h5 class="card-title">
+              {map.mapsets.artist} - {map.mapsets.title}
+            </h5>
+            <p class="card-text">
+              Mapped by {map.mapsets.creator}
+            </p>
+            <div class="d-flex gap-3">
+              <textarea name="notes" class="form-control" placeholder="Notes" />
+              <button type="submit" class="btn btn-primary"
+                >Add to Map Pool</button
+              >
+            </div>
+          </div>
         </div>
-      </div>
-    </form>
-  {/each}
+      </form>
+    {/each}
+  </div>
 </div>
