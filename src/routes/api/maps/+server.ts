@@ -37,12 +37,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       bpm: osuMap.bpm,
       creator: osuMap.beatmapset.creator,
     })
-    .select("*");
+    .select("*")
+    .single();
 
   map = await locals.supabase
     .from("maps")
     .upsert({
-      mapset_id: mapset.data[0].id,
+      mapset_id: mapset.data.id,
       osu_id: osuMap.id,
       star_rating: osuMap.difficulty_rating,
       approach_rate: osuMap.ar,
@@ -50,7 +51,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       overall_difficulty: osuMap.accuracy,
       difficulty_name: osuMap.version,
     })
-    .select("*, mapsets(*)");
+    .select("*, mapsets(*)")
+    .single();
 
   return new Response(JSON.stringify(map.data));
 };
