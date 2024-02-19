@@ -114,6 +114,15 @@
             </p>
             <div class="d-flex gap-3">
               <textarea name="notes" class="form-control" placeholder="Notes" />
+              <div class="mb-3">
+                <label for="" class="form-label">Mod ID</label>
+                <select class="form-select form-select-lg" name="" id="">
+                  {#each data.mapPool.map_pool_mods as mod}
+                    <option value={mod.id}>{mod.name}</option>
+                  {/each}
+                </select>
+              </div>
+
               <button type="submit" class="btn btn-primary"
                 >Add to Map Pool</button
               >
