@@ -14,17 +14,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     id = urlParts[urlParts.length - 1];
   }
 
-  const map = await locals.supabase
+  let map = await locals.supabase
     .from("maps")
     .select("*, mapsets(*)")
     .eq("osu_id", id)
     .single();
   if (map.data) {
-    map.data.beatmapset = map.data.mapsets;
-    map.data.beatmapset.id = map.data.beatmapset.osu_id;
-    delete map.data.mapsets;
-    delete map.data.beatmapset.osu_id;
-
     return new Response(JSON.stringify(map.data));
   }
   const osuMap = await getOsuMap(id);
@@ -44,17 +39,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     })
     .select("*");
 
-  await locals.supabase.from("maps").upsert({
-    mapset_id: mapset.data[0].id,
-    osu_id: osuMap.id,
-    star_rating: osuMap.difficulty_rating,
-    approach_rate: osuMap.ar,
-    circle_size: osuMap.cs,
-    overall_difficulty: osuMap.accuracy,
-    difficulty_name: osuMap.version,
-  });
+  map = await locals.supabase
+    .from("maps")
+    .upsert({
+      mapset_id: mapset.data[0].id,
+      osu_id: osuMap.id,
+      star_rating: osuMap.difficulty_rating,
+      approach_rate: osuMap.ar,
+      circle_size: osuMap.cs,
+      overall_difficulty: osuMap.accuracy,
+      difficulty_name: osuMap.version,
+    })
+    .select("*, mapsets(*)");
 
-  return new Response(JSON.stringify(osuMap));
+  return new Response(JSON.stringify(map.data));
 };
 
 async function getOsuMap(id: number) {

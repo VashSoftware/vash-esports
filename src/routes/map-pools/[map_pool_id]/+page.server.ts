@@ -20,9 +20,7 @@ export const actions = {
     const mapId = formData.get("mapId");
     const notes = formData.get("notes");
 
-    console.log("hello");
-
-    await locals.supabase.from("map_pool_maps").upsert({
+    const mapPoolMap = await locals.supabase.from("map_pool_maps").upsert({
       map_pool_id: params.map_pool_id,
       map_id: mapId,
       notes: notes,
