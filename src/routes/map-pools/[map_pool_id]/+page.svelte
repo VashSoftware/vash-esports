@@ -67,7 +67,7 @@
             >{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
               .difficulty_name}]</td
           >
-          <td>{map.maps.mapper_name}</td>
+          <td>{map.maps.mapsets.creator}</td>
           <td>{map.maps.star_rating}</td>
           <td>{map.maps.mapsets.bpm}</td>
           <td>{map.maps.mapsets.time}</td>
