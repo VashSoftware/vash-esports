@@ -29,7 +29,7 @@
 </script>
 
 <a href="/map-pools" type="button" class="btn btn-secondary my-4"
-  >Back to Map Pools</a
+  >{"<"} Back to Map Pools</a
 >
 
 <div class="mb-4">
