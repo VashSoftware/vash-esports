@@ -85,7 +85,10 @@
     on:input={debounce}
   />
 
-  <h2 class="mt-3">Found Maps:</h2>
+  {#if found_maps.length > 0}
+    <h2 class="mt-3">Found Maps:</h2>
+  {/if}
+
   {#each found_maps as map}
     <form action="?/addMap" method="post" use:enhance>
       <input type="hidden" name="mapId" value={map.id} />
