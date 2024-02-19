@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     circle_size: osuMap.cs,
     overall_difficulty: osuMap.accuracy,
     mapper_name: osuMap.beatmapset.creator,
-    difficulty_name: "Extra",
+    difficulty_name: osuMap.version,
   });
 
   return new Response(JSON.stringify(osuMap));
