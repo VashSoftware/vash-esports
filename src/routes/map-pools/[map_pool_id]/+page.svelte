@@ -28,8 +28,12 @@
   }
 </script>
 
-<div class="my-5">
-  <h1>Map Pool 1</h1>
+<a href="/map-pools" type="button" class="btn btn-secondary my-4"
+  >Back to Map Pools</a
+>
+
+<div class="mb-4">
+  <h1>{data.mapPool.name || `Map Pool ${data.mapPool.id}`}</h1>
   <p>{data.mapPool.description}</p>
 </div>
 
