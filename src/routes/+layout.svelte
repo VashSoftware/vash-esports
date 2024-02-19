@@ -147,7 +147,7 @@
               </ul>
             </li>
             <li class="nav-item ms-2">
-              <a class="nav-link" href="/users/1"
+              <a class="nav-link" href="/users/{data.user.data.id}"
                 ><img
                   class="rounded-circle"
                   height={64}
