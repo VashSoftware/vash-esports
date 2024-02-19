@@ -24,7 +24,7 @@
       let map = await getMap(event.target.value);
       console.log(map);
       found_maps = [map];
-    }, 250);
+    }, 200);
   }
 </script>
 
@@ -88,20 +88,20 @@
   <h2 class="mt-3">Found Maps:</h2>
   {#each found_maps as map}
     <form action="?/addMap" method="post" use:enhance>
-      <input type="hidden" name="mapId" value="2" />
+      <input type="hidden" name="mapId" value={map.id} />
 
       <div class="card my-3" style="width: 18rem;">
         <img
-          src="https://assets.ppy.sh/beatmaps/{map.id}/covers/cover@2x.jpg"
+          src="https://assets.ppy.sh/beatmaps/{map.mapsets
+            .osu_id}/covers/cover@2x.jpg"
           class="card-img-top"
         />
         <div class="card-body">
           <h5 class="card-title">
-            {map.beatmapset.artist} - {map.beatmapset.title}
+            {map.mapsets.artist} - {map.mapsets.title}
           </h5>
           <p class="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+            Mapped by {map.mapsets.creator}
           </p>
           <button type="submit" class="btn btn-primary">Add to Map Pool</button>
         </div>
