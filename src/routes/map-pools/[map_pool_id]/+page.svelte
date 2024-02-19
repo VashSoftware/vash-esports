@@ -92,7 +92,8 @@
 
       <div class="card my-3" style="width: 18rem;">
         <img
-          src="https://assets.ppy.sh/beatmaps/{map.id}/covers/cover@2x.jpg"
+          src="https://assets.ppy.sh/beatmaps/{map.beatmapset
+            .id}/covers/cover@2x.jpg"
           class="card-img-top"
         />
         <div class="card-body">

@@ -19,10 +19,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     .select("*, mapsets(*)")
     .eq("osu_id", id)
     .single();
-  console.log(map);
   if (map.data) {
     map.data.beatmapset = map.data.mapsets;
+    map.data.beatmapset.id = map.data.beatmapset.osu_id;
     delete map.data.mapsets;
+    delete map.data.beatmapset.osu_id;
 
     return new Response(JSON.stringify(map.data));
   }
