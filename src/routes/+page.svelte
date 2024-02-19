@@ -85,14 +85,12 @@
       </thead>
       <tbody>
         {#each data.events as event}
-          <tr
-            role="button"
-            class="align-self-center"
-            on:click={() => goto(`/events/${event.id}`)}
-          >
-            <td>{event.organisations?.name}</td>
-            <td>{event.name}</td>
-            <td>
+          <tr role="button" class="align-self-center">
+            <td on:click={() => goto(`/events/${event.id}`)}
+              >{event.organisations?.name}</td
+            >
+            <td on:click={() => goto(`/events/${event.id}`)}>{event.name}</td>
+            <td on:click={() => goto(`/events/${event.id}`)}>
               {event.participants.length}
               {#if event.max_participants}
                 / {event.max_participants}{/if}</td
