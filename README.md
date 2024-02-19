@@ -9,7 +9,7 @@ Next-Gen Esports Platform
 - (🔨 ONGOING) View matches with live info and streams
 - (🔨 ONGOING) Fully automarically refereed matches
 - (🔨 ONGOING) Notifications and scheduling for matches in your own apps
-- (🔨 ONGOING) Collaborative + AI map pool tools
+- (⌛ UPCOMING) Collaborative + AI map pool tools
 - (⌛ UPCOMING) Commentator dashboard with realtime data and statistics
 - (⌛ UPCOMING) Connect with others in discussions, chat and DMs
 - (⌛ UPCOMING) Statistics and leaderboards/ladders
