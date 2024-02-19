@@ -24,7 +24,7 @@
       let map = await getMap(event.target.value);
       console.log(map);
       found_maps = [map];
-    }, 250);
+    }, 200);
   }
 </script>
 
@@ -101,8 +101,7 @@
             {map.beatmapset.artist} - {map.beatmapset.title}
           </h5>
           <p class="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+            Mapped by {map.beatmapset.creator}
           </p>
           <button type="submit" class="btn btn-primary">Add to Map Pool</button>
         </div>

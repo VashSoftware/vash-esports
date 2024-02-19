@@ -40,6 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       artist: osuMap.beatmapset.artist,
       title: osuMap.beatmapset.title,
       bpm: osuMap.bpm,
+      creator: osuMap.beatmapset.creator,
     })
     .select("*");
 
@@ -50,7 +51,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     approach_rate: osuMap.ar,
     circle_size: osuMap.cs,
     overall_difficulty: osuMap.accuracy,
-    mapper_name: osuMap.beatmapset.creator,
     difficulty_name: osuMap.version,
   });
 
