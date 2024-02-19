@@ -4,7 +4,6 @@ import { OSU_CLIENT_ID, OSU_CLIENT_SECRET } from "$env/static/private";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   let { id } = await request.json();
-  console.log(id);
 
   if (id == "") {
     return new Response("Invalid request");
@@ -17,17 +16,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const map = await locals.supabase
     .from("maps")
-    .select("*")
+    .select("*, mapsets(*)")
     .eq("osu_id", id)
     .single();
+  console.log(map);
   if (map.data) {
+    map.data.beatmapset = map.data.mapsets;
+    delete map.data.mapsets;
+
     return new Response(JSON.stringify(map.data));
   }
-
   const osuMap = await getOsuMap(id);
-  console.log(osuMap);
 
-  if (osuMap.id) {
+  if (!osuMap.id) {
     return new Response("Map not found", { status: 404 });
   }
 
@@ -43,12 +44,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   await locals.supabase.from("maps").upsert({
     mapset_id: mapset.data[0].id,
-    osu_id: osuMap.beatmapset_id,
+    osu_id: osuMap.id,
     star_rating: osuMap.difficulty_rating,
     approach_rate: osuMap.ar,
     circle_size: osuMap.cs,
     overall_difficulty: osuMap.accuracy,
     mapper_name: osuMap.beatmapset.creator,
+    difficulty_name: "Extra",
   });
 
   return new Response(JSON.stringify(osuMap));

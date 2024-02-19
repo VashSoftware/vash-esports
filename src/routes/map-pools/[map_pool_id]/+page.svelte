@@ -3,6 +3,7 @@
 
   export let data;
 
+  let found_maps = [];
   async function getMap(id) {
     const response = await fetch(`/api/maps`, {
       method: "POST",
@@ -22,6 +23,7 @@
     timer = setTimeout(async () => {
       let map = await getMap(event.target.value);
       console.log(map);
+      found_maps = [map];
     }, 250);
   }
 </script>
@@ -83,22 +85,27 @@
     on:input={debounce}
   />
 
-  <form action="?/addMap" method="post" use:enhance>
-    <input type="hidden" name="mapId" value="2">
-    
-    <div class="card my-3" style="width: 18rem;">
-      <img
-        src="https://assets.ppy.sh/beatmaps/601135/covers/cover@2x.jpg"
-        class="card-img-top"
-      />
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
-        </p>
-        <button type="submit" class="btn btn-primary">Add to Map Pool</button>
+  <h2 class="mt-3">Found Maps:</h2>
+  {#each found_maps as map}
+    <form action="?/addMap" method="post" use:enhance>
+      <input type="hidden" name="mapId" value="2" />
+
+      <div class="card my-3" style="width: 18rem;">
+        <img
+          src="https://assets.ppy.sh/beatmaps/{map.id}/covers/cover@2x.jpg"
+          class="card-img-top"
+        />
+        <div class="card-body">
+          <h5 class="card-title">
+            {map.beatmapset.artist} - {map.beatmapset.title}
+          </h5>
+          <p class="card-text">
+            Some quick example text to build on the card title and make up the
+            bulk of the card's content.
+          </p>
+          <button type="submit" class="btn btn-primary">Add to Map Pool</button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  {/each}
 </div>
