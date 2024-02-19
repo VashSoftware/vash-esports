@@ -2,6 +2,7 @@
   import { enhance } from "$app/forms";
 
   export let data;
+  console.log(data);
 
   let found_maps = [];
   async function getMap(id) {
@@ -32,9 +33,18 @@
   >{"<"} Back to Map Pools</a
 >
 
-<div class="mb-4">
-  <h1>{data.mapPool.name || `Map Pool ${data.mapPool.id}`}</h1>
-  <p>{data.mapPool.description}</p>
+<div class="mb-4 d-flex align-items-center justify-content-between">
+  <div>
+    <h1>{data.mapPool.name || `Map Pool ${data.mapPool.id}`}</h1>
+    <p>{data.mapPool.description}</p>
+  </div>
+  <div>
+    <button
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#editMapPoolModal">Edit Data</button
+    >
+  </div>
 </div>
 
 {#each data.mapPool.map_pool_mods as mod}
@@ -55,31 +65,33 @@
               <th>Time</th>
               <th>CS</th>
               <th>Notes</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {#each mod.map_pool_maps as map}
               <tr class="">
                 <td>{mod.code}{map.mod_priority}</td>
-                <td>{map.maps.osu_id}</td>
+                <td>{map.maps?.osu_id}</td>
                 <td
                   ><img
-                    src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
+                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
                       .osu_id}/covers/cover@2x.jpg"
                     height="32"
                     alt="Map Banner"
                   /></td
                 >
                 <td
-                  >{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map
-                    .maps.difficulty_name}]</td
+                  >{map.maps?.mapsets.artist} - {map.maps?.mapsets.title} [{map
+                    .maps?.difficulty_name}]</td
                 >
-                <td>{map.maps.mapsets.creator}</td>
-                <td>{map.maps.star_rating}</td>
-                <td>{map.maps.mapsets.bpm}</td>
-                <td>{map.maps.mapsets.time}</td>
-                <td>{map.maps.circle_size}</td>
+                <td>{map.maps?.mapsets.creator}</td>
+                <td>{map.maps?.star_rating}</td>
+                <td>{map.maps?.mapsets.bpm}</td>
+                <td>{map.maps?.mapsets.time}</td>
+                <td>{map.maps?.circle_size}</td>
                 <td>{map.notes}</td>
+                <td></td>
               </tr>
             {/each}
           </tbody>
@@ -107,7 +119,7 @@
 
       <div class="card py-3">
         <img
-          src="https://assets.ppy.sh/beatmaps/{map.mapsets
+          src="https://assets.ppy.sh/beatmaps/{map?.mapsets
             .osu_id}/covers/cover.jpg"
           class="card-img-top"
           alt="Map Banner"
@@ -138,4 +150,84 @@
       </div>
     </form>
   {/each}
+</div>
+
+<div
+  class="modal fade"
+  id="editMapPoolModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">
+          Edit {data.mapPool.name || `Map Pool ${data.mapPool.id}`}
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form action="?/editMapPool" method="post" use:enhance>
+        <div class="modal-body">
+          <div class="mb-3">
+            <h2>Information</h2>
+            <label
+              for="mapPoolName"
+              class="form-label
+
+              ">Map Pool Name</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="mapPoolName"
+              name="name"
+              value={data.mapPool.name}
+            />
+
+            <label
+              for="mapPoolDescription"
+              class="form-label
+
+              ">Map Pool Description</label
+            >
+            <textarea
+              class="form-control"
+              id="mapPoolDescription"
+              name="description">{data.mapPool.description}</textarea
+            >
+
+            <h2>Maps</h2>
+            <div class="row">
+              {#each data.mapPool.map_pool_mods as mod}
+                <div class="col col-3">
+                  <label for="mapPoolMod" class="form-label">{mod.code}</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="mapPoolMaps"
+                    name="maps"
+                    value={mod.map_pool_maps.length}
+                  />
+                </div>
+              {/each}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">Close</button
+          >
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

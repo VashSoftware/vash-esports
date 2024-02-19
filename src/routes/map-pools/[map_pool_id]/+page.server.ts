@@ -26,4 +26,20 @@ export const actions = {
       notes: notes,
     });
   },
+  editMapPool: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+    const name = formData.get("name");
+    const description = formData.get("description");
+
+    const mapPool = await locals.supabase
+      .from("map_pools")
+      .upsert({
+        id: params.map_pool_id,
+        name: name,
+        description: description,
+      })
+      .select("*");
+
+    console.log(mapPool);
+  },
 } satisfies Actions;
