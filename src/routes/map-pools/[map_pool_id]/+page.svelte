@@ -3,7 +3,6 @@
 
   export let data;
 
-  let found_maps = [];
   async function getMap(id) {
     const response = await fetch(`/api/maps`, {
       method: "POST",
@@ -21,10 +20,14 @@
   function debounce(event) {
     clearTimeout(timer);
     timer = setTimeout(async () => {
-      let map = await getMap(event.target.value);
-      console.log(map);
-      found_maps = [map];
-    }, 200);
+      const formData = new FormData(event.target);
+      const osuId = formData.get("osu-id");
+      const mapI = formData.get("map-pool-map-i");
+      const modI = formData.get("map-pool-mod-i");
+
+      let map = await getMap(osuId);
+      data.mapPool.map_pool_mods[modI].map_pool_maps[mapI].found_maps = [map];
+    }, 300);
   }
 </script>
 
@@ -46,131 +49,142 @@
   </div>
 </div>
 
-{#each data.mapPool.map_pool_mods as mod}
-  <div class="row align-items-center">
-    <div class="col-2"><h2>{mod.name}</h2></div>
-    <div class="col">
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Pool ID</th>
-              <th>osu! ID</th>
-              <th>Banner</th>
-              <th>Artist - Title [Difficulty]</th>
-              <th>Mapper</th>
-              <th>Star Rating</th>
-              <th>BPM</th>
-              <th>Time</th>
-              <th>CS</th>
-              <th>Notes</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each mod.map_pool_maps as map}
-              <tr class="">
-                <td>{mod.code}{map.mod_priority}</td>
-                <td>{map.maps?.osu_id}</td>
-                <td
-                  ><img
-                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                      .osu_id}/covers/cover@2x.jpg"
-                    height="32"
-                    alt="Map Banner"
-                  /></td
-                >
-                <td
-                  >{map.maps?.mapsets.artist} - {map.maps?.mapsets.title} [{map
-                    .maps?.difficulty_name}]</td
-                >
-                <td>{map.maps?.mapsets.creator}</td>
-                <td>{map.maps?.star_rating}</td>
-                <td>{map.maps?.mapsets.bpm}</td>
-                <td>{map.maps?.mapsets.time}</td>
-                <td>{map.maps?.circle_size}</td>
-                <td>{map.notes}</td>
-                <td>
-                  <form action="?/deleteMapPoolMap" method="post" use:enhance>
-                    <input
-                      type="hidden"
-                      name="map-pool-map-id"
-                      value={map.id}
-                    />
-                    <button type="submit" class="btn btn-danger"
-                      ><svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="2em"
-                        height="2em"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
-                        />
-                      </svg>
-                    </button>
-                  </form>
-                </td>
+{#each data.mapPool.map_pool_mods as mod, mod_i}
+  {#if mod.map_pool_maps.length > 0}
+    <div class="row align-items-center">
+      <div class="col-2"><h2>{mod.name}</h2></div>
+      <div class="col">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Pool ID</th>
+                <th>osu! ID</th>
+                <th>Banner</th>
+                <th>Artist - Title [Difficulty]</th>
+                <th>Mapper</th>
+                <th>Star Rating</th>
+                <th>BPM</th>
+                <th>Time</th>
+                <th>CS</th>
+                <th>Notes</th>
+                <th>Actions</th>
               </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-{/each}
+            </thead>
+            <tbody>
+              {#each mod.map_pool_maps as map, map_i}
+                <tr class="">
+                  <td>{mod.code}{map.mod_priority}</td>
+                  <td>
+                    <form on:submit|preventDefault={debounce}>
+                      <input
+                        type="hidden"
+                        name="map-pool-mod-i"
+                        value={mod_i}
+                      />
+                      <input
+                        type="hidden"
+                        name="map-pool-map-i"
+                        value={map_i}
+                      />
 
-<input
-  type="text"
-  class="form-control"
-  placeholder="Enter osu! map ID / link"
-  on:input={debounce}
-/>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter osu! map ID / link"
+                        name="osu-id"
+                        value={map.maps?.osu_id || ""}
+                        on:input={(event) =>
+                          event.target.form.dispatchEvent(new Event("submit"))}
+                      />
+                    </form>
 
-{#if found_maps.length > 0}
-  <h2 class="mt-3">Found Maps:</h2>
-{/if}
+                    {#if map.found_maps}
+                      {#each map.found_maps as foundMap}
+                        <form action="?/addMap" method="post">
+                          <input type="hidden" name="mapId" value={map.id} />
 
-<div class="row row-cols-4 gap-3 mx-0">
-  {#each found_maps as map}
-    <form class="col" action="?/addMap" method="post" use:enhance>
-      <input type="hidden" name="mapId" value={map.id} />
+                          <div class="card py-3">
+                            <img
+                              src="https://assets.ppy.sh/beatmaps/{foundMap
+                                ?.mapsets.osu_id}/covers/cover.jpg"
+                              class="card-img-top"
+                              alt="Map Banner"
+                            />
+                            <div class="card-body">
+                              <h5 class="card-title">
+                                {foundMap.mapsets.artist} - {foundMap.mapsets
+                                  .title}
+                              </h5>
+                              <p class="card-text">
+                                Mapped by {foundMap.mapsets.creator}
+                              </p>
+                              <div class="d-flex gap-3">
+                                <textarea
+                                  name="notes"
+                                  class="form-control"
+                                  placeholder="Notes"
+                                />
 
-      <div class="card py-3">
-        <img
-          src="https://assets.ppy.sh/beatmaps/{map?.mapsets
-            .osu_id}/covers/cover.jpg"
-          class="card-img-top"
-          alt="Map Banner"
-        />
-        <div class="card-body">
-          <h5 class="card-title">
-            {map.mapsets.artist} - {map.mapsets.title}
-          </h5>
-          <p class="card-text">
-            Mapped by {map.mapsets.creator}
-          </p>
-          <div class="d-flex gap-3">
-            <textarea name="notes" class="form-control" placeholder="Notes" />
-            <div class="mb-3">
-              <label for="" class="form-label">Mod ID</label>
-              <select class="form-select form-select-lg" name="" id="">
-                {#each data.mapPool.map_pool_mods as mod}
-                  <option value={mod.id}>{mod.name}</option>
-                {/each}
-              </select>
-            </div>
-
-            <button type="submit" class="btn btn-primary"
-              >Add to Map Pool</button
-            >
-          </div>
+                                <button type="submit" class="btn btn-primary"
+                                  >Add to Map Pool</button
+                                >
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      {/each}
+                    {/if}
+                  </td>
+                  <td
+                    ><img
+                      src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                        .osu_id}/covers/cover@2x.jpg"
+                      height="32"
+                      alt="Map Banner"
+                    /></td
+                  >
+                  <td
+                    >{map.maps?.mapsets.artist} - {map.maps?.mapsets.title} [{map
+                      .maps?.difficulty_name}]</td
+                  >
+                  <td>{map.maps?.mapsets.creator}</td>
+                  <td>{map.maps?.star_rating}</td>
+                  <td>{map.maps?.mapsets.bpm}</td>
+                  <td>{map.maps?.mapsets.time}</td>
+                  <td>{map.maps?.circle_size}</td>
+                  <td>{map.notes}</td>
+                  <td>
+                    <form action="?/deleteMapPoolMap" method="post" use:enhance>
+                      <input
+                        type="hidden"
+                        name="map-pool-map-id"
+                        value={map.id}
+                      />
+                      <button type="submit" class="btn btn-danger"
+                        ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="2em"
+                          height="2em"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
+                          />
+                        </svg>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
         </div>
       </div>
-    </form>
-  {/each}
-</div>
+    </div>
+  {/if}
+{/each}
 
 <div
   class="modal fade"
@@ -233,6 +247,8 @@
                     id="mapPoolMaps"
                     name="map-pool-mods-{mod.id}"
                     value={mod.map_pool_maps.length}
+                    min="1"
+                    max="99"
                   />
                 </div>
               {/each}
