@@ -2,7 +2,6 @@
   import { enhance } from "$app/forms";
 
   export let data;
-  console.log(data);
 
   let found_maps = [];
   async function getMap(id) {
@@ -91,7 +90,28 @@
                 <td>{map.maps?.mapsets.time}</td>
                 <td>{map.maps?.circle_size}</td>
                 <td>{map.notes}</td>
-                <td></td>
+                <td>
+                  <form action="?/deleteMapPoolMap" method="post" use:enhance>
+                    <input
+                      type="hidden"
+                      name="map-pool-map-id"
+                      value={map.id}
+                    />
+                    <button type="submit" class="btn btn-danger"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="2em"
+                        height="2em"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
+                        />
+                      </svg>
+                    </button>
+                  </form>
+                </td>
               </tr>
             {/each}
           </tbody>
@@ -172,7 +192,7 @@
           aria-label="Close"
         ></button>
       </div>
-      <form action="?/editMapPool" method="post" use:enhance>
+      <form action="?/editMapPool" method="post">
         <div class="modal-body">
           <div class="mb-3">
             <h2>Information</h2>
@@ -211,7 +231,7 @@
                     type="number"
                     class="form-control"
                     id="mapPoolMaps"
-                    name="maps"
+                    name="map-pool-mods-{mod.id}"
                     value={mod.map_pool_maps.length}
                   />
                 </div>
