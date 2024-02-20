@@ -7,6 +7,10 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       map_pool_mods(*, map_pool_mod_mods(*, mods(*)), map_pool_maps(*, maps(*, mapsets(*))))`
     )
     .eq("id", params.map_pool_id)
+    .order("mod_priority", {
+      referencedTable: "map_pool_mods.map_pool_maps",
+      ascending: true,
+    })
     .single();
 
   return {
@@ -108,7 +112,7 @@ export const actions = {
 
     const mapPoolMap = await locals.supabase
       .from("map_pool_maps")
-      .delete()
+      .update({ map_id: null })
       .eq("id", mapPoolMapId);
   },
 } satisfies Actions;
