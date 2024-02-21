@@ -44,7 +44,7 @@
     <button
       class="btn btn-primary"
       data-bs-toggle="modal"
-      data-bs-target="#editMapPoolModal">Edit Data</button
+      data-bs-target="#editMapPoolModal">Edit Map Pool</button
     >
   </div>
 </div>
