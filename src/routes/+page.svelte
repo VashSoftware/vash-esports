@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { tooltip } from "$lib/bootstrapTooltip";
 
   export let data;
 
@@ -99,13 +100,22 @@
             >
 
             <td class="align-middle text-end col-1">
-              <button
-                class="btn btn-primary"
-                disabled={event.participants.length < event.max_participants}
-                data-bs-toggle="modal"
-                data-bs-target="#registerEventModal"
-                on:click={() => (selectedEvent = event)}>Register</button
-              >
+              {#if event?.disabled}
+                <div use:tooltip data-bs-title={event?.disabledMessage}>
+                  <button
+                    class="btn btn-primary"
+                    disabled={true}
+                    on:click={() => (selectedEvent = event)}>Register</button
+                  >
+                </div>
+              {:else}
+                <button
+                  data-bs-toggle="modal"
+                  data-bs-target="#registerEventModal"
+                  class="btn btn-primary"
+                  on:click={() => (selectedEvent = event)}>Register</button
+                >
+              {/if}
             </td>
           </tr>
         {/each}

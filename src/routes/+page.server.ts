@@ -18,9 +18,26 @@ export const load: PageServerLoad = async ({ locals }) => {
     .order("created_at", { ascending: false })
     .limit(10);
 
+  const session = await locals.getSession();
+
+  let canRegisterEvents = [];
+  events.data.forEach((event) => {
+    event.participants.forEach((participant) => {
+      participant.teams.team_members.forEach((teamMember) => {
+        if (teamMember.user_profiles.user_id === session.user.id) {
+          event.disabled = true;
+          event.disabledMessage = "You are already registered";
+        }
+      });
+    });
+
+    canRegisterEvents.push(true);
+  });
+
   return {
     matches: matches.data,
     events: events.data,
+    canRegisterEvents,
   };
 };
 
