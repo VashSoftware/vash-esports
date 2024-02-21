@@ -98,7 +98,7 @@
                 / {event.max_participants}{/if}</td
             >
 
-            <td class="align-middle text-end">
+            <td class="align-middle text-end col-1">
               <button
                 class="btn btn-primary"
                 disabled={event.participants.length < event.max_participants}
