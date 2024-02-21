@@ -23,3 +23,20 @@ export const load: PageServerLoad = async ({ locals }) => {
     events: events.data,
   };
 };
+
+export const actions = {
+  register: async ({ locals, request }) => {
+    const formData = await request.formData();
+    const teamId = formData.get("team-id");
+    const eventId = formData.get("event-id");
+
+    const participant = await locals.supabase.from("participants").insert([
+      {
+        team_id: teamId,
+        event_id: eventId,
+      },
+    ]);
+
+    console.log(participant);
+  },
+} satisfies Actions;

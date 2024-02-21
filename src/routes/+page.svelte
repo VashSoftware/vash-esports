@@ -2,6 +2,8 @@
   import { goto } from "$app/navigation";
 
   export let data;
+
+  let selectedEvent;
 </script>
 
 <svelte:head>
@@ -101,7 +103,8 @@
                 class="btn btn-primary"
                 disabled={event.participants.length < event.max_participants}
                 data-bs-toggle="modal"
-                data-bs-target="#registerEventModal">Register</button
+                data-bs-target="#registerEventModal"
+                on:click={() => (selectedEvent = event)}>Register</button
               >
             </td>
           </tr>
@@ -112,31 +115,48 @@
 </div>
 
 <!-- Modal -->
-<div
-  class="modal fade"
-  id="registerEventModal"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">...</div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-          >Close</button
+<form action="?/register" method="post">
+  <div
+    class="modal fade"
+    id="registerEventModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">
+            Register for {selectedEvent?.name}
+          </h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div
+          class="modal-body text-center d-flex justify-content-center align-items-center gap-3"
         >
-        <button type="button" class="btn btn-primary">Save changes</button>
+          <input type="hidden" name="event-id" value={selectedEvent?.id} />
+
+          <label for="team-id">Team</label>
+          <select style="max-width: 15em;" class="form-select" name="team-id"
+            >{#each data.teams as team}
+              <option value={team.id}>{team.name}</option>
+            {/each}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">Close</button
+          >
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</form>
