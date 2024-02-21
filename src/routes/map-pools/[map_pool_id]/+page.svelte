@@ -173,7 +173,23 @@
                     >{#if map.maps}{map.maps?.circle_size}{/if}</td
                   >
                   <td
-                    >{#if map.maps}{map.notes}{/if}</td
+                    >{#if map.maps}
+                      <form action="?/updateMapPoolMapNotes" method="post">
+                        <input
+                          type="hidden"
+                          name="map-pool-map-id"
+                          value={map.id}
+                        />
+
+                        <input
+                          type="text"
+                          name="notes"
+                          value={map.notes}
+                          class="form-control"
+                          placeholder="Add notes"
+                        />
+                      </form>
+                    {/if}</td
                   >
                   <td
                     >{#if map.maps}

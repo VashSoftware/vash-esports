@@ -28,8 +28,8 @@ export const actions = {
     const mapPoolMap = await locals.supabase
       .from("map_pool_maps")
       .update({
-      map_id: mapId,
-      notes: notes,
+        map_id: mapId,
+        notes: notes,
       })
       .eq("id", mapPoolMapId);
   },
@@ -105,6 +105,16 @@ export const actions = {
     const mapPoolMap = await locals.supabase
       .from("map_pool_maps")
       .update({ map_id: null })
+      .eq("id", mapPoolMapId);
+  },
+  updateMapPoolMapNotes: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+    const mapPoolMapId = formData.get("map-pool-map-id");
+    const notes = formData.get("notes");
+
+    const mapPoolMap = await locals.supabase
+      .from("map_pool_maps")
+      .update({ notes: notes })
       .eq("id", mapPoolMapId);
   },
 } satisfies Actions;
