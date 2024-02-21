@@ -18,8 +18,42 @@ export const load: PageServerLoad = async ({ locals }) => {
     .order("created_at", { ascending: false })
     .limit(10);
 
+  const session = await locals.getSession();
+
+  let canRegisterEvents = [];
+  events.data.forEach((event) => {
+    event.participants.forEach((participant) => {
+      participant.teams.team_members.forEach((teamMember) => {
+        if (teamMember.user_profiles.user_id === session.user.id) {
+          event.disabled = true;
+          event.disabledMessage = "You are already registered";
+        }
+      });
+    });
+
+    canRegisterEvents.push(true);
+  });
+
   return {
     matches: matches.data,
     events: events.data,
+    canRegisterEvents,
   };
 };
+
+export const actions = {
+  register: async ({ locals, request }) => {
+    const formData = await request.formData();
+    const teamId = formData.get("team-id");
+    const eventId = formData.get("event-id");
+
+    const participant = await locals.supabase.from("participants").insert([
+      {
+        team_id: teamId,
+        event_id: eventId,
+      },
+    ]);
+
+    console.log(participant);
+  },
+} satisfies Actions;
