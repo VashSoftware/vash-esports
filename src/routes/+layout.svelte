@@ -38,8 +38,6 @@
       ...foundTeams,
       ...foundOrganisations,
     ];
-
-    console.log(searchResults);
   }
 </script>
 
