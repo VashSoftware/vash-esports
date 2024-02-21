@@ -23,19 +23,20 @@ export const actions = {
     const formData = await request.formData();
     const mapId = formData.get("mapId");
     const notes = formData.get("notes");
+    const mapPoolMapId = formData.get("mapPoolMapId");
 
-    const mapPoolMap = await locals.supabase.from("map_pool_maps").upsert({
-      map_pool_id: params.map_pool_id,
+    const mapPoolMap = await locals.supabase
+      .from("map_pool_maps")
+      .update({
       map_id: mapId,
       notes: notes,
-    });
+      })
+      .eq("id", mapPoolMapId);
   },
   editMapPool: async ({ locals, params, request }) => {
     const formData = await request.formData();
     const name = formData.get("name");
     const description = formData.get("description");
-
-    // console.log(formData);
 
     const mapPoolMods = await locals.supabase
       .from("map_pool_mods")
@@ -48,13 +49,6 @@ export const actions = {
         const modLengthDifference =
           Number.parseInt(formData.get(formDataKey) as string) -
           mapPoolMod.map_pool_maps.length;
-
-        // console.log("formDataKey: ", formDataKey);
-        // console.log("formData.get(formDataKey): ", formData.get(formDataKey));
-        // console.log(
-        //   "mapPoolMod.map_pool_maps.length: ",
-        //   mapPoolMod.map_pool_maps.length
-        // );
 
         if (modLengthDifference == 0) {
           return;
@@ -80,8 +74,6 @@ export const actions = {
               "id",
               toBeDeleted.data.map((map) => map.id)
             );
-
-          console.log(maps);
         }
 
         if (modLengthDifference > 0) {

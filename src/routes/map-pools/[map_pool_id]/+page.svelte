@@ -102,7 +102,16 @@
                     {#if map.found_maps}
                       {#each map.found_maps as foundMap}
                         <form action="?/addMap" method="post">
-                          <input type="hidden" name="mapId" value={map.id} />
+                          <input
+                            type="hidden"
+                            name="mapId"
+                            value={foundMap.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="mapPoolMapId"
+                            value={map.id}
+                          />
 
                           <div class="card py-3">
                             <img
