@@ -146,44 +146,62 @@
                     {/if}
                   </td>
                   <td
-                    ><img
-                      src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                        .osu_id}/covers/cover@2x.jpg"
-                      height="32"
-                      alt="Map Banner"
-                    /></td
+                    >{#if map.maps}<img
+                        src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                          .osu_id}/covers/cover@2x.jpg"
+                        height="32"
+                        alt="Map Banner"
+                      />{/if}</td
                   >
                   <td
-                    >{map.maps?.mapsets.artist} - {map.maps?.mapsets.title} [{map
-                      .maps?.difficulty_name}]</td
+                    >{#if map.maps}{map.maps?.mapsets.artist} - {map.maps
+                        ?.mapsets.title} [{map.maps?.difficulty_name}]{/if}</td
                   >
-                  <td>{map.maps?.mapsets.creator}</td>
-                  <td>{map.maps?.star_rating}</td>
-                  <td>{map.maps?.mapsets.bpm}</td>
-                  <td>{map.maps?.mapsets.time}</td>
-                  <td>{map.maps?.circle_size}</td>
-                  <td>{map.notes}</td>
-                  <td>
-                    <form action="?/deleteMapPoolMap" method="post" use:enhance>
-                      <input
-                        type="hidden"
-                        name="map-pool-map-id"
-                        value={map.id}
-                      />
-                      <button type="submit" class="btn btn-danger"
-                        ><svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="2em"
-                          height="2em"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            fill="currentColor"
-                            d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
-                          />
-                        </svg>
-                      </button>
-                    </form>
+                  <td
+                    >{#if map.maps}{map.maps?.mapsets.creator}{/if}</td
+                  >
+                  <td
+                    >{#if map.maps}{map.maps?.star_rating}{/if}</td
+                  >
+                  <td
+                    >{#if map.maps}{map.maps?.mapsets.bpm}{/if}</td
+                  >
+                  <td
+                    >{#if map.maps}{map.maps?.mapsets.time}{/if}</td
+                  >
+                  <td
+                    >{#if map.maps}{map.maps?.circle_size}{/if}</td
+                  >
+                  <td
+                    >{#if map.maps}{map.notes}{/if}</td
+                  >
+                  <td
+                    >{#if map.maps}
+                      <form
+                        action="?/deleteMapPoolMap"
+                        method="post"
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="map-pool-map-id"
+                          value={map.id}
+                        />
+                        <button type="submit" class="btn btn-danger"
+                          ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="2em"
+                            height="2em"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
+                            />
+                          </svg>
+                        </button>
+                      </form>
+                    {/if}
                   </td>
                 </tr>
               {/each}
