@@ -48,8 +48,8 @@
     <div class="container row p-0">
       <div class="col d-flex align-items-center">
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
-        <div class="btn btn-warning btn-sm" style="pointer-events: none;">
-          ALPHA
+        <div class="btn btn-danger btn-sm" style="pointer-events: none;">
+          PRE-ALPHA
         </div>
       </div>
       <div class="col text-center">
