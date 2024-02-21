@@ -140,7 +140,7 @@ This match is being broadcasted on the following official channels:
           <div class="row g-0">
             <div class="col-md-4">
               <img
-                src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
+                src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
                   .osu_id}/covers/cover@2x.jpg"
                 class="img-fluid rounded-start"
                 alt="osu! mapset cover"
@@ -151,7 +151,7 @@ This match is being broadcasted on the following official channels:
                 class="card-body d-flex align-items-center justify-content-between"
               >
                 <div class="card-title">
-                  {map.maps.mapsets.artist} - {map.maps.mapsets.title}
+                  {map.maps?.mapsets.artist} - {map.maps?.mapsets.title}
                 </div>
                 <form method="post" action="?/banMap" use:enhance>
                   <input type="hidden" name="map-id" value="1" />
@@ -176,7 +176,7 @@ This match is being broadcasted on the following official channels:
         <div class="col-md-8">
           <div class="card-body">
             <h5 class="card-title">
-              {map.maps.mapsets.artist} - {map.maps.mapsets.title}
+              {map.maps?.mapsets.artist} - {map.maps?.mapsets.title}
             </h5>
             <button class="btn btn-primary">Pick</button>
             <button class="btn btn-danger">Ban</button>
