@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { tooltip } from "$lib/bootstrapTooltip";
   import RegisterButton from "../../components/registerButton.svelte";
   import { onMount } from "svelte";
 
@@ -134,7 +135,14 @@
                 alt="Game icon"
               /></label
             >
-            <select name="game-id" class="form-select" id="game-id">
+            <select
+              use:tooltip
+              name="game-id"
+              class="form-select"
+              id="game-id"
+              disabled
+              data-bs-title="More events coming soon"
+            >
               {#each data.games as game}
                 <option value={game.id}>{game.name}</option>
               {/each}
