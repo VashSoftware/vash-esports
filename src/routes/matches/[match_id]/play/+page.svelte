@@ -64,7 +64,7 @@
     let title = map.maps?.mapsets.title;
     let difficulty_name = map.maps?.difficulty_name;
 
-    const max_length = 12;
+    const max_length = 16;
 
     artist =
       artist.length > max_length
@@ -83,7 +83,7 @@
   }
 </script>
 
-This match is being broadcasted on the following official channels:
+<!-- This match is being broadcasted on the following official channels: -->
 <div class="my-5">
   <div class="row my-5">
     <div class="col">
@@ -175,9 +175,6 @@ This match is being broadcasted on the following official channels:
   {#each data.match.rounds.map_pools.map_pool_mods as mod}
     {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
       <div class="d-flex align-items-center flex-wrap">
-        <h4>
-          {mod.name}
-        </h4>
         {#each mod.map_pool_maps as map}
           {#if map.maps}
             <div class="row my-1 px-1">
@@ -188,13 +185,13 @@ This match is being broadcasted on the following official channels:
               >
                 <div class="d-flex">
                   <div
-                    class=" p-3 d-flex align-items-center rounded-start"
+                    class="p-2 d-flex align-items-center rounded-start"
                     style="background-color: #{mod['bg-color'] ||
-                      '000000'}; height: 80px; object-fit: cover"
+                      '000000'}; height: 70px; object-fit: cover"
                   >
-                    <h4 class="text-black">
+                    <h5 class="text-black">
                       {mod.code}{map.mod_priority}
-                    </h4>
+                    </h5>
                   </div>
 
                   <div style="position: relative;">
@@ -203,7 +200,7 @@ This match is being broadcasted on the following official channels:
                         src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
                           .osu_id}/covers/cover@2x.jpg"
                         alt="Match map cover"
-                        style="filter: blur(1px) brightness(70%); height: 80px; object-fit: cover"
+                        style="filter: blur(1px) brightness(70%); height: 70px; object-fit: cover"
                       />
                     </div>
                     <div
@@ -211,7 +208,7 @@ This match is being broadcasted on the following official channels:
                       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 8px #000000;"
                     >
                       <div class="col">
-                        <div>
+                        <div style="font-size: smaller;">
                           {getShortenedMapName(map)}
                         </div>
 
@@ -223,24 +220,26 @@ This match is being broadcasted on the following official channels:
                     </div>
                   </div>
 
-                  <div
-                    class=" p-3 d-flex align-items-center rounded-end"
-                    style="background-color: #{mod['bg-color'] ||
-                      '000000'}; height: 80px; object-fit: cover"
-                  >
-                    <form action="?/banMap" method="post" use:enhance>
-                      <input
-                        type="hidden"
-                        name="map-pool-map-id"
-                        value={map.id}
-                      />
+                  {#if map.type !== "tiebreaker"}
+                    <div
+                      class=" p-2 d-flex align-items-center rounded-end"
+                      style="background-color: #{mod['bg-color'] ||
+                        '000000'}; height: 70px; object-fit: cover"
+                    >
+                      <form action="?/banMap" method="post" use:enhance>
+                        <input
+                          type="hidden"
+                          name="map-pool-map-id"
+                          value={map.id}
+                        />
 
-                      <button
-                        class="btn btn-danger"
-                        style=" height: 100%; object-fit: cover">BAN</button
-                      >
-                    </form>
-                  </div>
+                        <button
+                          class="btn btn-danger"
+                          style=" height: 100%; object-fit: cover">BAN</button
+                        >
+                      </form>
+                    </div>
+                  {/if}
                 </div>
               </a>
             </div>
