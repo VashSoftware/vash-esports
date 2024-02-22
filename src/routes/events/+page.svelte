@@ -141,7 +141,7 @@
               class="form-select"
               id="game-id"
               disabled
-              data-bs-title="More events coming soon"
+              data-bs-title="More games coming soon"
             >
               {#each data.games as game}
                 <option value={game.id}>{game.name}</option>
