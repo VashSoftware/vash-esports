@@ -1,22 +1,27 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import RegisterButton from "../../components/registerButton.svelte";
+  import { onMount } from "svelte";
+
+  onMount(async () => {
+    await import("bootstrap/js/dist/dropdown");
+  });
 
   export let data;
-
-  const isActive = () => {
-    return true;
-  };
 </script>
 
 <div class="row py-5">
   <div class="col">
-    <h1>Events ({data.events.length})</h1>
+    <h1>Events ({data.eventsCount})</h1>
   </div>
   <div class="col text-end">
-    <a href="/events/create">
-      <button class="btn btn-primary btn-lg"> Create Event </button>
-    </a>
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#createEventModal"
+      class="btn btn-primary btn-lg"
+    >
+      Create Event
+    </button>
   </div>
 </div>
 
@@ -52,23 +57,124 @@
     </tbody>
   </table>
 
-  <form method="POST">
-    <nav aria-label="Event pagination">
-      <ul class="pagination justify-content-center">
+  <nav aria-label="Event pagination">
+    <ul class="pagination justify-content-center">
+      <li class="page-item">
+        <button type="submit" class="page-link">Previous</button>
+      </li>
+      {#each new Array(Math.floor(data.eventsCount / 10 + 1)) as tab, i}
         <li class="page-item">
-          <button type="submit" class="page-link">Previous</button>
+          <a
+            href="?page={i + 1}"
+            class="page-link {() =>
+              i + 1 == Math.floor(data.eventsCount / 10 + 1) ? 'active' : ''}"
+            >{i + 1}</a
+          >
         </li>
-        {#each [1, 2, 3, 4, 5] as tab}
-          <li class="page-item">
-            <button type="submit" class="page-link {isActive() ? 'active' : ''}"
-              >{tab}</button
-            >
-          </li>
-        {/each}
-        <li class="page-item">
-          <button type="submit" class="page-link">Next</button>
-        </li>
-      </ul>
-    </nav>
-  </form>
+      {/each}
+      <li class="page-item">
+        <button type="submit" class="page-link">Next</button>
+      </li>
+    </ul>
+  </nav>
 </div>
+
+<form action="?/createEvent" method="post">
+  <div
+    class="modal fade"
+    id="createEventModal"
+    tabindex="-1"
+    aria-labelledby="createEventModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Create Event</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="organisation-id" class="form-label">Organisation</label>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              name="organisation-id"
+            >
+              {#each data.organisations as organisation}<option value="1"
+                  >{organisation.name}</option
+                >{/each}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="event-group-id" class="form-label">Event Group</label>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              name="event-group-id"
+            >
+              {#each data.eventGroups as eventGroup}<option value="1"
+                  >{eventGroup.name}</option
+                >{/each}
+            </select>
+          </div>
+
+          <label for="game-id" class="form-label">Game</label>
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="game-id"
+              ><img
+                height="32"
+                src={data.games[0].logo}
+                alt="Game icon"
+              /></label
+            >
+            <select name="game-id" class="form-select" id="game-id">
+              {#each data.games as game}
+                <option value={game.id}>{game.name}</option>
+              {/each}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="event-name" class="form-label">Name</label>
+            <input
+              id="event-name"
+              type="text"
+              class="form-control"
+              name="event-name"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="event-description" class="form-label">Description</label
+            >
+            <textarea
+              id="event-name"
+              class="form-control"
+              name="event-description"
+            />
+          </div>
+
+          <div class="form-text">
+            We'll need more configuration later to start the event.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">Close</button
+          >
+          <button type="submit" class="btn btn-primary">Create Event</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
