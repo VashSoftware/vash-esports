@@ -37,6 +37,10 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       )`
     )
     .eq("id", params.match_id)
+    .order("priority", {
+      referencedTable: "rounds.map_pools.map_pool_mods",
+      ascending: true,
+    })
     .single();
 
   return {
