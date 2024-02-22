@@ -174,67 +174,75 @@ This match is being broadcasted on the following official channels:
 
   {#each data.match.rounds.map_pools.map_pool_mods as mod}
     {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
-      <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center flex-wrap">
         <h4>
           {mod.name}
         </h4>
         {#each mod.map_pool_maps as map}
           {#if map.maps}
-            <div class="row my-2">
-              <div class="col-4 d-flex">
-                <div
-                  class=" p-3 d-flex align-items-center rounded-start"
-                  style="background-color: #000000;  ; height: 80px; object-fit: cover"
-                >
-                  <h4>
-                    {mod.code}{map.mod_priority}
-                  </h4>
-                </div>
-
-                <div style="position: relative;">
-                  <div class="text-center">
-                    <img
-                      src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                        .osu_id}/covers/cover@2x.jpg"
-                      alt="Match map cover"
-                      style="filter: blur(1px) brightness(70%); height: 80px; object-fit: cover"
-                    />
-                  </div>
+            <div class="row my-1 px-1">
+              <a
+                style="text-decoration: none; color: inherit;"
+                href="https://osu.ppy.sh/beatmaps/{map.maps?.osu_id}"
+                target="_blank"
+              >
+                <div class="d-flex">
                   <div
-                    class="text-center row align-items-center"
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 8px #000000;"
+                    class=" p-3 d-flex align-items-center rounded-start"
+                    style="background-color: #{mod['bg-color'] ||
+                      '000000'}; height: 80px; object-fit: cover"
                   >
-                    <div class="col">
-                      <div>
-                        {getShortenedMapName(map)}
-                      </div>
+                    <h4 class="text-black">
+                      {mod.code}{map.mod_priority}
+                    </h4>
+                  </div>
 
-                      <div>
-                        <b>{map.maps?.star_rating}★</b> -
-                        <b>{map.maps?.mapsets.bpm}BPM</b>
+                  <div style="position: relative;">
+                    <div class="text-center">
+                      <img
+                        src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                          .osu_id}/covers/cover@2x.jpg"
+                        alt="Match map cover"
+                        style="filter: blur(1px) brightness(70%); height: 80px; object-fit: cover"
+                      />
+                    </div>
+                    <div
+                      class="text-center row align-items-center"
+                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 8px #000000;"
+                    >
+                      <div class="col">
+                        <div>
+                          {getShortenedMapName(map)}
+                        </div>
+
+                        <div>
+                          <b>{map.maps?.star_rating}★</b> -
+                          <b>{map.maps?.mapsets.bpm}BPM</b>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div
-                  class=" p-3 d-flex align-items-center rounded-end"
-                  style="background-color: #000000; height: 80px; object-fit: cover"
-                >
-                  <form action="?/banMap" method="post" use:enhance>
-                    <input
-                      type="hidden"
-                      name="map-pool-map-id"
-                      value={map.id}
-                    />
+                  <div
+                    class=" p-3 d-flex align-items-center rounded-end"
+                    style="background-color: #{mod['bg-color'] ||
+                      '000000'}; height: 80px; object-fit: cover"
+                  >
+                    <form action="?/banMap" method="post" use:enhance>
+                      <input
+                        type="hidden"
+                        name="map-pool-map-id"
+                        value={map.id}
+                      />
 
-                    <button
-                      class="btn btn-danger"
-                      style=" height: 100%; object-fit: cover">BAN</button
-                    >
-                  </form>
+                      <button
+                        class="btn btn-danger"
+                        style=" height: 100%; object-fit: cover">BAN</button
+                      >
+                    </form>
+                  </div>
                 </div>
-              </div>
+              </a>
             </div>
           {/if}
         {/each}
