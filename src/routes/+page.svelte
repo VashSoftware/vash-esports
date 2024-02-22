@@ -11,7 +11,7 @@
 
 <div class="text-center py-5">
   <h1><b>Vash Esports</b></h1>
-  <h3>The best way to play in osu! tournaments.</h3>
+  <h3>The best way to play osu! tournaments.</h3>
 </div>
 
 <div class="py-4">
