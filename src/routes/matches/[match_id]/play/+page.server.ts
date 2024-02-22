@@ -37,6 +37,10 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       )`
     )
     .eq("id", params.match_id)
+    .order("priority", {
+      referencedTable: "rounds.map_pools.map_pool_mods",
+      ascending: true,
+    })
     .single();
 
   return {
@@ -48,13 +52,13 @@ export const actions = {
   banMap: async ({ locals, params, request }) => {
     const formData = await request.formData();
 
-    const mapId = formData.get("map-id");
+    const mapId = formData.get("map-pool-map-id");
 
     const matchBan = await locals.supabase
       .from("match_bans")
       .insert([{ match_id: params.match_id, map_pool_map_id: mapId }])
       .select("*");
 
-    console.log(matchBan);
+    console.log("Banned map with ID: ", matchBan?.data[0].id);
   },
 } satisfies Actions;
