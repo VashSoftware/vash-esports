@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     event.participants.forEach((participant) => {
       participant.teams.team_members.forEach((teamMember) => {
         if (teamMember.user_profiles.user_id === session.user.id) {
-          event.disabled = false;
+          event.disabled = true;
           event.disabledMessage = "You are already registered";
         }
       });
