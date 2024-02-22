@@ -1,10 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { tooltip } from "$lib/bootstrapTooltip";
+  import RegisterButton from "../components/registerButton.svelte";
 
   export let data;
-
-  let selectedEvent;
 </script>
 
 <svelte:head>
@@ -88,34 +86,21 @@
       </thead>
       <tbody>
         {#each data.events as event}
-          <tr role="button" class="align-self-center">
-            <td on:click={() => goto(`/events/${event.id}`)}
+          <tr class="align-self-center">
+            <td role="button" on:click={() => goto(`/events/${event.id}`)}
               >{event.organisations?.name}</td
             >
-            <td on:click={() => goto(`/events/${event.id}`)}>{event.name}</td>
-            <td on:click={() => goto(`/events/${event.id}`)}>
+            <td role="button" on:click={() => goto(`/events/${event.id}`)}
+              >{event.name}</td
+            >
+            <td role="button" on:click={() => goto(`/events/${event.id}`)}>
               {event.participants.length}
               {#if event.max_participants}
                 / {event.max_participants}{/if}</td
             >
 
             <td class="align-middle text-end col-1">
-              {#if event?.disabled}
-                <div use:tooltip data-bs-title={event?.disabledMessage}>
-                  <button
-                    class="btn btn-primary"
-                    disabled={true}
-                    on:click={() => (selectedEvent = event)}>Register</button
-                  >
-                </div>
-              {:else}
-                <button
-                  data-bs-toggle="modal"
-                  data-bs-target="#registerEventModal"
-                  class="btn btn-primary"
-                  on:click={() => (selectedEvent = event)}>Register</button
-                >
-              {/if}
+              <RegisterButton {event} teams={data.teams} />
             </td>
           </tr>
         {/each}
@@ -123,50 +108,3 @@
     </table>
   </div>
 </div>
-
-<!-- Modal -->
-<form action="?/register" method="post">
-  <div
-    class="modal fade"
-    id="registerEventModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">
-            Register for {selectedEvent?.name}
-          </h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div
-          class="modal-body text-center d-flex justify-content-center align-items-center gap-3"
-        >
-          <input type="hidden" name="event-id" value={selectedEvent?.id} />
-
-          <label for="team-id">Team</label>
-          <select style="max-width: 15em;" class="form-select" name="team-id"
-            >{#each data.teams as team}
-              <option value={team.id}>{team.name}</option>
-            {/each}
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">Close</button
-          >
-          <button type="submit" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</form>

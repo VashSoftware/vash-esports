@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { goto } from "$app/navigation";
+  import RegisterButton from "../../components/registerButton.svelte";
 
   export let data;
 
   const isActive = () => {
     return true;
-  }
+  };
 </script>
 
 <div class="row py-5">
@@ -31,30 +32,43 @@
     </thead>
     <tbody>
       {#each data.events as event}
-        <tr role="button"
-        on:click={() => goto(`/events/${event.id}`)}>
-          <td>{event.organisations?.name}</td>
-          <td>{event.name}</td>
-          <td>{event.participants.length} / {event.max_registrations ? event.max_registrations : '∞'}</td>
-          <td>
-            <a href="/events/{event.id}/register">
-              <button class="btn btn-primary">Register</button>
-            </a>
+        <tr>
+          <td role="button" on:click={() => goto(`/events/${event.id}`)}
+            >{event.organisations?.name}</td
+          >
+          <td role="button" on:click={() => goto(`/events/${event.id}`)}
+            >{event.name}</td
+          >
+          <td role="button" on:click={() => goto(`/events/${event.id}`)}
+            >{event.participants.length} / {event.max_registrations
+              ? event.max_registrations
+              : "∞"}</td
+          >
+          <td class="col-1">
+            <RegisterButton {event} teams={data.teams} />
           </td>
         </tr>
       {/each}
     </tbody>
   </table>
 
-<form method="POST">
+  <form method="POST">
     <nav aria-label="Event pagination">
-        <ul class="pagination justify-content-center">
-            <li class="page-item"><button type="submit" class="page-link">Previous</button></li>
-            {#each [1,2,3,4,5] as tab}
-            <li class="page-item"><button type="submit" class="page-link {isActive() ? 'active' : ''}" >{tab}</button></li>
-            {/each}
-            <li class="page-item"><button type="submit" class="page-link">Next</button></li>
-        </ul>
+      <ul class="pagination justify-content-center">
+        <li class="page-item">
+          <button type="submit" class="page-link">Previous</button>
+        </li>
+        {#each [1, 2, 3, 4, 5] as tab}
+          <li class="page-item">
+            <button type="submit" class="page-link {isActive() ? 'active' : ''}"
+              >{tab}</button
+            >
+          </li>
+        {/each}
+        <li class="page-item">
+          <button type="submit" class="page-link">Next</button>
+        </li>
+      </ul>
     </nav>
-</form>
+  </form>
 </div>

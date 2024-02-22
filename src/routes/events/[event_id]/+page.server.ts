@@ -54,6 +54,16 @@ export async function load({ params, locals }) {
     .from("event_banners")
     .getPublicUrl(event.data.id);
 
+  const session = await locals.getSession();
+  event.data.participants.forEach((participant) => {
+    participant.teams.team_members.forEach((teamMember) => {
+      if (teamMember.user_profiles.user_id === session.user.id) {
+        event.disabled = true;
+        event.disabledMessage = "You are already registered";
+      }
+    });
+  });
+
   return {
     event: event.data,
     participantIcons: participantIcons,
