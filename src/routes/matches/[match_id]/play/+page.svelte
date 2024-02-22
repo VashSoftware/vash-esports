@@ -151,33 +151,35 @@ This match is being broadcasted on the following official channels:
   <div class="row">
     {#each data.match.rounds.map_pools.map_pool_mods as mod}
       {#each mod.map_pool_maps as map}
-        <div class="col p-2">
-          <div class=" card mb-3">
-            <div class="row g-0">
-              <div class="col-md-4">
-                <img
-                  src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                    .osu_id}/covers/cover@2x.jpg"
-                  class="img-fluid rounded-start"
-                  alt="osu! mapset cover"
-                />
-              </div>
-              <div class="col-md-8">
-                <div
-                  class="card-body d-flex align-items-center justify-content-between"
-                >
-                  <div class="card-title">
-                    {map.maps?.mapsets.artist} - {map.maps?.mapsets.title}
+        {#if map.maps}
+          <div class="col p-2">
+            <div class=" card mb-3">
+              <div class="row g-0">
+                <div class="col-md-4">
+                  <img
+                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                      .osu_id}/covers/cover@2x.jpg"
+                    class="img-fluid rounded-start"
+                    alt="osu! mapset cover"
+                  />
+                </div>
+                <div class="col-md-8">
+                  <div
+                    class="card-body d-flex align-items-center justify-content-between"
+                  >
+                    <div class="card-title">
+                      {map.maps?.mapsets.artist} - {map.maps?.mapsets.title}
+                    </div>
+                    <form method="post" action="?/banMap" use:enhance>
+                      <input type="hidden" name="map-id" value="1" />
+                      <button type="submit" class="btn btn-danger">Ban</button>
+                    </form>
                   </div>
-                  <form method="post" action="?/banMap" use:enhance>
-                    <input type="hidden" name="map-id" value="1" />
-                    <button type="submit" class="btn btn-danger">Ban</button>
-                  </form>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        {/if}
       {/each}
     {/each}
   </div>
