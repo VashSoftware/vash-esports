@@ -1,4 +1,5 @@
 <script lang="ts">
+  import RegisterButton from "../../../components/registerButton.svelte";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
 
@@ -17,7 +18,7 @@
 </svelte:head>
 
 <div class="row pb-5" style="position: relative;">
-  <img godulib
+  <img
     src={data.eventBanner.data.publicUrl}
     alt="Match map cover"
     style="filter: blur(2px); object-fit: cover"
@@ -37,11 +38,7 @@
     </div>
 
     <div class="col text-end">
-      <button
-        class="btn btn-lg btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#registerModal">Register</button
-      >
+      <RegisterButton event={data.event} teams={data.teams} />
       <button
         class="btn btn-lg btn-secondary"
         on:click={() => goto($page.url.pathname + "/manage")}>Manage</button
@@ -198,6 +195,31 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <h3>Prizes</h3>
+  <div class="row text-center">
+    <div class="col col-3">
+      <h3>2nd place</h3>
+      <ul>
+        <li>100$</li>
+        <li>2 years osu!supporter</li>
+      </ul>
+    </div>
+    <div class="col col-6">
+      <h2>1st place</h2>
+      <ul>
+        <li>100$</li>
+        <li>2 years osu!supporter</li>
+      </ul>
+    </div>
+    <div class="col col-3">
+      <h4>3rd place</h4>
+      <ul>
+        <li>100$</li>
+        <li>2 years osu!supporter</li>
+      </ul>
     </div>
   </div>
 </div>
