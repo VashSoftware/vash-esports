@@ -58,6 +58,29 @@
       (payload) => getMatch()
     )
     .subscribe();
+
+  function getShortenedMapName(map) {
+    let artist = map.maps?.mapsets.artist;
+    let title = map.maps?.mapsets.title;
+    let difficulty_name = map.maps?.difficulty_name;
+
+    const max_length = 12;
+
+    artist =
+      artist.length > max_length
+        ? artist.substring(0, max_length) + "..."
+        : artist;
+    title =
+      title.length > max_length
+        ? title.substring(0, max_length) + "..."
+        : title;
+    difficulty_name =
+      difficulty_name.length > max_length
+        ? difficulty_name.substring(0, max_length) + "..."
+        : difficulty_name;
+
+    return `${artist} - ${title} [${difficulty_name}]`;
+  }
 </script>
 
 This match is being broadcasted on the following official channels:
@@ -147,42 +170,77 @@ This match is being broadcasted on the following official channels:
     </div>
   </div> -->
 
-  <h3 class="text-center">macdobald borgar has to ban a map.</h3>
-  <div class="row">
-    {#each data.match.rounds.map_pools.map_pool_mods as mod}
-      {#each mod.map_pool_maps as map}
-        {#if map.maps}
-          <div class="col p-2">
-            <div class=" card mb-3">
-              <div class="row g-0">
-                <div class="col-md-4">
-                  <img
-                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                      .osu_id}/covers/cover@2x.jpg"
-                    class="img-fluid rounded-start"
-                    alt="osu! mapset cover"
-                  />
+  <h3 class="text-center">macdobald borgar has to ban a map (1/2 Left)</h3>
+
+  {#each data.match.rounds.map_pools.map_pool_mods as mod}
+    {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
+      <div class="d-flex align-items-center gap-3">
+        <h4>
+          {mod.name}
+        </h4>
+        {#each mod.map_pool_maps as map}
+          {#if map.maps}
+            <div class="row my-2">
+              <div class="col-4 d-flex">
+                <div
+                  class=" p-3 d-flex align-items-center rounded-start"
+                  style="background-color: #000000;  ; height: 80px; object-fit: cover"
+                >
+                  <h4>
+                    {mod.code}{map.mod_priority}
+                  </h4>
                 </div>
-                <div class="col-md-8">
-                  <div
-                    class="card-body d-flex align-items-center justify-content-between"
-                  >
-                    <div class="card-title">
-                      {map.maps?.mapsets.artist} - {map.maps?.mapsets.title}
-                    </div>
-                    <form method="post" action="?/banMap" use:enhance>
-                      <input type="hidden" name="map-id" value="1" />
-                      <button type="submit" class="btn btn-danger">Ban</button>
-                    </form>
+
+                <div style="position: relative;">
+                  <div class="text-center">
+                    <img
+                      src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                        .osu_id}/covers/cover@2x.jpg"
+                      alt="Match map cover"
+                      style="filter: blur(1px) brightness(70%); height: 80px; object-fit: cover"
+                    />
                   </div>
+                  <div
+                    class="text-center row align-items-center"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 8px #000000;"
+                  >
+                    <div class="col">
+                      <div>
+                        {getShortenedMapName(map)}
+                      </div>
+
+                      <div>
+                        <b>{map.maps?.star_rating}★</b> -
+                        <b>{map.maps?.mapsets.bpm}BPM</b>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class=" p-3 d-flex align-items-center rounded-end"
+                  style="background-color: #000000; height: 80px; object-fit: cover"
+                >
+                  <form action="?/banMap" method="post" use:enhance>
+                    <input
+                      type="hidden"
+                      name="map-pool-map-id"
+                      value={map.id}
+                    />
+
+                    <button
+                      class="btn btn-danger"
+                      style=" height: 100%; object-fit: cover">BAN</button
+                    >
+                  </form>
                 </div>
               </div>
             </div>
-          </div>
-        {/if}
-      {/each}
-    {/each}
-  </div>
+          {/if}
+        {/each}
+      </div>
+    {/if}
+  {/each}
 
   <h2 class="my-5">Phase 1: Playing</h2>
   <h2>Map pool</h2>

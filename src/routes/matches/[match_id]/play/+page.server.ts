@@ -48,13 +48,13 @@ export const actions = {
   banMap: async ({ locals, params, request }) => {
     const formData = await request.formData();
 
-    const mapId = formData.get("map-id");
+    const mapId = formData.get("map-pool-map-id");
 
     const matchBan = await locals.supabase
       .from("match_bans")
       .insert([{ match_id: params.match_id, map_pool_map_id: mapId }])
       .select("*");
 
-    console.log(matchBan);
+    console.log("Banned map with ID: ", matchBan?.data[0].id);
   },
 } satisfies Actions;
