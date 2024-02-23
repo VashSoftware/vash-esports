@@ -31,12 +31,12 @@
     <div class="mb-3">
       <label for="startTimeInput" class="form-label">Start Time</label>
       <input
-      id="startTimeInput"
-      class="form-control"
-      type="datetime-local"
-      name="startTime"
-      value={new Date(data.event.created_at).toISOString().substring(0, 16)}
-    />
+        id="startTimeInput"
+        class="form-control"
+        type="datetime-local"
+        name="startTime"
+        value={new Date(data.event.created_at).toISOString().substring(0, 16)}
+      />
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
@@ -45,34 +45,7 @@
 
 <div class="py-2">
   <div class="row">
-    <h2 class="col">Staff Members ({data.staffMembers.length})</h2>
-    <div class="col text-end">
-      <button class="btn btn-primary">Add Staff Members</button>
-    </div>
-  </div>
-  <div class="table-responsive">
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Roles</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each data.staffMembers as staffMember}
-          <tr class="">
-            <td>{staffMember.user_profiles.name}</td>
-            <td>{staffMember.roles}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="py-2">
-  <div class="row">
-    <h2 class="col">Rounds ({data.rounds.length})</h2>
+    <h2 class="col">Rounds ({data.event.rounds.length})</h2>
     <div class="col text-end">
       <button class="btn btn-primary">Add Rounds</button>
     </div>
@@ -87,13 +60,13 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.rounds as round}
+        {#each data.event.rounds as round}
           <tr>
             <td>{round.name}</td>
             <td>
-              <a href="/map-pools/{round.map_pool_id}">{round.map_pool}</a>
+              <a href="/map-pools/{round.map_pools.id}">{round.map_pools}</a>
             </td>
-            <td>{round.map_pool}</td>
+            <td>{round.map_pools}</td>
           </tr>
         {/each}
       </tbody>
@@ -104,7 +77,7 @@
 <div class="py-2">
   <div class="row">
     <div class="col">
-      <h2>Participants ({data.participants.length})</h2>
+      <h2>Participants ({data.event.participants.length})</h2>
     </div>
 
     <div class="col text-end">
@@ -122,7 +95,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.participants as participant}
+        {#each data.event.participants as participant}
           <tr>
             <td>{participant.teams.name}</td>
             <td>{new Date(participant.created_at).toLocaleString()}</td>
