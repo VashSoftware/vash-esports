@@ -51,4 +51,18 @@ export const actions = {
 
     console.log(participant);
   },
+  dismissNotification: async ({ locals, request }) => {
+    const formData = await request.formData();
+
+    const notificationId = formData.get("notification-id");
+
+    const updated = await locals.supabase
+      .from("notification_recipients")
+      .update({ dismissed_at: new Date() })
+      .eq("id", notificationId)
+      .select("*")
+      .single();
+
+    console.log(updated);
+  },
 } satisfies Actions;
