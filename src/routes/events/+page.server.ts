@@ -20,16 +20,23 @@ export const load: PageServerLoad = async ({ locals, request }) => {
     .select("id", { count: "exact", head: true });
 
   const session = await locals.getSession();
-  events.data.forEach((event) => {
-    event.participants.forEach((participant) => {
-      participant.teams.team_members.forEach((teamMember) => {
-        if (teamMember.user_profiles.user_id === session.user.id) {
-          event.disabled = true;
-          event.disabledMessage = "You are already registered";
-        }
+  if (session) {
+    events.data.forEach((event) => {
+      event.participants.forEach((participant) => {
+        participant.teams.team_members.forEach((teamMember) => {
+          if (teamMember.user_profiles.user_id === session.user.id) {
+            event.disabled = true;
+            event.disabledMessage = "You are already registered";
+          }
+        });
       });
     });
-  });
+  } else {
+    events.data.forEach((event) => {
+      event.disabled = true;
+      event.disabledMessage = "You need to be logged in to register for events";
+    });
+  }
 
   const games = await locals.supabase.from("games").select("*");
   games.data.forEach(

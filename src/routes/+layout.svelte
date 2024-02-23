@@ -102,16 +102,16 @@
       </div>
       <div class="p-0">
         <ul class="navbar-nav align-items-center justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="/events">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/matches">Matches</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/rankings">Rankings</a>
+          </li>
           {#if data.session?.user}
-            <li class="nav-item">
-              <a class="nav-link" href="/events">Events</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/matches">Matches</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/rankings">Rankings</a>
-            </li>
             <li
               class="nav-item mx-2 ms-3 dropdown d-flex flex-column align-items-center"
             >
@@ -216,7 +216,13 @@
   <footer class="container-fluid mt-auto bg-dark-subtle">
     <div class="container">
       <div class="row text-center my-3">
-        <div class="col"></div>
+        <div class="col">
+          <stripe-buy-button
+            buy-button-id="buy_btn_1OmnmQK4YdEKZm47w7jpTVA9"
+            publishable-key="pk_live_51KvfIRK4YdEKZm472sIZDQb4WIyCSWkXfzBwwGbgMJtE0siYmYvUME8510RaUi7TVnxRvXJxGEDsrniLLx1r72Gr00tmk9MPx7"
+          >
+          </stripe-buy-button>
+        </div>
         <div class="col d-flex justify-content-center align-items-center">
           <a class="text-decoration-none mx-2" href="/terms">Terms</a>
           •

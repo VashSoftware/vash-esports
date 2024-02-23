@@ -9,7 +9,7 @@ export async function load({ params, locals }) {
         teams (*,
           team_members(
             user_profiles (
-              name
+              *
             )
           )
         )
@@ -54,8 +54,8 @@ export async function load({ params, locals }) {
     event.data.participants.forEach((participant) => {
       participant.teams.team_members.forEach((teamMember) => {
         if (teamMember.user_profiles.user_id === session.user.id) {
-          event.disabled = true;
-          event.disabledMessage = "You are already registered";
+          event.data.disabled = true;
+          event.data.disabledMessage = "You are already registered";
         }
       });
     });
