@@ -1,5 +1,4 @@
 <script lang="ts">
-  import "../app.pcss";
   import type { LayoutData } from "./$types";
 
   export let data: LayoutData;
@@ -43,14 +42,14 @@
 
 <main class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg bg-dark-subtle justify-content-center">
-    <div class="container row p-0">
-      <div class="col d-flex align-items-center">
+    <div class="container d-flex flex-column flex-md-row p-0">
+      <div class="d-flex align-items-center">
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
         <div class="btn btn-danger btn-sm" style="pointer-events: none;">
           PRE-ALPHA
         </div>
       </div>
-      <div class="col text-center">
+      <div class="text-center">
         <div class="position-relative">
           <div class="input-group">
             <input
@@ -85,7 +84,7 @@
           </ul>
         </div>
       </div>
-      <div class="col p-0">
+      <div class="p-0">
         <ul class="navbar-nav align-items-center justify-content-end">
           {#if data.session?.user}
             <li class="nav-item">

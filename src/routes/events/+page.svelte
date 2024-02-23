@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { tooltip } from "$lib/bootstrapTooltip";
   import RegisterButton from "../../components/registerButton.svelte";
   import { onMount } from "svelte";
 
@@ -41,8 +42,9 @@
           <td role="button" on:click={() => goto(`/events/${event.id}`)}
             >{event.organisations?.name}</td
           >
-          <td role="button" on:click={() => goto(`/events/${event.id}`)}
-            >{event.name}</td
+          <td role="button" on:click={() => goto(`/events/${event.id}`)}>
+            {#if event.event_groups}<b>{event.event_groups?.name}</b>
+            {/if}{event.name}</td
           >
           <td role="button" on:click={() => goto(`/events/${event.id}`)}
             >{event.participants.length} / {event.max_registrations
@@ -134,7 +136,14 @@
                 alt="Game icon"
               /></label
             >
-            <select name="game-id" class="form-select" id="game-id">
+            <select
+              use:tooltip
+              name="game-id"
+              class="form-select"
+              id="game-id"
+              disabled
+              data-bs-title="More games coming soon"
+            >
               {#each data.games as game}
                 <option value={game.id}>{game.name}</option>
               {/each}

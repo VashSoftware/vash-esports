@@ -37,7 +37,12 @@
             class="align-self-center"
             on:click={() => goto(`/matches/${match.id}`)}
           >
-            <td>{match.rounds.events.name}</td>
+            <td
+              >{#if match.rounds.events.event_groups}<b
+                  >{match.rounds.events.event_groups.name}</b
+                >
+              {/if}{match.rounds.events.name}</td
+            >
             <td
               >{match.rounds.name}
               {#if match.max_participants}
@@ -91,7 +96,8 @@
               >{event.organisations?.name}</td
             >
             <td role="button" on:click={() => goto(`/events/${event.id}`)}
-              >{event.name}</td
+              >{#if event.event_groups}<b>{event.event_groups?.name}</b>
+              {/if}{event.name}</td
             >
             <td role="button" on:click={() => goto(`/events/${event.id}`)}>
               {event.participants.length}

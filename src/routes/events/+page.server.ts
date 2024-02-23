@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals, request }) => {
   const events = await locals.supabase
     .from("events")
     .select(
-      `*, participants (teams(team_members( user_profiles(*)))), organisations (name)`
+      `*, participants (teams(team_members( user_profiles(*)))), organisations (name), event_groups(*)`
     )
     .range(page * 10, page * 10 + 9);
 
@@ -50,7 +50,6 @@ export const load: PageServerLoad = async ({ locals, request }) => {
 export const actions = {
   createEvent: async ({ locals, request }) => {
     const formData = await request.formData();
-    console.log(formData);
 
     const event = await locals.supabase
       .from("events")
@@ -71,6 +70,8 @@ export const actions = {
         event_id: event.data.id,
       },
     ]);
+
+    console.log("Created event: ", event.data.id);
 
     throw redirect(302, `/events/${event.data.id}`);
   },
