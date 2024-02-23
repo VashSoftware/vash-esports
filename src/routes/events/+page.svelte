@@ -42,8 +42,9 @@
           <td role="button" on:click={() => goto(`/events/${event.id}`)}
             >{event.organisations?.name}</td
           >
-          <td role="button" on:click={() => goto(`/events/${event.id}`)}
-            >{event.name}</td
+          <td role="button" on:click={() => goto(`/events/${event.id}`)}>
+            {#if event.event_groups}<b>{event.event_groups?.name}</b>
+            {/if}{event.name}</td
           >
           <td role="button" on:click={() => goto(`/events/${event.id}`)}
             >{event.participants.length} / {event.max_registrations
