@@ -37,7 +37,12 @@
             class="align-self-center"
             on:click={() => goto(`/matches/${match.id}`)}
           >
-            <td>{match.rounds.events.name}</td>
+            <td
+              >{#if match.rounds.events.event_groups}<b
+                  >{match.rounds.events.event_groups.name}</b
+                >
+              {/if}{match.rounds.events.name}</td
+            >
             <td
               >{match.rounds.name}
               {#if match.max_participants}
