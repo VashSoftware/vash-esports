@@ -41,42 +41,69 @@
       />
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
   </form>
 </div>
 
 <div class="my-3">
-  <div class="row">
-    <h2 class="col">Rounds ({data.event.rounds.length})</h2>
-    <div class="col text-end">
-      <button
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#editRoundsModal">Edit Rounds</button
-      >
-    </div>
-  </div>
+  <h2>Rounds ({data.event.rounds.length})</h2>
   <div class="table-responsive">
     <table class="table">
       <thead>
         <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Map Pool</th>
-          <th scope="col">Column 3</th>
+          <th>Name</th>
+          <th>Map Pool</th>
+          <th>Best Of</th>
+          <th>Bans per Team</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {#each data.event.rounds as round}
           <tr>
-            <td>{round.name}</td>
+            <td> {round.name}</td>
             <td>
-              <a href="/map-pools/{round.map_pools?.id}"
-                >{round.map_pools?.name}</a
-              >
-            </td>
-            <td>{round.map_pools}</td>
+              <select class="form-select" name="map-pool-id">
+                {#each data.mapPools as mapPool}
+                  <option value={mapPool.id}>{mapPool.name}</option>
+                {/each}
+              </select></td
+            >
+            <td>{round.best_of}</td>
+            <td>{round.match_player_bans}</td>
+            <td>
+              <form action="?/deleteRound" method="post" use:enhance>
+                <input type="hidden" name="round-id" value={round.id} />
+                <button type="submit" class="btn btn-danger"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1.5em"
+                    height="1.5em"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
+                    />
+                  </svg>
+                </button>
+              </form></td
+            >
           </tr>
         {/each}
+        <tr>
+          <td></td>
+          <td> </td>
+          <td></td>
+          <td></td>
+          <td>
+            <form action="?/addRound" method="post" use:enhance>
+              <button type="submit" class="btn btn-success">+</button>
+            </form></td
+          >
+        </tr>
       </tbody>
     </table>
   </div>
@@ -117,95 +144,3 @@
     </table>
   </div>
 </div>
-
-<form action="?/editRounds" method="post">
-  <div
-    class="modal fade"
-    id="editRoundsModal"
-    tabindex="-1"
-    aria-labelledby="editRoundsModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Rounds</h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Map Pool</th>
-                  <th>Best Of</th>
-                  <th>Bans per Team</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {#each data.event.rounds as round}
-                  <tr>
-                    <td> {round.name}</td>
-                    <td>
-                      <select class="form-select" name="map-pool-id">
-                        {#each data.mapPools as mapPool}
-                          <option value={mapPool.id}>{mapPool.name}</option>
-                        {/each}
-                      </select></td
-                    >
-                    <td>{round.best_of}</td>
-                    <td>{round.match_player_bans}</td>
-                    <td>
-                      <form action="?/deleteRound" method="post" use:enhance>
-                        <input type="hidden" name="round-id" value={round.id} />
-                        <button type="submit" class="btn btn-danger"
-                          ><svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="1.5em"
-                            height="1.5em"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill="currentColor"
-                              d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
-                            />
-                          </svg>
-                        </button>
-                      </form></td
-                    >
-                  </tr>
-                {/each}
-                <tr>
-                  <td></td>
-                  <td> </td>
-                  <td></td>
-                  <td></td>
-                  <td>
-                    <form action="?/addRound" method="post" use:enhance>
-                      <button type="submit" class="btn btn-success">+</button>
-                    </form></td
-                  >
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">Close</button
-          >
-          <button type="submit" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</form>
