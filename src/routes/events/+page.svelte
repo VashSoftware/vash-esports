@@ -2,11 +2,6 @@
   import { goto } from "$app/navigation";
   import { tooltip } from "$lib/bootstrapTooltip";
   import RegisterButton from "../../components/registerButton.svelte";
-  import { onMount } from "svelte";
-
-  onMount(async () => {
-    await import("bootstrap/js/dist/dropdown");
-  });
 
   export let data;
 </script>

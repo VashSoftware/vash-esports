@@ -1,5 +1,11 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
   import type { LayoutData } from "./$types";
+  import { onMount } from "svelte";
+
+  onMount(async () => {
+    await import("bootstrap/js/dist/dropdown");
+  });
 
   export let data: LayoutData;
 
@@ -38,7 +44,17 @@
       ...foundOrganisations,
     ];
   }
+
+  function getNotificationsCount() {
+    return data.notifications.length > 0
+      ? `(${data.notifications.length}) `
+      : "";
+  }
 </script>
+
+<svelte:head>
+  <title>{getNotificationsCount()}Vash Esports</title>
+</svelte:head>
 
 <main class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg bg-dark-subtle justify-content-center">
@@ -100,6 +116,7 @@
               class="nav-item mx-2 ms-3 dropdown d-flex flex-column align-items-center"
             >
               <svg
+                class="dropdown-toggle"
                 xmlns="http://www.w3.org/2000/svg"
                 width="2em"
                 height="2em"
@@ -120,12 +137,20 @@
                 </g>
               </svg>
 
+              {#if data.notifications.length > 0}
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                >
+                  {data.notifications.length}
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+              {/if}
+
               <ul
                 class="dropdown-menu dropdown-menu-end"
                 style="min-width: 350px; width: fit-content; "
               >
-                {#each data.notifications as notification}
-                  <li><hr class="dropdown-divider" /></li>
+                {#each data.notifications as notification, i}
                   <li
                     class="dropdown-item d-flex m-2 align-items-center justify-content-between"
                   >
@@ -139,7 +164,23 @@
                       class="btn btn-primary"
                       href={notification.notifications.href}>Go</a
                     >
+                    <form
+                      action="/?/dismissNotification"
+                      method="post"
+                      use:enhance
+                    >
+                      <input
+                        type="hidden"
+                        name="notification-id"
+                        value={notification.id}
+                      />
+
+                      <button type="submit" class="btn-close"></button>
+                    </form>
                   </li>
+                  {#if i !== data.notifications.length - 1}
+                    <li><hr class="dropdown-divider" /></li>
+                  {/if}
                 {/each}
               </ul>
             </li>
