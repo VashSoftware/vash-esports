@@ -1,3 +1,5 @@
+import type { Actions } from "./$types.js";
+
 export async function load({ locals, params }) {
   const event = await locals.supabase
     .from("events")
@@ -33,7 +35,41 @@ export async function load({ locals, params }) {
     .eq("id", params.event_id)
     .single();
 
+  const mapPools = await locals.supabase.from("map_pools").select("*");
+
   return {
     event: event.data,
+    mapPools: mapPools.data,
   };
 }
+
+export const actions = {
+  updateEvent: async ({ locals, params, body }) => {
+    const { data, error } = await locals.supabase
+      .from("events")
+      .update({
+        name: body.name,
+        description: body.description,
+        start_date: body.start_date,
+        end_date: body.end_date,
+        map_pool_id: body.map_pool_id,
+      })
+      .eq("id", params.event_id);
+
+    return { data, error };
+  },
+  deleteRound: async ({ locals, params }) => {
+    console.log("hello!");
+  },
+  addRound: async ({ locals, params }) => {
+    const round = await locals.supabase
+      .from("rounds")
+      .insert({ event_id: params.event_id })
+      .select("*")
+      .single();
+
+    console.log(
+      `Created round for event ${params.event_id} with ID: ${round.data.id}`
+    );
+  },
+} satisfies Actions;
