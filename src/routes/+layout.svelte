@@ -216,7 +216,13 @@
   <footer class="container-fluid mt-auto bg-dark-subtle">
     <div class="container">
       <div class="row text-center my-3">
-        <div class="col"></div>
+        <div class="col">
+          <stripe-buy-button
+            buy-button-id="buy_btn_1OmnmQK4YdEKZm47w7jpTVA9"
+            publishable-key="pk_live_51KvfIRK4YdEKZm472sIZDQb4WIyCSWkXfzBwwGbgMJtE0siYmYvUME8510RaUi7TVnxRvXJxGEDsrniLLx1r72Gr00tmk9MPx7"
+          >
+          </stripe-buy-button>
+        </div>
         <div class="col d-flex justify-content-center align-items-center">
           <a class="text-decoration-none mx-2" href="/terms">Terms</a>
           •
