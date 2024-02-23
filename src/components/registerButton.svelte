@@ -7,9 +7,9 @@
 </script>
 
 {#if event?.disabled}
-  <div use:tooltip data-bs-title={event?.disabledMessage}>
-    <button class="btn btn-primary" disabled={true}>Register</button>
-  </div>
+  <span use:tooltip data-bs-title={event?.disabledMessage}>
+    <button class="btn btn-primary" disabled>Register</button>
+  </span>
 {:else}
   <button
     data-bs-toggle="modal"

@@ -36,11 +36,6 @@ export async function load({ params, locals }) {
     .eq("id", params.event_id)
     .single();
 
-  // console.log(
-  //   event.data.rounds[0].matches[0].match_participants[0].participants.teams
-  //     .name
-  // );
-
   let participantIcons = [];
   for (let i = 0; i < event.data.participants.length; i++) {
     const publicUrl = await locals.supabase.storage
@@ -55,14 +50,20 @@ export async function load({ params, locals }) {
     .getPublicUrl(event.data.id);
 
   const session = await locals.getSession();
-  event.data.participants.forEach((participant) => {
-    participant.teams.team_members.forEach((teamMember) => {
-      if (teamMember.user_profiles.user_id === session.user.id) {
-        event.disabled = true;
-        event.disabledMessage = "You are already registered";
-      }
+  if (session) {
+    event.data.participants.forEach((participant) => {
+      participant.teams.team_members.forEach((teamMember) => {
+        if (teamMember.user_profiles.user_id === session.user.id) {
+          event.disabled = true;
+          event.disabledMessage = "You are already registered";
+        }
+      });
     });
-  });
+  } else {
+    event.data.disabled = true;
+    event.data.disabledMessage =
+      "You need to be logged in to register for events";
+  }
 
   return {
     event: event.data,
