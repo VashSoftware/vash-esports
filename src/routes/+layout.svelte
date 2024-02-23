@@ -102,16 +102,16 @@
       </div>
       <div class="p-0">
         <ul class="navbar-nav align-items-center justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="/events">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/matches">Matches</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/rankings">Rankings</a>
+          </li>
           {#if data.session?.user}
-            <li class="nav-item">
-              <a class="nav-link" href="/events">Events</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/matches">Matches</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/rankings">Rankings</a>
-            </li>
             <li
               class="nav-item mx-2 ms-3 dropdown d-flex flex-column align-items-center"
             >
