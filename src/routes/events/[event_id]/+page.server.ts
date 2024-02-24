@@ -31,7 +31,11 @@ export async function load({ params, locals }) {
       ), 
       organisations(
         *
-      )`
+      ),
+      event_groups(
+        *
+      )
+      `
     )
     .eq("id", params.event_id)
     .single();

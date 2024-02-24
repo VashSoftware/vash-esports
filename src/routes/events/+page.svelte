@@ -103,8 +103,8 @@
               aria-label="Default select example"
               name="organisation-id"
             >
-              {#each data.organisations as organisation}<option value="1"
-                  >{organisation.name}</option
+              {#each data.organisations as organisation}<option
+                  value={organisation.id}>{organisation.name}</option
                 >{/each}
             </select>
           </div>
@@ -116,8 +116,9 @@
               aria-label="Default select example"
               name="event-group-id"
             >
-              {#each data.eventGroups as eventGroup}<option value="1"
-                  >{eventGroup.name}</option
+              <option>None</option>
+              {#each data.eventGroups as eventGroup}<option
+                  value={eventGroup.id}>{eventGroup.name}</option
                 >{/each}
             </select>
           </div>

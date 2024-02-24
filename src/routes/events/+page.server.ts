@@ -13,11 +13,13 @@ export const load: PageServerLoad = async ({ locals, request }) => {
     .select(
       `*, participants (teams(team_members( user_profiles(*)))), organisations (name), event_groups(*)`
     )
+    .neq("event_status_id", 1)
     .range(page * 10, page * 10 + 9);
 
   const eventsCount = await locals.supabase
     .from("events")
-    .select("id", { count: "exact", head: true });
+    .select("id", { count: "exact", head: true })
+    .neq("event_status_id", 1);
 
   const session = await locals.getSession();
   if (session) {
@@ -58,25 +60,27 @@ export const actions = {
   createEvent: async ({ locals, request }) => {
     const formData = await request.formData();
 
+    const eventOptions = await locals.supabase
+      .from("event_options")
+      .insert([{}])
+      .select("*")
+      .single();
+
     const event = await locals.supabase
       .from("events")
       .insert([
         {
-          organisation_id: formData.get("organisation-id"),
-          event_group_id: formData.get("event-group-id"),
-          game_id: formData.get("game-id"),
           name: formData.get("event-name"),
+          game_id: formData.get("game-id"),
+          organisation_id: formData.get("organisation-id"),
+          event_options_id: eventOptions.data.id,
+          event_status_id: 1,
+          event_group_id: formData.get("event-group-id"),
           description: formData.get("event-description"),
         },
       ])
       .select("*")
       .single();
-
-    await locals.supabase.from("event_options").insert([
-      {
-        event_id: event.data.id,
-      },
-    ]);
 
     console.log("Created event: ", event.data.id);
 
