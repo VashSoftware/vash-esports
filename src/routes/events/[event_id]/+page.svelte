@@ -265,7 +265,7 @@
         <div class="card-title d-flex justify-content-between mx-1">
           <h3>Grand Finals</h3>
           <a
-            href="/map-pools/{round.map_pools.id}"
+            href="/map-pools/{round.map_pools?.id}"
             role="button"
             class="btn btn-primary">Go to Map Pool</a
           >
