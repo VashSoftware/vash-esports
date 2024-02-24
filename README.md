@@ -4,7 +4,6 @@ Next-Gen Esports Platform
 ⚠️ This project is currently in pre-Alpha version, meaning a lot of functionality is missing or broken. Please keep in touch with our [X](https://x.com/VashSoftware) and [Discord Server](https://discord.gg/n3mZgWk) for updates.⚠️
 
 ## Features
-- (✅ DONE) Make map pools
 - (🔨 ONGOING) Register for and Create your favorite osu! tournaments
 - (🔨 ONGOING) Event schedules, teams list, map pools and more 
 - (🔨 ONGOING) View matches with live info and streams
