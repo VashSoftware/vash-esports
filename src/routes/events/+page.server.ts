@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals, request }) => {
   const events = await locals.supabase
     .from("events")
     .select(
-      `*, participants (teams(team_members( user_profiles(*)))), organisations (name), event_groups(*)`
+      `*, participants (teams(team_members( user_profiles(*)))), organisations (name), event_groups(*), event_options(*)`
     )
     .neq("event_status_id", 1)
     .range(page * 10, page * 10 + 9);

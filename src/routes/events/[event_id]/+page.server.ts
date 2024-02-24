@@ -34,6 +34,9 @@ export async function load({ params, locals }) {
       ),
       event_groups(
         *
+      ),
+      event_options(
+        *
       )
       `
     )
