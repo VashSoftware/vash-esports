@@ -171,7 +171,14 @@
             <td>{participant.teams.name}</td>
             <td>{new Date(participant.created_at).toLocaleString()}</td>
             <td>
-              <button class="btn btn-danger">Disqualify</button>
+              <form action="?/disqualifyParticipant" method="post" use:enhance>
+                <input type="hidden" name="participant-id" value={participant.id}>
+                
+                <button
+                  class="btn btn-danger"
+                  disabled={participant.disqualified_at}>Disqualify</button
+                >
+              </form>
               <button class="btn btn-secondary">Manage</button>
             </td>
           </tr>

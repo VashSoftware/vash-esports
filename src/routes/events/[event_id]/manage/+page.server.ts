@@ -75,4 +75,17 @@ export const actions = {
       `Created round for event ${params.event_id} with ID: ${round.data.id}`
     );
   },
+  disqualifyParticipant: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+    const participantId = formData.get("participant-id");
+
+    const participant = await locals.supabase
+      .from("participants")
+      .update({ disqualified_at: new Date() })
+      .eq("id", participantId)
+      .select("*")
+      .single();
+
+    console.log(`Disqualified participant from event ${params.event_id}`);
+  },
 } satisfies Actions;
