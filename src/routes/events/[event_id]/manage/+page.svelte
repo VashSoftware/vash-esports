@@ -7,7 +7,7 @@
 <h1 class="py-5">Manage {data.event.name}</h1>
 
 <div class="my-3">
-  <h2>General</h2>
+  <h2 class="my-3">General</h2>
   <form method="post" action="?/updateEventSettings">
     <div class="mb-3">
       <label for="organisationSelect">Organisation</label>
@@ -48,7 +48,7 @@
 </div>
 
 <div class="my-3">
-  <h2>Rounds ({data.event.rounds.length})</h2>
+  <h2 class="my-3">Rounds ({data.event.rounds.length})</h2>
   <div class="table-responsive">
     <table class="table">
       <thead>
@@ -63,7 +63,14 @@
       <tbody>
         {#each data.event.rounds as round}
           <tr>
-            <td> {round.name}</td>
+            <td>
+              <input
+                type="text"
+                name="round-name"
+                class="form-control"
+                value={round.name}
+              /></td
+            >
             <td>
               <select class="form-select" name="map-pool-id">
                 {#each data.mapPools as mapPool}
@@ -71,8 +78,26 @@
                 {/each}
               </select></td
             >
-            <td>{round.best_of}</td>
-            <td>{round.match_player_bans}</td>
+            <td
+              ><input
+                class="form-control"
+                type="number"
+                name="round-best-of"
+                min="1"
+                max="999"
+                value={round.best_of}
+              />
+            </td>
+            <td>
+              <input
+                class="form-control"
+                type="number"
+                name="round-bans"
+                min="0"
+                max="9"
+                value={round.match_player_bans}
+              />
+            </td>
             <td>
               <form action="?/deleteRound" method="post" use:enhance>
                 <input type="hidden" name="round-id" value={round.id} />
@@ -112,7 +137,7 @@
 <div class="my-3">
   <div class="row">
     <div class="col">
-      <h2>Participants ({data.event.participants.length})</h2>
+      <h2 class="my-3">Participants ({data.event.participants.length})</h2>
     </div>
 
     <div class="col text-end">
