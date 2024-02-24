@@ -29,6 +29,9 @@ export async function load({ locals, params }) {
             )
           )
         )
+      ),
+      event_groups(
+        *
       )
       `
     )
