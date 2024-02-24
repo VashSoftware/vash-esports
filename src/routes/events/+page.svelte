@@ -42,8 +42,9 @@
             {/if}{event.name}</td
           >
           <td role="button" on:click={() => goto(`/events/${event.id}`)}
-            >{event.participants.length} / {event.max_registrations
-              ? event.max_registrations
+            >{event.participants.length} / {event.event_options
+              .max_registrations
+              ? event.event_options.max_registrations
               : "∞"}</td
           >
           <td class="col-1">
