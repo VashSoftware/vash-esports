@@ -13,11 +13,13 @@ export const load: PageServerLoad = async ({ locals, request }) => {
     .select(
       `*, participants (teams(team_members( user_profiles(*)))), organisations (name), event_groups(*)`
     )
+    .neq("event_status_id", 1)
     .range(page * 10, page * 10 + 9);
 
   const eventsCount = await locals.supabase
     .from("events")
-    .select("id", { count: "exact", head: true });
+    .select("id", { count: "exact", head: true })
+    .neq("event_status_id", 1);
 
   const session = await locals.getSession();
   if (session) {
