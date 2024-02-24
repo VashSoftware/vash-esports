@@ -34,7 +34,10 @@
           >{data.event.organisations.name}</a
         >
       </h4>
-      <h1>{data.event.name}</h1>
+      <h1>
+        {#if data.event.event_groups}{data.event.event_groups?.name}{/if}
+        {data.event.name}
+      </h1>
     </div>
 
     <div class="col text-end">
