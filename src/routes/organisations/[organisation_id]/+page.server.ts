@@ -18,7 +18,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         )
       ),
       events(
-        *
+        *,
+        event_groups(
+          *
+        )
       ),
       event_groups(
         *
@@ -55,5 +58,5 @@ export const actions = {
       .single();
 
     console.log(`Deleted Event Group: ${eventGroup.data}`);
-  }
+  },
 } satisfies Actions;

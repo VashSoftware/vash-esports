@@ -39,7 +39,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Column 1</th>
+          <th>Name</th>
           <th>Column 2</th>
           <th>Column 3</th>
         </tr>
@@ -47,7 +47,10 @@
       <tbody>
         {#each data.organisation.events as event}
           <tr>
-            <td> {event.name}</td>
+            <td>
+              {#if event.event_groups}<b>{event.event_groups?.name}</b>
+              {/if}{event.name}</td
+            >
             <td>R1C2</td>
             <td>R1C3</td>
           </tr>
