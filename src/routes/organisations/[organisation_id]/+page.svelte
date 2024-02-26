@@ -9,17 +9,20 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Column 1</th>
-        <th>Column 2</th>
-        <th>Column 3</th>
+        <th>Name</th>
+        <th>Rating</th>
+        <th>Roles</th>
       </tr>
     </thead>
     <tbody>
       {#each data.organisation.organisation_members as member}
         <tr>
           <td> {member.user_profiles.name}</td>
-          <td>R1C2</td>
-          <td>R1C3</td>
+          <td>1,000</td>
+          <td
+            >{#each member.organisation_member_roles as role}{role
+                .organisation_roles.name || role.custom_role_name}{/each}</td
+          >
         </tr>
       {/each}
     </tbody>

@@ -9,6 +9,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         *,
         user_profiles(
           *
+        ),
+        organisation_member_roles(
+          *,
+          organisation_roles(
+            *
+          )
         )
       ),
       events(
