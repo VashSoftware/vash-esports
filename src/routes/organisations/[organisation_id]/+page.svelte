@@ -28,6 +28,7 @@
             >
           </tr>
         {/each}
+        
       </tbody>
     </table>
   </div>

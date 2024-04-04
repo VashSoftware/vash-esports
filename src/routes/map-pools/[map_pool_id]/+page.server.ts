@@ -1,4 +1,5 @@
 import type { Actions, PageServerLoad } from "./$types";
+
 export const load: PageServerLoad = async ({ locals, params, url }) => {
   const mapPool = await locals.supabase
     .from("map_pools")

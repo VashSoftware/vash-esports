@@ -52,6 +52,19 @@
       />
     </div>
 
+    <div class="mb-3">
+      <label for="startTimeInput" class="form-label"
+        >Max Registrations (Keep blank for uncapped.)</label
+      >
+      <input
+        id="maxRegistrationsInput"
+        class="form-control"
+        type="number"
+        name="maxRegistrations"
+        value={data.event.max_participants}
+      />
+    </div>
+
     <div class="text-center">
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>
@@ -68,7 +81,7 @@
           <th>Map Pool</th>
           <th>Best Of</th>
           <th>Bans per Team</th>
-          <th>Actions</th>
+          <th>Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -82,13 +95,43 @@
                 value={round.name}
               /></td
             >
-            <td>
-              <select class="form-select" name="map-pool-id">
+            <td class="dropdown">
+              <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {#if round.map_pool_id}{round.map_pools.name}{:else}Choose a Map
+                  Pool{/if}
+              </button>
+              <ul class="dropdown-menu p-3">
+                <input
+                  class="form-control mb-3"
+                  type="text"
+                  placeholder="Search for Map Pools"
+                />
+
                 {#each data.mapPools as mapPool}
-                  <option value={mapPool.id}>{mapPool.name}</option>
+                  <form action="?/addRoundMapPool" method="post" use:enhance>
+                    <li class="d-flex gap-3 align-items-center">
+                      <input type="hidden" name="round-id" value={round.id} />
+                      <input
+                        type="hidden"
+                        name="map-pool-id"
+                        value={mapPool.id}
+                      />
+                      <a href="/map-pools/{mapPool.id}"
+                        ><h6 class="m-0">{mapPool.name}</h6></a
+                      >
+                      <button type="submit" class="btn btn-primary"
+                        >Select</button
+                      >
+                    </li>
+                  </form>
                 {/each}
-              </select></td
-            >
+              </ul>
+            </td>
             <td
               ><input
                 class="form-control"
@@ -109,10 +152,10 @@
                 value={round.match_player_bans}
               />
             </td>
-            <td>
+            <td class="text-center">
               <form action="?/deleteRound" method="post" use:enhance>
                 <input type="hidden" name="round-id" value={round.id} />
-                <button type="submit" class="btn btn-danger"
+                <button type="submit" class="btn btn-danger px-2"
                   ><svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="1.5em"
@@ -134,9 +177,9 @@
           <td> </td>
           <td></td>
           <td></td>
-          <td>
+          <td class="text-center">
             <form action="?/addRound" method="post" use:enhance>
-              <button type="submit" class="btn btn-success">+</button>
+              <button type="submit" class="btn btn-success px-3">+</button>
             </form></td
           >
         </tr>
@@ -172,8 +215,12 @@
             <td>{new Date(participant.created_at).toLocaleString()}</td>
             <td>
               <form action="?/disqualifyParticipant" method="post" use:enhance>
-                <input type="hidden" name="participant-id" value={participant.id}>
-                
+                <input
+                  type="hidden"
+                  name="participant-id"
+                  value={participant.id}
+                />
+
                 <button
                   class="btn btn-danger"
                   disabled={participant.disqualified_at}>Disqualify</button
@@ -192,12 +239,27 @@
   <h2 class="my-3">Danger Zone</h2>
 
   <form action="?/changeVisibility" method="post">
-    <button type="submit" class="btn btn-danger">
-      {#if data.event.visibility === "public"}Make Private{:else}Make Public{/if}
-    </button>
+    <div class="row py-3">
+      <div class="col">
+        <p>Change Visibility:</p>
+      </div>
+      <div class="col">
+        <select name="visibility" class="form-select">
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+        </select>
+      </div>
+    </div>
   </form>
 
   <form action="?/deleteEvent" method="post">
-    <button type="submit" class="btn btn-danger">Delete Event</button>
+    <div class="row py-3">
+      <div class="col">
+        <p>Delete Event</p>
+      </div>
+      <div class="col">
+        <button type="submit" class="btn btn-danger">Delete Event</button>
+      </div>
+    </div>
   </form>
 </div>

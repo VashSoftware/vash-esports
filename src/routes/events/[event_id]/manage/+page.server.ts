@@ -61,8 +61,18 @@ export const actions = {
 
     return { data, error };
   },
-  deleteRound: async ({ locals, params }) => {
-    console.log("hello!");
+  deleteRound: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+    const roundId = formData.get("round-id");
+
+    const round = await locals.supabase
+      .from("rounds")
+      .delete()
+      .eq("id", roundId)
+      .select("id")
+      .single();
+
+    console.log(`Deleted round with ID: ${round.data.id}`);
   },
   addRound: async ({ locals, params }) => {
     const round = await locals.supabase
@@ -73,6 +83,23 @@ export const actions = {
 
     console.log(
       `Created round for event ${params.event_id} with ID: ${round.data.id}`
+    );
+  },
+  addRoundMapPool: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+    const roundId = formData.get("round-id");
+    const mapPoolId = formData.get("map-pool-id");
+
+    const roundMapPool = await locals.supabase
+      .from("rounds")
+      .update({ map_pool_id: mapPoolId })
+      .eq("id", roundId)
+      .select("*");
+
+    console.log(roundMapPool.error);
+
+    console.log(
+      `Added map pool ${mapPoolId} to round ${roundId} with ID: ${roundMapPool.data.id}`
     );
   },
   disqualifyParticipant: async ({ locals, params, request }) => {

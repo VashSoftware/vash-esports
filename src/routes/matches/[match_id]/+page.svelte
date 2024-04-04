@@ -42,7 +42,10 @@
       <div class="col">
         <div class="text-center">
           <a href="/events/{data.match.rounds.events.id}">
-            <h2>{data.match.rounds.events.name}</h2></a
+            <h2>
+              {#if data.match.rounds.events.event_groups}{data.match.rounds
+                  .events.event_groups.name} {/if}{data.match.rounds.events.name}
+            </h2></a
           >
           <h3>Grand Finals</h3>
         </div>
