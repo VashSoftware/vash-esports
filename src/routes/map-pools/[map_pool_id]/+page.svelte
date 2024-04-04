@@ -37,8 +37,8 @@
 
 <div class="mb-4 d-flex align-items-center justify-content-between">
   <div>
-    <h1>{data.mapPool.name || `Map Pool ${data.mapPool.id}`}</h1>
-    <p>{data.mapPool.description}</p>
+    <h1>{data.mapPool?.name || `Map Pool ${data.mapPool?.id}`}</h1>
+    <p>{data.mapPool?.description}</p>
   </div>
   <div>
     <button
@@ -49,7 +49,7 @@
   </div>
 </div>
 
-{#each data.mapPool.map_pool_mods as mod, mod_i}
+{#each data.mapPool?.map_pool_mods as mod, mod_i}
   {#if mod.map_pool_maps.length > 0}
     <div class="row align-items-center">
       <div class="col-2"><h2>{mod.name}</h2></div>
@@ -240,7 +240,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">
-          Edit {data.mapPool.name || `Map Pool ${data.mapPool.id}`}
+          Edit {data.mapPool?.name || `Map Pool ${data.mapPool.id}`}
         </h1>
         <button
           type="button"

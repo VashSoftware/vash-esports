@@ -111,6 +111,9 @@
           <li class="nav-item">
             <a class="nav-link" href="/rankings">Rankings</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/map-pools">Map Pools</a>
+          </li>
           {#if data.session?.user}
             <li
               class="nav-item mx-2 ms-3 dropdown d-flex flex-column align-items-center"
