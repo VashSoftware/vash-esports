@@ -63,7 +63,7 @@
     let title = map.maps?.mapsets.title;
     let difficulty_name = map.maps?.difficulty_name;
 
-    const max_length = 16;
+    const max_length = 15;
 
     artist =
       artist.length > max_length
@@ -79,6 +79,15 @@
         : difficulty_name;
 
     return `${artist} - ${title} [${difficulty_name}]`;
+  }
+
+  function getCurrentBanner() {
+    let bans = data.match.rounds.match_player_bans;
+    let current_ban = bans - 1;
+
+    return current_ban % 2 == 0
+      ? data.match.match_participants[0].participants.teams.name
+      : data.match.match_participants[1].participants.teams.name;
   }
 </script>
 
@@ -203,7 +212,7 @@
         class="nav-link active"
         id="pills-home-tab"
         data-bs-toggle="pill"
-        data-bs-target="#tab-pane-users"
+        data-bs-target="#tab-pane-teams"
         type="button"
         role="tab"
         aria-controls="pills-home"
@@ -215,7 +224,7 @@
         class="nav-link"
         id="pills-profile-tab"
         data-bs-toggle="pill"
-        data-bs-target="#tab-pane-teams"
+        data-bs-target="#tab-pane-users"
         type="button"
         role="tab"
         aria-controls="pills-profile"
@@ -239,100 +248,87 @@
 
 <div class="tab-content" id="pills-tabContent">
   <div
-    class="tab-pane fade show active"
-    id="tab-pane-users"
-    role="tabpanel"
-    aria-labelledby="pills-home-tab"
-    tabindex="0"
-  ></div>
-  <div
-    class="tab-pane fade"
+    class="tab-pane fade active show"
     id="tab-pane-teams"
     role="tabpanel"
     aria-labelledby="pills-profile-tab"
     tabindex="0"
   >
-    <h3 class="text-center my-4">
-      <b>macdobald borgar</b> has to ban a map! (2/{data.match.rounds
-        .match_player_bans} Left)
-    </h3>
+    <div class="d-flex justify-content-around align-items-center">
+      <div></div>
+      <h3 class="text-center my-4">
+        <b>{getCurrentBanner()}</b> has to ban a map! (2/{data.match.rounds
+          .match_player_bans} Left)
+      </h3>
+      <form action="?/surrenderBans" method="post">
+        <button class="btn btn-danger">Surrender Bans</button>
+      </form>
+    </div>
 
     {#each data.match.rounds.map_pools.map_pool_mods as mod}
       {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
-        <div class="d-flex align-items-center flex-wrap">
+        <div
+          class="d-flex align-items-center flex-wrap justify-content-center my-3"
+        >
           {#each mod.map_pool_maps as map}
             {#if map.maps}
-              <div class="row my-1 px-1">
-                <a
-                  style="text-decoration: none; color: inherit;"
-                  href="https://osu.ppy.sh/beatmaps/{map.maps?.osu_id}"
-                  target="_blank"
-                >
-                  <div class="d-flex">
-                    <div
-                      class="p-2 d-flex align-items-center rounded-start"
-                      style="background-color: #{mod['bg-color'] ||
-                        '000000'}; height: 70px; object-fit: cover"
-                    >
-                      <h5 class="text-black">
-                        {mod.code}{map.mod_priority}
-                      </h5>
+              <div class="card text-bg-dark m-2 rounded-5">
+                <img
+                  src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                    .osu_id}/covers/cover@2x.jpg"
+                  class="card-img rounded-5"
+                  style="filter: blur(1px) brightness(70%); width: 350px; height: 60px; object-fit: cover;"
+                  alt="..."
+                />
+                <div class="card-img-overlay">
+                  <div
+                    class="d-flex justify-content-between align-items-center h-100"
+                  >
+                    <div class="d-flex flex-column justify-content-center">
+                      <h5 class="mb-0"><b>{mod.code}{map.mod_priority}</b></h5>
                     </div>
-
-                    <div style="position: relative;">
-                      <div class="text-center">
-                        <img
-                          src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                            .osu_id}/covers/cover@2x.jpg"
-                          alt="Match map cover"
-                          style="filter: blur(1px) brightness(70%); height: 70px; object-fit: cover"
-                        />
-                      </div>
-                      <div
-                        class="text-center row align-items-center"
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 8px #000000;"
-                      >
-                        <div class="col">
-                          <div style="font-size: smaller;">
-                            {getShortenedMapName(map)}
-                          </div>
-
-                          <div>
-                            <b>{map.maps?.star_rating}★</b> -
-                            <b>{map.maps?.mapsets.bpm}BPM</b>
-                          </div>
+                    <div>
+                      <small class="card-title text-center">
+                        <div class="text-center">
+                          {getShortenedMapName(map)}
                         </div>
-                      </div>
+                      </small>
+                      <p class="card-text text-center">
+                        <b>{map.maps?.star_rating}★</b> -
+                        <b>{map.maps?.mapsets.bpm}BPM</b> -
+                        <b>{map.maps?.mapsets.time}</b>
+                      </p>
                     </div>
+                    <form action="?/banMap" method="post" use:enhance>
+                      <input
+                        type="hidden"
+                        name="map-pool-map-id"
+                        value={map.id}
+                      />
 
-                    {#if map.type !== "tiebreaker"}
-                      <div
-                        class=" p-2 d-flex align-items-center rounded-end"
-                        style="background-color: #{mod['bg-color'] ||
-                          '000000'}; height: 70px; object-fit: cover"
+                      <button
+                        type="submit"
+                        class="btn btn-danger"
+                        style=" height: 100%; object-fit: cover">BAN</button
                       >
-                        <form action="?/banMap" method="post" use:enhance>
-                          <input
-                            type="hidden"
-                            name="map-pool-map-id"
-                            value={map.id}
-                          />
-
-                          <button
-                            class="btn btn-danger"
-                            style=" height: 100%; object-fit: cover">BAN</button
-                          >
-                        </form>
-                      </div>
-                    {/if}
+                    </form>
                   </div>
-                </a>
+                </div>
               </div>
             {/if}
           {/each}
         </div>
       {/if}
     {/each}
+  </div>
+  <div
+    class="tab-pane fade"
+    id="tab-pane-users"
+    role="tabpanel"
+    aria-labelledby="pills-home-tab"
+    tabindex="0"
+  >
+    hello
   </div>
   <div
     class="tab-pane fade"
