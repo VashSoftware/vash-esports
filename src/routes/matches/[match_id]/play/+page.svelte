@@ -63,7 +63,7 @@
     let title = map.maps?.mapsets.title;
     let difficulty_name = map.maps?.difficulty_name;
 
-    const max_length = 15;
+    const max_length = 18;
 
     artist =
       artist.length > max_length
@@ -88,6 +88,19 @@
     return current_ban % 2 == 0
       ? data.match.match_participants[0].participants.teams.name
       : data.match.match_participants[1].participants.teams.name;
+  }
+
+  function formatSeconds(seconds) {
+    let date = new Date(null);
+    date.setSeconds(seconds);
+    let hours = date.getUTCHours();
+    let minutes = date.getUTCMinutes();
+    let secondsValue = date.getUTCSeconds();
+    let formattedTime = `${minutes.toString().padStart(2, "0")}:${secondsValue.toString().padStart(2, "0")}`;
+    if (hours > 0) {
+      formattedTime = `${hours.toString().padStart(2, "0")}:${formattedTime}`;
+    }
+    return formattedTime;
   }
 </script>
 
@@ -287,17 +300,20 @@
                     <div class="d-flex flex-column justify-content-center">
                       <h5 class="mb-0"><b>{mod.code}{map.mod_priority}</b></h5>
                     </div>
-                    <div>
-                      <small class="card-title text-center">
-                        <div class="text-center">
-                          {getShortenedMapName(map)}
-                        </div>
-                      </small>
-                      <p class="card-text text-center">
-                        <b>{map.maps?.star_rating}★</b> -
-                        <b>{map.maps?.mapsets.bpm}BPM</b> -
-                        <b>{map.maps?.mapsets.time}</b>
+                    <div class="text-center">
+                      <p
+                        class="card-title lh-sm my-0"
+                        style="font-size: smaller;"
+                      >
+                        {getShortenedMapName(map)}
                       </p>
+                      <div>
+                        <small>
+                          <b>{map.maps?.star_rating}★</b> -
+                          <b>{map.maps?.mapsets.bpm}BPM</b> -
+                          <b>{formatSeconds(map.maps?.mapsets.time)}</b>
+                        </small>
+                      </div>
                     </div>
                     <form action="?/banMap" method="post" use:enhance>
                       <input
