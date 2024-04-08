@@ -37,12 +37,11 @@
           teams(*
           )
         )
-      )`
+      ),
+      match_maps(*, scores(*))`
       )
       .eq("id", data.match.id)
       .single();
-
-    console.log(updatedMatch);
 
     data.match = updatedMatch.data;
   };
@@ -107,7 +106,29 @@
         {/each}
       </div>
     </div>
-    <div class="col text-center">1-1</div>
+    <div class="col text-center">
+      {data.match.match_maps.filter(
+        (match_map) =>
+          match_map.scores.filter(
+            (score) =>
+              score.match_participant_id == data.match.match_participants[0].id
+          )[0]?.score >
+          match_map.scores.filter(
+            (score) =>
+              score.match_participant_id == data.match.match_participants[1].id
+          )[0]?.score
+      ).length} - {data.match.match_maps.filter(
+        (match_map) =>
+          match_map.scores.filter(
+            (score) =>
+              score.match_participant_id == data.match.match_participants[1].id
+          )[0]?.score >
+          match_map.scores.filter(
+            (score) =>
+              score.match_participant_id == data.match.match_participants[0].id
+          )[0]?.score
+      ).length}
+    </div>
     <div class="col text-end">
       <h2 class="text-center">
         {data.match.match_participants[1].participants.teams.name}

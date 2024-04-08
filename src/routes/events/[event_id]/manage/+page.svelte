@@ -6,10 +6,13 @@
 
 <div class="row">
   <div class="col">
-    <h1 class="py-5">
-      Manage {#if data.event.event_groups}{data.event.event_groups?.name}{/if}
-      {data.event.name}
-    </h1>
+    <div class="py-5">
+      <h1>
+        Manage {#if data.event.event_groups}{data.event.event_groups?.name}{/if}
+        {data.event.name}
+      </h1>
+      <a href="/events/{data.event.id}">Go to Event Page</a>
+    </div>
   </div>
   <div class="col d-flex justify-content-around align-items-center w-100">
     <div><b>{data.event.participants.length}</b> Registrations</div>
