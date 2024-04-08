@@ -7,24 +7,11 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       `*,
       rounds ( best_of, events (id, name, event_links(*, platforms(*)), event_groups(*))),
       match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
-      match_maps(maps(*, mapsets(*)),
-      scores(*)),
-      match_predictions(*, user_profiles(*))`
+      match_maps(maps(*, mapsets(*)), scores(*)),
+      match_predictions(*, user_profiles(*))`,
     )
     .eq("id", params.match_id)
     .single();
-
-  const changes = await locals.supabase
-    .channel("schema-db-changes")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-      },
-      (payload) => console.log(payload)
-    )
-    .subscribe();
 
   return {
     match: data,

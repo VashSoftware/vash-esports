@@ -34,7 +34,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
           teams(*
           )
         )
-      )`
+      ),
+      match_maps(*, scores(*))`,
     )
     .eq("id", params.match_id)
     .order("priority", {

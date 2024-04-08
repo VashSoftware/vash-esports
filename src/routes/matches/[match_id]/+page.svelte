@@ -3,7 +3,33 @@
 
   export let data;
 
-  console.log(data);
+  const getMatch = async () => {
+    let updatedMatch = await data.supabase
+      .from("matches")
+      .select(
+        `*,
+      rounds ( best_of, events (id, name, event_links(*, platforms(*)), event_groups(*))),
+      match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
+      match_maps(maps(*, mapsets(*)), scores(*)),
+      match_predictions(*, user_profiles(*))`
+      )
+      .eq("id", data.match.id)
+      .single();
+
+    data.match = updatedMatch.data;
+  };
+
+  data.supabase
+    .channel("schema-db-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+      },
+      (payload) => getMatch()
+    )
+    .subscribe();
 
   $: participant1Predictions = data.match.match_predictions.filter(
     (prediction) =>
@@ -44,7 +70,8 @@
           <a href="/events/{data.match.rounds.events.id}">
             <h2>
               {#if data.match.rounds.events.event_groups}{data.match.rounds
-                  .events.event_groups.name} {/if}{data.match.rounds.events.name}
+                  .events.event_groups.name}
+              {/if}{data.match.rounds.events.name}
             </h2></a
           >
           <h3>Grand Finals</h3>
