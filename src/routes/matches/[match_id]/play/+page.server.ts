@@ -35,7 +35,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
           )
         )
       ),
-      match_maps(*, scores(*))`,
+      match_maps(*, scores(*)),
+      match_bans(*)`,
     )
     .eq("id", params.match_id)
     .order("priority", {
@@ -64,14 +65,13 @@ export const actions = {
   },
   surrenderBans: async ({ locals, params, request }) => {
     const formData = await request.formData();
+    const matchParticipant = formData.get("match-participant-id");
 
-    const mapId = formData.get("map-pool-map-id");
+    await locals.supabase
+      .from("match_participants")
+      .update({ surrendered_bans: true })
+      .eq("id", matchParticipant);
 
-    const matchBan = await locals.supabase
-      .from("match_bans")
-      .insert([{ match_id: params.match_id, map_pool_map_id: mapId }])
-      .select("*");
-
-    console.log("Banned map with ID: ", matchBan?.data[0].id);
+    console.log("Surrendered bans for participant with ID: ", matchParticipant);
   },
 } satisfies Actions;

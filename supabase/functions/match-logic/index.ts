@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
         if (discord_id.data) {
           discord.users.send(
             discord_id.data[0].value,
-            "Your match has started.",
+            "Your match has started. Visit https://esports.vash.software/matches/3/play to join.",
           );
         }
       }

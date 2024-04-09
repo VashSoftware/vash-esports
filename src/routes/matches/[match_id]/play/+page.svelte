@@ -1,5 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { tooltip } from "$lib/bootstrapTooltip.js";
+  import { match } from "../../../../stores.js";
 
   export let data;
 
@@ -38,9 +40,14 @@
           )
         )
       ),
-      match_maps(*, scores(*))`
+      match_maps(*, scores(*)),
+      match_bans(*)`
       )
       .eq("id", data.match.id)
+      .order("priority", {
+        referencedTable: "rounds.map_pools.map_pool_mods",
+        ascending: true,
+      })
       .single();
 
     data.match = updatedMatch.data;
@@ -82,10 +89,7 @@
   }
 
   function getCurrentBanner() {
-    let bans = data.match.rounds.match_player_bans;
-    let current_ban = bans - 1;
-
-    return current_ban % 2 == 0
+    return data.match.match_bans.length % 2 == 0
       ? data.match.match_participants[0].participants.teams.name
       : data.match.match_participants[1].participants.teams.name;
   }
@@ -102,6 +106,19 @@
     }
     return formattedTime;
   }
+
+  function canBan(map) {
+    const bans = data.match.match_bans.filter(
+      (ban) => ban.map_pool_map_id == map.id
+    );
+
+    return bans.length == 0;
+  }
+
+  let banTimeRemaining = 90;
+  const banTimer = setInterval(() => {
+    banTimeRemaining = Math.max(0, banTimeRemaining - 1);
+  }, 1000);
 </script>
 
 <!-- This match is being broadcasted on the following official channels: -->
@@ -271,66 +288,94 @@
       <div></div>
       <h3 class="text-center my-4">
         <b>{getCurrentBanner()}</b> has to ban a map! (2/{data.match.rounds
-          .match_player_bans} Left)
+          .match_player_bans} Left) ({banTimeRemaining} seconds remaining)
       </h3>
-      <form action="?/surrenderBans" method="post">
-        <button class="btn btn-danger">Surrender Bans</button>
-      </form>
+
+      <button
+        class="btn btn-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#surrenderBansModal"
+        disabled={data.match.match_participants[1].surrendered_bans}
+        >Surrender Bans</button
+      >
     </div>
 
     {#each data.match.rounds.map_pools.map_pool_mods as mod}
       {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
         <div
-          class="d-flex align-items-center flex-wrap justify-content-center my-3"
+          class="d-flex align-items-center flex-wrap justify-content-center my-2"
         >
           {#each mod.map_pool_maps as map}
             {#if map.maps}
-              <div class="card text-bg-dark m-2 rounded-5">
-                <img
-                  src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                    .osu_id}/covers/cover@2x.jpg"
-                  class="card-img rounded-5"
-                  style="filter: blur(1px) brightness(70%); width: 350px; height: 60px; object-fit: cover;"
-                  alt="..."
-                />
-                <div class="card-img-overlay">
-                  <div
-                    class="d-flex justify-content-between align-items-center h-100"
-                  >
-                    <div class="d-flex flex-column justify-content-center">
-                      <h5 class="mb-0"><b>{mod.code}{map.mod_priority}</b></h5>
-                    </div>
-                    <div class="text-center">
-                      <p
-                        class="card-title lh-sm my-0"
-                        style="font-size: smaller;"
-                      >
-                        {getShortenedMapName(map)}
-                      </p>
-                      <div>
-                        <small>
-                          <b>{map.maps?.star_rating}★</b> -
-                          <b>{map.maps?.mapsets.bpm}BPM</b> -
-                          <b>{formatSeconds(map.maps?.mapsets.time)}</b>
-                        </small>
+              <a
+                href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
+                  .osu_id}#osu/{map.maps.osu_id}"
+              >
+                <div class="card text-bg-dark m-1 rounded-5">
+                  <img
+                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                      .osu_id}/covers/cover@2x.jpg"
+                    class="card-img rounded-5"
+                    style="filter: blur(1px) brightness(70%); width: 350px; height: 60px; object-fit: cover;"
+                    alt="..."
+                  />
+                  <div class="card-img-overlay">
+                    <div
+                      class="d-flex justify-content-between align-items-center h-100"
+                    >
+                      <div class="d-flex flex-column justify-content-center">
+                        <h5 class="mb-0">
+                          <b>{mod.code}{map.mod_priority}</b>
+                        </h5>
                       </div>
-                    </div>
-                    <form action="?/banMap" method="post" use:enhance>
-                      <input
-                        type="hidden"
-                        name="map-pool-map-id"
-                        value={map.id}
-                      />
+                      <div class="text-center">
+                        <p
+                          class="card-title lh-sm my-0"
+                          style="font-size: smaller;"
+                        >
+                          {getShortenedMapName(map)}
+                        </p>
+                        <div>
+                          <small>
+                            <b>{map.maps?.star_rating}★</b> -
+                            <b>{map.maps?.mapsets.bpm}BPM</b> -
+                            <b>{formatSeconds(map.maps?.mapsets.time)}</b>
+                          </small>
+                        </div>
+                      </div>
+                      <form action="?/banMap" method="post" use:enhance>
+                        <input
+                          type="hidden"
+                          name="map-pool-map-id"
+                          value={map.id}
+                        />
 
-                      <button
-                        type="submit"
-                        class="btn btn-danger"
-                        style=" height: 100%; object-fit: cover">BAN</button
-                      >
-                    </form>
+                        {#if canBan(map)}
+                          <button
+                            type="submit"
+                            class="btn btn-danger"
+                            disabled={data.match.rounds.match_player_bans == 0}
+                            style=" height: 100%; object-fit: cover">BAN</button
+                          >
+                        {:else}
+                          <span
+                            use:tooltip
+                            data-bs-title={"Cannot ban this map."}
+                          >
+                            <button
+                              type="submit"
+                              class="btn btn-danger"
+                              disabled
+                              style=" height: 100%; object-fit: cover"
+                              >BAN</button
+                            ></span
+                          >
+                        {/if}
+                      </form>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             {/if}
           {/each}
         </div>
@@ -377,5 +422,45 @@
     {/each}
 
     <h2 class="my-5">Phase 3: Finishing</h2>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="surrenderBansModal"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Are you sure?</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        You will not be able to ban any more maps for the rest of the match.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+          >Close</button
+        >
+        <form action="?/surrenderBans" method="post" use:enhance>
+          <input
+            type="hidden"
+            name="match-participant-id"
+            value={data.match.match_participants[0].id}
+          />
+          <button type="submit" class="btn btn-danger" data-bs-dismiss="modal"
+            >Confirm</button
+          >
+        </form>
+      </div>
+    </div>
   </div>
 </div>
