@@ -55,7 +55,9 @@
 <ul>
   {#each data.team.participants as participation}
     <li>
-      <a href="/events/{participation.events.id}">{participation.events.name}</a
+      <a href="/events/{participation.events.id}"
+        >{participation.events.event_groups?.name}
+        {participation.events.name}</a
       >
     </li>
   {/each}
