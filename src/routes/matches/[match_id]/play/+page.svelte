@@ -115,165 +115,106 @@
     return bans.length == 0;
   }
 
+  let currentMatchBan = null;
   let banTimeRemaining = 90;
-  const banTimer = setInterval(() => {
-    banTimeRemaining = Math.max(0, banTimeRemaining - 1);
+  const interval = setInterval(() => {
+    banTimeRemaining -= 1;
+    if (banTimeRemaining <= 0) {
+      clearInterval(interval);
+    }
   }, 1000);
+
+  // // Pane switching logic
+  // const triggerTabList = document.querySelectorAll("#myTab button");
+  // triggerTabList.forEach((triggerEl) => {
+  //   const tabTrigger = new bootstrap.Tab(triggerEl);
+
+  //   triggerEl.addEventListener("click", (event) => {
+  //     event.preventDefault();
+  //     tabTrigger.show();
+  //   });
+  // });
 </script>
 
 <!-- This match is being broadcasted on the following official channels: -->
-<div class="my-5">
-  <div class="row my-5">
-    <div class="col">
-      <h2 class="text-center">
-        {data.match.match_participants[0].participants.teams.name}
-      </h2>
-
-      <div class="row row-cols-2">
-        {#each data.match.match_participants[0].match_participant_players as player}
-          <div class="p-2">
-            <div class="card col p-2">
-              <div class="row">
-                <div class="col">{player.team_members.user_profiles.name}</div>
-                <div class="col text-end">
-                  {player.match_participant_player_states.name}
-                  {player.match_participant_player_states.emoji}
-                </div>
-              </div>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-    <div class="col text-center">
-      {data.match.match_maps.filter(
-        (match_map) =>
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[0].id
-          )[0]?.score >
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[1].id
-          )[0]?.score
-      ).length} - {data.match.match_maps.filter(
-        (match_map) =>
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[1].id
-          )[0]?.score >
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[0].id
-          )[0]?.score
-      ).length}
-    </div>
-    <div class="col text-end">
-      <h2 class="text-center">
-        {data.match.match_participants[1].participants.teams.name}
-      </h2>
-
-      <div class="row row-cols-2">
-        {#each data.match?.match_participants[1].match_participant_players as player}
-          <div class="p-2">
-            <div class="card col p-2">
-              <div class="row">
-                <div class="col text-start">
-                  {player.team_members.user_profiles.name}
-                </div>
-                <div class="col text-end">
-                  {player.match_participant_player_states.name}
-                  {player.match_participant_player_states.emoji}
-                </div>
-              </div>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-  </div>
-
-  <!-- <h2 class="my-5">Phase 0: Preparation</h2>
-  <div class="py-4">
-    <h3 class="text-center my-4">Rolls</h3>
-    <div class="progress-stacked">
-      <div
-        class="progress"
-        role="progressbar"
-        aria-label="Segment one"
-        aria-valuenow="15"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        style="width: {(data.match.match_participants[0].roll /
-          (data.match.match_participants[0].roll +
-            data.match.match_participants[1].roll)) *
-          100}%"
-      >
-        <div class="progress-bar">{data.match.match_participants[0].roll}</div>
-      </div>
-      <div
-        class="progress"
-        role="progressbar"
-        aria-label="Segment two"
-        aria-valuenow="30"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        style="width: {(data.match.match_participants[1].roll /
-          (data.match.match_participants[0].roll +
-            data.match.match_participants[1].roll)) *
-          100}%"
-      >
-        <div class="progress-bar bg-success">
-          {data.match.match_participants[1].roll}
-        </div>
-      </div>
-    </div>
-  </div> -->
+<div class="my-4 text-center">
+  <a href="/events/{data.match.rounds.events.id}">
+    <h3>
+      {data.match.rounds.events.event_groups?.name}
+      {data.match.rounds.events.name}
+    </h3>
+  </a>
+  <h4>{data.match.rounds.name}</h4>
 </div>
 
-<div class="py-5 text-center">
-  <ul
-    class="nav nav-pills justify-content-center"
-    id="pills-tab"
-    role="tablist"
-  >
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link active"
-        id="pills-home-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#tab-pane-teams"
-        type="button"
-        role="tab"
-        aria-controls="pills-home"
-        aria-selected="true">1. Banning</button
-      >
-    </li>
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link"
-        id="pills-profile-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#tab-pane-users"
-        type="button"
-        role="tab"
-        aria-controls="pills-profile"
-        aria-selected="false">2. Playing</button
-      >
-    </li>
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link"
-        id="pills-profile-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#tab-pane-organisations"
-        type="button"
-        role="tab"
-        aria-controls="pills-profile"
-        aria-selected="false">Organisations</button
-      >
-    </li>
-  </ul>
+<div class="row my-5 align-items-center">
+  <div class="col">
+    <h2 class="text-center">
+      {data.match.match_participants[0].participants.teams.name}
+    </h2>
+
+    <div class="row row-cols-2 justify-content-center">
+      {#each data.match.match_participants[0].match_participant_players as player}
+        <div class="p-2">
+          <div class="card col p-2">
+            <div class="row">
+              <div class="col">{player.team_members.user_profiles.name}</div>
+              <div class="col text-end">
+                {player.match_participant_player_states.name}
+                {player.match_participant_player_states.emoji}
+              </div>
+            </div>
+          </div>
+        </div>
+      {/each}
+    </div>
+  </div>
+  <div class="col text-center fs-1 fw-bold">
+    {data.match.match_maps.filter(
+      (match_map) =>
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[0].id
+        )[0]?.score >
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[1].id
+        )[0]?.score
+    ).length} - {data.match.match_maps.filter(
+      (match_map) =>
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[1].id
+        )[0]?.score >
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[0].id
+        )[0]?.score
+    ).length}
+  </div>
+  <div class="col text-end">
+    <h2 class="text-center">
+      {data.match.match_participants[1].participants.teams.name}
+    </h2>
+
+    <div class="row row-cols-2 justify-content-center">
+      {#each data.match?.match_participants[1].match_participant_players as player}
+        <div class="p-2">
+          <div class="card col p-2">
+            <div class="row">
+              <div class="col text-start">
+                {player.team_members.user_profiles.name}
+              </div>
+              <div class="col text-end">
+                {player.match_participant_player_states.name}
+                {player.match_participant_player_states.emoji}
+              </div>
+            </div>
+          </div>
+        </div>
+      {/each}
+    </div>
+  </div>
 </div>
 
 <div class="tab-content" id="pills-tabContent">

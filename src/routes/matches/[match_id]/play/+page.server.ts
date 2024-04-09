@@ -19,7 +19,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
               )
             )
           )
-        )
+        ),
+        events(*, event_groups(*))
       ),
       match_participants(*,
         match_participant_players(*,
