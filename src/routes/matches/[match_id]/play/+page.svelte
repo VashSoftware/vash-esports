@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip.js";
-  import { match } from "../../../../stores.js";
+  import { onMount } from "svelte";
 
   export let data;
 
@@ -24,7 +24,8 @@
               )
             )
           )
-        )
+        ),
+        events(*, event_groups(*))
       ),
       match_participants(*,
         match_participant_players(*,
@@ -41,7 +42,7 @@
         )
       ),
       match_maps(*, scores(*)),
-      match_bans(*)`
+      match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
       .eq("id", data.match.id)
       .order("priority", {
@@ -88,12 +89,6 @@
     return `${artist} - ${title} [${difficulty_name}]`;
   }
 
-  function getCurrentBanner() {
-    return data.match.match_bans.length % 2 == 0
-      ? data.match.match_participants[0].participants.teams.name
-      : data.match.match_participants[1].participants.teams.name;
-  }
-
   function formatSeconds(seconds) {
     let date = new Date(null);
     date.setSeconds(seconds);
@@ -115,25 +110,54 @@
     return bans.length == 0;
   }
 
-  let currentMatchBan = null;
-  let banTimeRemaining = 90;
-  const interval = setInterval(() => {
-    banTimeRemaining -= 1;
-    if (banTimeRemaining <= 0) {
-      clearInterval(interval);
+  let currentMatchBan = data.match.match_bans
+    .filter((ban) => ban.map_pool_map_id == null)
+    .sort((a, b) => a.time_limit - b.time_limit)[0];
+
+  $: {
+    currentMatchBan = data.match.match_bans
+      .filter((ban) => ban.map_pool_map_id == null)
+      .sort((a, b) => a.time_limit - b.time_limit)[0];
+  }
+
+  let banTimeRemaining = "";
+
+  function startTimer() {
+    const currentTime = new Date().getTime();
+    const banTime = new Date(currentMatchBan?.time_limit).getTime();
+    const timeRemaining = banTime - currentTime;
+
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+    const minutes = Math.floor(
+      (timeRemaining % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    const hours = Math.floor(
+      (timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+
+    banTimeRemaining = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+    if (timeRemaining > 0) {
+      setTimeout(startTimer, 1000);
     }
-  }, 1000);
+  }
 
-  // // Pane switching logic
-  // const triggerTabList = document.querySelectorAll("#myTab button");
-  // triggerTabList.forEach((triggerEl) => {
-  //   const tabTrigger = new bootstrap.Tab(triggerEl);
+  startTimer();
 
-  //   triggerEl.addEventListener("click", (event) => {
-  //     event.preventDefault();
-  //     tabTrigger.show();
-  //   });
-  // });
+  // Pane switching logic
+  onMount(() => {
+    import("bootstrap").then((bootstrap) => {
+      if (currentMatchBan) {
+        const banTab = bootstrap.Tab.getInstance("#banTab");
+        banTab.show();
+        console.log(banTab);
+      } else {
+        const playTab = bootstrap.Tab.getInstance("#playTab");
+        console.log(playTab);
+        playTab.show();
+      }
+    });
+  });
 </script>
 
 <!-- This match is being broadcasted on the following official channels: -->
@@ -149,9 +173,11 @@
 
 <div class="row my-5 align-items-center">
   <div class="col">
-    <h2 class="text-center">
-      {data.match.match_participants[0].participants.teams.name}
-    </h2>
+    <a href="/teams/{data.match.match_participants[0].participants.teams.id}">
+      <h2 class="text-center">
+        {data.match.match_participants[0].participants.teams.name}
+      </h2>
+    </a>
 
     <div class="row row-cols-2 justify-content-center">
       {#each data.match.match_participants[0].match_participant_players as player}
@@ -193,9 +219,11 @@
     ).length}
   </div>
   <div class="col text-end">
-    <h2 class="text-center">
-      {data.match.match_participants[1].participants.teams.name}
-    </h2>
+    <a href="/teams/{data.match.match_participants[1].participants.teams.id}">
+      <h2 class="text-center">
+        {data.match.match_participants[1].participants.teams.name}
+      </h2>
+    </a>
 
     <div class="row row-cols-2 justify-content-center">
       {#each data.match?.match_participants[1].match_participant_players as player}
@@ -219,8 +247,8 @@
 
 <div class="tab-content" id="pills-tabContent">
   <div
-    class="tab-pane fade active show"
-    id="tab-pane-teams"
+    class="tab-pane fade"
+    id="banTab"
     role="tabpanel"
     aria-labelledby="pills-profile-tab"
     tabindex="0"
@@ -228,8 +256,9 @@
     <div class="d-flex justify-content-around align-items-center">
       <div></div>
       <h3 class="text-center my-4">
-        <b>{getCurrentBanner()}</b> has to ban a map! (2/{data.match.rounds
-          .match_player_bans} Left) ({banTimeRemaining} seconds remaining)
+        <b>{currentMatchBan?.match_participants.participants.teams.name}</b> has
+        to ban a map! (2/{data.match.rounds.match_player_bans} Left) ({banTimeRemaining}
+        seconds remaining)
       </h3>
 
       <button
@@ -290,6 +319,11 @@
                           name="map-pool-map-id"
                           value={map.id}
                         />
+                        <input
+                          type="hidden"
+                          name="ban-id"
+                          value={currentMatchBan?.id}
+                        />
 
                         {#if canBan(map)}
                           <button
@@ -325,7 +359,7 @@
   </div>
   <div
     class="tab-pane fade"
-    id="tab-pane-users"
+    id="playTab"
     role="tabpanel"
     aria-labelledby="pills-home-tab"
     tabindex="0"
