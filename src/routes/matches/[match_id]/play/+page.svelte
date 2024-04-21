@@ -144,20 +144,7 @@
 
   startTimer();
 
-  // Pane switching logic
-  onMount(() => {
-    import("bootstrap").then((bootstrap) => {
-      if (currentMatchBan) {
-        const banTab = bootstrap.Tab.getInstance("#banTab");
-        banTab.show();
-        console.log(banTab);
-      } else {
-        const playTab = bootstrap.Tab.getInstance("#playTab");
-        console.log(playTab);
-        playTab.show();
-      }
-    });
-  });
+  let currentTab = "bans";
 </script>
 
 <!-- This match is being broadcasted on the following official channels: -->
@@ -247,13 +234,13 @@
 
 <div class="tab-content" id="pills-tabContent">
   <div
-    class="tab-pane fade"
+    class="tab-pane fade {currentTab === 'bans' ? 'show active' : ''}"
     id="banTab"
     role="tabpanel"
     aria-labelledby="pills-profile-tab"
     tabindex="0"
   >
-    <div class="d-flex justify-content-around align-items-center">
+    <div class="d-flex justifbfy-content-around align-items-center">
       <div></div>
       <h3 class="text-center my-4">
         <b>{currentMatchBan?.match_participants.participants.teams.name}</b> has
@@ -358,13 +345,13 @@
     {/each}
   </div>
   <div
-    class="tab-pane fade"
+    class="tab-pane fade {currentTab === 'hello' ? 'show active' : ''}"
     id="playTab"
     role="tabpanel"
     aria-labelledby="pills-home-tab"
     tabindex="0"
   >
-    hello
+    hello!
   </div>
   <div
     class="tab-pane fade"
