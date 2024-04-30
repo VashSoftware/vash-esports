@@ -72,9 +72,9 @@
         {#each data.userRatings as userRating, i}
           <tr role="button" on:click={() => goto(`/users/${userRating.id}`)}>
             <td>{i + 1}</td>
-            <td>{userRating.user_profiles.name}</td>
+            <td>{userRating.name}</td>
             <td>{data.matchesPlayed.length}</td>
-            <td>{userRating.rating}</td>
+            <td>{userRating.user_ratings[0]?.rating || "Not rated yet"}</td>
           </tr>
         {/each}
       </tbody>

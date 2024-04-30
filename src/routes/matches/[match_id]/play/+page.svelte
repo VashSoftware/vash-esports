@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip.js";
-  import { match } from "../../../../stores.js";
 
   export let data;
 
@@ -24,7 +23,8 @@
               )
             )
           )
-        )
+        ),
+        events(*, event_groups(*))
       ),
       match_participants(*,
         match_participant_players(*,
@@ -41,7 +41,7 @@
         )
       ),
       match_maps(*, scores(*)),
-      match_bans(*)`
+      match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
       .eq("id", data.match.id)
       .order("priority", {
@@ -88,12 +88,6 @@
     return `${artist} - ${title} [${difficulty_name}]`;
   }
 
-  function getCurrentBanner() {
-    return data.match.match_bans.length % 2 == 0
-      ? data.match.match_participants[0].participants.teams.name
-      : data.match.match_participants[1].participants.teams.name;
-  }
-
   function formatSeconds(seconds) {
     let date = new Date(null);
     date.setSeconds(seconds);
@@ -115,180 +109,143 @@
     return bans.length == 0;
   }
 
-  let banTimeRemaining = 90;
-  const banTimer = setInterval(() => {
-    banTimeRemaining = Math.max(0, banTimeRemaining - 1);
-  }, 1000);
+  let currentMatchBan = data.match.match_bans
+    .filter((ban) => ban.map_pool_map_id == null)
+    .sort((a, b) => a.time_limit - b.time_limit)[0];
+
+  $: {
+    currentMatchBan = data.match.match_bans
+      .filter((ban) => ban.map_pool_map_id == null)
+      .sort((a, b) => a.time_limit - b.time_limit)[0];
+  }
+
+  let banTimeRemaining = "";
+
+  function startTimer() {
+    const currentTime = new Date().getTime();
+    const banTime = new Date(currentMatchBan?.time_limit).getTime();
+    const timeRemaining = banTime - currentTime;
+
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+    const minutes = Math.floor(
+      (timeRemaining % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    const hours = Math.floor(
+      (timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+
+    banTimeRemaining = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+    if (timeRemaining > 0) {
+      setTimeout(startTimer, 1000);
+    }
+  }
+
+  startTimer();
+
+  let currentTab = "bans";
+  $: currentTab = currentMatchBan ? "bans" : "hello";
 </script>
 
 <!-- This match is being broadcasted on the following official channels: -->
-<div class="my-5">
-  <div class="row my-5">
-    <div class="col">
+<div class="my-4 text-center">
+  <a href="/events/{data.match.rounds.events.id}">
+    <h3>
+      {data.match.rounds.events.event_groups?.name}
+      {data.match.rounds.events.name}
+    </h3>
+  </a>
+  <h4>{data.match.rounds.name}</h4>
+</div>
+
+<div class="row my-5 align-items-center">
+  <div class="col">
+    <a href="/teams/{data.match.match_participants[0].participants.teams.id}">
       <h2 class="text-center">
         {data.match.match_participants[0].participants.teams.name}
       </h2>
+    </a>
 
-      <div class="row row-cols-2">
-        {#each data.match.match_participants[0].match_participant_players as player}
-          <div class="p-2">
-            <div class="card col p-2">
-              <div class="row">
-                <div class="col">{player.team_members.user_profiles.name}</div>
-                <div class="col text-end">
-                  {player.match_participant_player_states.name}
-                  {player.match_participant_player_states.emoji}
-                </div>
+    <div class="row row-cols-2 justify-content-center">
+      {#each data.match.match_participants[0].match_participant_players as player}
+        <div class="p-2">
+          <div class="card col p-2">
+            <div class="row">
+              <div class="col">{player.team_members.user_profiles.name}</div>
+              <div class="col text-end">
+                {player.match_participant_player_states.name}
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>
-        {/each}
-      </div>
+        </div>
+      {/each}
     </div>
-    <div class="col text-center">
-      {data.match.match_maps.filter(
-        (match_map) =>
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[0].id
-          )[0]?.score >
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[1].id
-          )[0]?.score
-      ).length} - {data.match.match_maps.filter(
-        (match_map) =>
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[1].id
-          )[0]?.score >
-          match_map.scores.filter(
-            (score) =>
-              score.match_participant_id == data.match.match_participants[0].id
-          )[0]?.score
-      ).length}
-    </div>
-    <div class="col text-end">
+  </div>
+  <div class="col text-center fs-1 fw-bold">
+    {data.match.match_maps.filter(
+      (match_map) =>
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[0].id
+        )[0]?.score >
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[1].id
+        )[0]?.score
+    ).length} - {data.match.match_maps.filter(
+      (match_map) =>
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[1].id
+        )[0]?.score >
+        match_map.scores.filter(
+          (score) =>
+            score.match_participant_id == data.match.match_participants[0].id
+        )[0]?.score
+    ).length}
+  </div>
+  <div class="col text-end">
+    <a href="/teams/{data.match.match_participants[1].participants.teams.id}">
       <h2 class="text-center">
         {data.match.match_participants[1].participants.teams.name}
       </h2>
+    </a>
 
-      <div class="row row-cols-2">
-        {#each data.match?.match_participants[1].match_participant_players as player}
-          <div class="p-2">
-            <div class="card col p-2">
-              <div class="row">
-                <div class="col text-start">
-                  {player.team_members.user_profiles.name}
-                </div>
-                <div class="col text-end">
-                  {player.match_participant_player_states.name}
-                  {player.match_participant_player_states.emoji}
-                </div>
+    <div class="row row-cols-2 justify-content-center">
+      {#each data.match?.match_participants[1].match_participant_players as player}
+        <div class="p-2">
+          <div class="card col p-2">
+            <div class="row">
+              <div class="col text-start">
+                {player.team_members.user_profiles.name}
+              </div>
+              <div class="col text-end">
+                {player.match_participant_player_states.name}
+                {player.match_participant_player_states.emoji}
               </div>
             </div>
           </div>
-        {/each}
-      </div>
+        </div>
+      {/each}
     </div>
   </div>
-
-  <!-- <h2 class="my-5">Phase 0: Preparation</h2>
-  <div class="py-4">
-    <h3 class="text-center my-4">Rolls</h3>
-    <div class="progress-stacked">
-      <div
-        class="progress"
-        role="progressbar"
-        aria-label="Segment one"
-        aria-valuenow="15"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        style="width: {(data.match.match_participants[0].roll /
-          (data.match.match_participants[0].roll +
-            data.match.match_participants[1].roll)) *
-          100}%"
-      >
-        <div class="progress-bar">{data.match.match_participants[0].roll}</div>
-      </div>
-      <div
-        class="progress"
-        role="progressbar"
-        aria-label="Segment two"
-        aria-valuenow="30"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        style="width: {(data.match.match_participants[1].roll /
-          (data.match.match_participants[0].roll +
-            data.match.match_participants[1].roll)) *
-          100}%"
-      >
-        <div class="progress-bar bg-success">
-          {data.match.match_participants[1].roll}
-        </div>
-      </div>
-    </div>
-  </div> -->
-</div>
-
-<div class="py-5 text-center">
-  <ul
-    class="nav nav-pills justify-content-center"
-    id="pills-tab"
-    role="tablist"
-  >
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link active"
-        id="pills-home-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#tab-pane-teams"
-        type="button"
-        role="tab"
-        aria-controls="pills-home"
-        aria-selected="true">1. Banning</button
-      >
-    </li>
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link"
-        id="pills-profile-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#tab-pane-users"
-        type="button"
-        role="tab"
-        aria-controls="pills-profile"
-        aria-selected="false">2. Playing</button
-      >
-    </li>
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link"
-        id="pills-profile-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#tab-pane-organisations"
-        type="button"
-        role="tab"
-        aria-controls="pills-profile"
-        aria-selected="false">Organisations</button
-      >
-    </li>
-  </ul>
 </div>
 
 <div class="tab-content" id="pills-tabContent">
   <div
-    class="tab-pane fade active show"
-    id="tab-pane-teams"
+    class="tab-pane fade {currentTab === 'bans' ? 'show active' : ''}"
+    id="banTab"
     role="tabpanel"
     aria-labelledby="pills-profile-tab"
     tabindex="0"
   >
-    <div class="d-flex justify-content-around align-items-center">
+    <div class="d-flex justifbfy-content-around align-items-center">
       <div></div>
       <h3 class="text-center my-4">
-        <b>{getCurrentBanner()}</b> has to ban a map! (2/{data.match.rounds
-          .match_player_bans} Left) ({banTimeRemaining} seconds remaining)
+        <b>{currentMatchBan?.match_participants.participants.teams.name}</b> has
+        to ban a map! (2/{data.match.rounds.match_player_bans} Left) ({banTimeRemaining}
+        seconds remaining)
       </h3>
 
       <button
@@ -349,6 +306,11 @@
                           name="map-pool-map-id"
                           value={map.id}
                         />
+                        <input
+                          type="hidden"
+                          name="ban-id"
+                          value={currentMatchBan?.id}
+                        />
 
                         {#if canBan(map)}
                           <button
@@ -383,13 +345,13 @@
     {/each}
   </div>
   <div
-    class="tab-pane fade"
-    id="tab-pane-users"
+    class="tab-pane fade {currentTab === 'hello' ? 'show active' : ''}"
+    id="playTab"
     role="tabpanel"
     aria-labelledby="pills-home-tab"
     tabindex="0"
   >
-    hello
+    hello!
   </div>
   <div
     class="tab-pane fade"

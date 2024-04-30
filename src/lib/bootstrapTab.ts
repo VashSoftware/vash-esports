@@ -1,5 +1,5 @@
 export function tab(node) {
   import("bootstrap").then((Bootstrap) => {
-    new Bootstrap.Tab(node);
+    return new Bootstrap.Tab(node);
   });
 }

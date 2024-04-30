@@ -2,6 +2,7 @@
   import { enhance } from "$app/forms";
   import type { LayoutData } from "./$types";
   import { onMount } from "svelte";
+  import { page } from "$app/stores";
 
   onMount(async () => {
     await import("bootstrap/js/dist/dropdown");
@@ -103,16 +104,32 @@
       <div class="p-0">
         <ul class="navbar-nav align-items-center justify-content-end">
           <li class="nav-item">
-            <a class="nav-link" href="/events">Events</a>
+            <a
+              class="nav-link"
+              href="/events"
+              class:active={$page.url.pathname === "/events"}>Events</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/matches">Matches</a>
+            <a
+              class="nav-link"
+              href="/matches"
+              class:active={$page.url.pathname === "/matches"}>Matches</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/rankings">Rankings</a>
+            <a
+              class="nav-link"
+              href="/rankings"
+              class:active={$page.url.pathname === "/rankings"}>Rankings</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/map-pools">Map Pools</a>
+            <a
+              class="nav-link"
+              href="/map-pools"
+              class:active={$page.url.pathname === "/map-pools"}>Map Pools</a
+            >
           </li>
           {#if data.session?.user}
             <li
