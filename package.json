@@ -39,7 +39,9 @@
     "@vercel/speed-insights": "^1.0.10",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "discord.js": "^14.14.1",
     "googleapis": "^134.0.0",
-    "osu-api-extended": "^2.8.4"
+    "osu-api-extended": "^2.8.4",
+    "supabase": "^1.164.1"
   }
 }
