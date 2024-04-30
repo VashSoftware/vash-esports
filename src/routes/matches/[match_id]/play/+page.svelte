@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip.js";
-  import { onMount } from "svelte";
 
   export let data;
 
@@ -145,6 +144,7 @@
   startTimer();
 
   let currentTab = "bans";
+  $: currentTab = currentMatchBan ? "bans" : "hello";
 </script>
 
 <!-- This match is being broadcasted on the following official channels: -->
