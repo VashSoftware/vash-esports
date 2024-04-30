@@ -1,8 +1,8 @@
 export async function load(request) {
   const userRatingsPromise = request.locals.supabase
-    .from("user_ratings")
+    .from("user_profiles")
     .select(
-      "*, user_profiles (name, team_members (teams( participants (match_participants (matches (count))))))"
+      "user_ratings(*), id, name, team_members (teams( participants (match_participants (matches (count)))))"
     );
 
   const matchesPlayedPromise = request.locals.supabase
