@@ -36,8 +36,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
           )
         )
       ),
-      match_maps(*, scores(*)),
-      match_bans(*, match_participants(*, participants(*, teams(name))))`,
+      match_maps(*, maps(*, mapsets(*)), scores(*)),
+      match_bans(*, match_participants(*, participants(*, teams(name))))`
     )
     .eq("id", params.match_id)
     .order("priority", {
@@ -78,5 +78,29 @@ export const actions = {
       .eq("id", matchParticipant);
 
     console.log("Surrendered bans for participant with ID: ", matchParticipant);
+  },
+  pickMap: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    const mapId = formData.get("map-id");
+
+    const matchMap = await locals.supabase
+      .from("match_maps")
+      .insert({ map_id: mapId, match_id: params.match_id })
+      .select("*");
+
+    const mapPlayers = await locals.supabase
+      .from("match_participant_players")
+      .select("*, match_participants(*)")
+      .eq("match_participants.match_id", params.match_id);
+
+    for (const player of mapPlayers.data) {
+      await locals.supabase.from("scores").insert({
+        match_map_id: matchMap.data[0].id,
+        match_participant_player_id: player.id,
+      });
+    }
+
+    console.log("Picked map with ID: ", mapId);
   },
 } satisfies Actions;

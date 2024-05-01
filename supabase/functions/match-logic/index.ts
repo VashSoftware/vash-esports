@@ -7,8 +7,51 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_ANON_KEY") ?? "",
     {
       global: { headers: { Authorization: req.headers.get("Authorization")! } },
-    },
+    }
   );
+
+  const currentTime = new Date();
+  currentTime.setSeconds(0, 0);
+
+  const minuteLater = new Date(currentTime);
+  minuteLater.setMinutes(currentTime.getMinutes() + 1);
+
+  const { data, error } = await supabase
+    .from("matches")
+    .select(
+      `*,
+    match_participants(
+      *,
+      match_participant_players(
+        *,
+        team_members(
+          *,
+          user_profiles(*,
+            user_platforms(*
+
+            )
+          )
+        )
+      ),
+      participants(
+      teams(*))
+    )
+  `
+    )
+    .gte("start_time", currentTime.toISOString())
+    .lt("start_time", minuteLater.toISOString());
+
+  if (error) {
+    throw error;
+  }
+
+  console.log("Matches: ", data);
+
+  if (!data) {
+    return new Response(JSON.stringify(data), {
+      status: 404,
+    });
+  }
 
   const discord = new Client({
     intents: [GatewayIntentBits.Guilds],
@@ -22,64 +65,15 @@ Deno.serve(async (req) => {
 
   discord.login(Deno.env.get("DISCORD_TOKEN"));
 
-  const currentTime = new Date();
-  currentTime.setSeconds(0, 0);
-
-  const minuteLater = new Date(currentTime);
-  minuteLater.setMinutes(currentTime.getMinutes() + 1);
-
-  const { data, error } = await supabase
-    .from("matches")
-    .select(
-      `*,
-      match_participants(
-        *,
-        match_participant_players(
-          *,
-          team_members(
-            *
-          )
-        )
-      )
-    `,
-    )
-    .gte("start_time", currentTime.toISOString())
-    .lt("start_time", minuteLater.toISOString());
-
-  if (error) {
-    throw error;
-  }
-
-  console.log("Matches: ", data);
-
-  const token = await fetch("https://osu.ppy.sh/oauth/token", {
-    method: "POST",
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      "client_id": Deno.env.get("OSU_CLIENT_ID")!,
-      "client_secret": Deno.env.get("OSU_CLIENT_SECRET")!,
-      "grant_type": "client_credentials",
-      "scope": "public",
-    }),
-  });
-  const { access_token } = await token.json();
-
-  function makeMatch() {
-    // Logic to make a match
-    fetch("https://osu.ppy.sh/api/v2/rooms", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + access_token,
-        "Content-Type": "application/json",
+  async function makeMatch(match) {
+    const makeMatch = await supabase.functions.invoke("send-osu-message", {
+      body: {
+        channel: "BanchoBot",
+        message: `!mp make VASH: (${match.match_participants[0].participants.teams.name}) vs (${match.match_participants[1].participants.teams.name})`,
       },
     });
-  }
 
-  function invitePlayers() {
-    // Logic to invite players
+    return makeMatch.data.newChannel;
   }
 
   async function sendDiscordMessage(match: any) {
@@ -87,16 +81,16 @@ Deno.serve(async (req) => {
 
     for (const match_participant of match.match_participants) {
       for (const player of match_participant.match_participant_players) {
-        const discord_id = await supabase.from("user_platforms").select("value")
-          .eq("user_id", player.team_members.user_id).eq(
-            "platform_id",
-            9,
-          );
+        const discord_id = await supabase
+          .from("user_platforms")
+          .select("value")
+          .eq("user_id", player.team_members.user_id)
+          .eq("platform_id", 9);
 
         if (discord_id.data) {
           discord.users.send(
             discord_id.data[0].value,
-            `Your match has started. Visit https://esports.vash.software/matches/${match.id}/play to join.`,
+            `Your match has started. Visit https://esports.vash.software/matches/${match.id}/play to join.`
           );
         }
       }
@@ -112,12 +106,35 @@ Deno.serve(async (req) => {
   }
 
   for (const match of data) {
-    // makeMatch();
-    // invitePlayers();
+    const channelId = await makeMatch(match);
+
+    const matchPlayers = match.match_participants.flatMap(
+      (participant) => participant.match_participant_players
+    );
+
+    for (const player of matchPlayers) {
+      const { data, error } = await supabase.functions.invoke(
+        "send-osu-message",
+        {
+          body: {
+            channel: channelId,
+            message: `!mp invite ${
+              player.team_members.user_profiles.user_platforms.filter(
+                (platform) => platform.platform_id == 1
+              )[0].value
+            }`,
+          },
+        }
+      );
+    }
+    
+    // getStatuses();
     await sendDiscordMessage(match);
     // notifyPlayers();
     // notifyFollowers();
   }
+
+  await discord.destroy();
 
   return new Response(JSON.stringify(data), {
     headers: { "Content-Type": "application/json" },
