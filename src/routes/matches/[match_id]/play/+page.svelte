@@ -346,9 +346,7 @@
   </div>
 </div>
 <div
-  class="tab-pane fade {currentTab === 'hello'
-    ? 'show active'
-    : ''} text-center"
+  class="tab-pane fade {currentTab === 'hello' ? 'show active' : ''}"
   id="playTab"
   role="tabpanel"
   aria-labelledby="pills-home-tab"
@@ -356,7 +354,7 @@
 >
   <div class="row">
     <div class="col">
-      <h1>Maps Played</h1>
+      <h1 class="text-center">Maps Played</h1>
 
       {#each data.match.match_maps as map}
         <div class="row py-1 align-items-center">
@@ -400,7 +398,7 @@
       {/each}
     </div>
     <div class="col">
-      <h1>Pick Maps</h1>
+      <h1 class="text-center">Pick Maps</h1>
 
       {#each data.match.rounds.map_pools.map_pool_mods as mod}
         {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
