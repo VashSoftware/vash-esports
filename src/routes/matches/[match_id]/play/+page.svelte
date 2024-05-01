@@ -427,7 +427,11 @@
                     src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
                       .osu_id}/covers/cover@2x.jpg"
                     class="card-img rounded-5"
-                    style="filter: blur(1px) brightness(70%); width: 300px; height: 80px; object-fit: cover;"
+                    style="filter: blur(1px) brightness({data.match.match_maps.filter(
+                      (match_map) => match_map.map_id == map.map_id
+                    ).length > 0
+                      ? '30%'
+                      : '70%'}); width: 300px; height: 80px; object-fit: cover;"
                     alt="..."
                   />
                   <div class="card-img-overlay">
