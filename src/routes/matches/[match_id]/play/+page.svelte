@@ -40,7 +40,7 @@
           )
         )
       ),
-      match_maps(*, maps(*, mapsets(*)), scores(*)),
+      match_maps(*, maps(*, mapsets(*)), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
       .eq("id", data.match.id)
@@ -185,24 +185,36 @@
   <div class="col text-center fs-1 fw-bold">
     {data.match.match_maps.filter(
       (match_map) =>
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[0].id
-        )[0]?.score >
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[1].id
-        )[0]?.score
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[0].id
+          )
+          .reduce((sum, score) => sum + score.score, 0) >
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[1].id
+          )
+          .reduce((sum, score) => sum + score.score, 0)
     ).length} - {data.match.match_maps.filter(
       (match_map) =>
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[1].id
-        )[0]?.score >
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[0].id
-        )[0]?.score
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[1].id
+          )
+          .reduce((sum, score) => sum + score.score, 0) >
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[0].id
+          )
+          .reduce((sum, score) => sum + score.score, 0)
     ).length}
   </div>
   <div class="col text-end">

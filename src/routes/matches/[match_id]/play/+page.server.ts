@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
           )
         )
       ),
-      match_maps(*, maps(*, mapsets(*)), scores(*)),
+      match_maps(*, maps(*, mapsets(*)), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
     )
     .eq("id", params.match_id)
