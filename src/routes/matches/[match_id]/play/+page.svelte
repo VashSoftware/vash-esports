@@ -460,7 +460,9 @@
                         <button
                           type="submit"
                           class="btn btn-success"
-                          disabled={data.match.rounds.match_player_bans == 0}
+                          disabled={data.match.match_maps.filter(
+                            (match_map) => match_map.map_id == map.map_id
+                          ).length > 0}
                           style=" height: 100%; object-fit: cover">PICK</button
                         >
                       </form>
