@@ -400,72 +400,65 @@
     <div class="col">
       <h1 class="text-center">Pick Maps</h1>
 
-      {#each data.match.rounds.map_pools.map_pool_mods as mod}
-        {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
-          <div
-            class="d-flex align-items-center flex-wrap justify-content-center my-2"
-          >
-            {#each mod.map_pool_maps as map}
-              {#if map.maps}
-                <a
-                  href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
-                    .osu_id}#osu/{map.maps.osu_id}"
-                >
-                  <div class="card text-bg-dark m-1 rounded-5">
-                    <img
-                      src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                        .osu_id}/covers/cover@2x.jpg"
-                      class="card-img rounded-5"
-                      style="filter: blur(1px) brightness(70%); width: 350px; height: 60px; object-fit: cover;"
-                      alt="..."
-                    />
-                    <div class="card-img-overlay">
-                      <div
-                        class="d-flex justify-content-between align-items-center h-100"
-                      >
-                        <div class="d-flex flex-column justify-content-center">
-                          <h5 class="mb-0">
-                            <b>{mod.code}{map.mod_priority}</b>
-                          </h5>
-                        </div>
-                        <div class="text-center">
-                          <p
-                            class="card-title lh-sm my-0"
-                            style="font-size: smaller;"
-                          >
-                            {getShortenedMapName(map)}
-                          </p>
-                          <div>
-                            <small>
-                              <b>{map.maps?.star_rating}★</b> -
-                              <b>{map.maps?.mapsets.bpm}BPM</b> -
-                              <b>{formatSeconds(map.maps?.mapsets.time)}</b>
-                            </small>
-                          </div>
-                        </div>
-                        <form action="?/pickMap" method="post" use:enhance>
-                          <input
-                            type="hidden"
-                            name="map-id"
-                            value={map.map_id}
-                          />
-
-                          <button
-                            type="submit"
-                            class="btn btn-success"
-                            disabled={data.match.rounds.match_player_bans == 0}
-                            style=" height: 100%; object-fit: cover"
-                            >PICK</button
-                          >
-                        </form>
+      {#each data.match.rounds.map_pools.map_pool_mods.filter((mod) => mod.type != "tiebreaker") as mod}
+        <div
+          class="d-flex align-items-center flex-wrap justify-content-center my-2"
+        >
+          {#each mod.map_pool_maps as map}
+            {#if map.maps}
+              <a
+                href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
+                  .osu_id}#osu/{map.maps.osu_id}"
+              >
+                <div class="card text-bg-dark m-1 rounded-5">
+                  <img
+                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                      .osu_id}/covers/cover@2x.jpg"
+                    class="card-img rounded-5"
+                    style="filter: blur(1px) brightness(70%); width: 300px; height: 80px; object-fit: cover;"
+                    alt="..."
+                  />
+                  <div class="card-img-overlay">
+                    <div
+                      class="d-flex justify-content-between align-items-center h-100"
+                    >
+                      <div class="d-flex flex-column justify-content-center">
+                        <h5 class="mb-0">
+                          <b>{mod.code}{map.mod_priority}</b>
+                        </h5>
                       </div>
+                      <div class="text-center">
+                        <p
+                          class="card-title lh-sm my-0"
+                          style="font-size: smaller;"
+                        >
+                          {getShortenedMapName(map)}
+                        </p>
+                        <div>
+                          <small>
+                            <b>{map.maps?.star_rating}★</b> -
+                            <b>{map.maps?.mapsets.bpm}BPM</b> -
+                            <b>{formatSeconds(map.maps?.mapsets.time)}</b>
+                          </small>
+                        </div>
+                      </div>
+                      <form action="?/pickMap" method="post" use:enhance>
+                        <input type="hidden" name="map-id" value={map.map_id} />
+
+                        <button
+                          type="submit"
+                          class="btn btn-success"
+                          disabled={data.match.rounds.match_player_bans == 0}
+                          style=" height: 100%; object-fit: cover">PICK</button
+                        >
+                      </form>
                     </div>
                   </div>
-                </a>
-              {/if}
-            {/each}
-          </div>
-        {/if}
+                </div>
+              </a>
+            {/if}
+          {/each}
+        </div>
       {/each}
     </div>
   </div>
