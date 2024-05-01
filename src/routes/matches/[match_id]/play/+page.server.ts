@@ -82,16 +82,25 @@ export const actions = {
   pickMap: async ({ locals, params, request }) => {
     const formData = await request.formData();
 
-    const mapId = formData.get("map-pool-map-id");
-    const banId = formData.get("pick-id");
+    const mapId = formData.get("map-id");
 
-    const matchBan = await locals.supabase
+    const matchMap = await locals.supabase
       .from("match_maps")
-      .insert({ map_pool_map_id: mapId, ban_time: new Date() })
+      .insert({ map_id: mapId, match_id: params.match_id })
       .select("*");
 
-    console.log(matchBan.error);
+    const mapPlayers = await locals.supabase
+      .from("match_participant_players")
+      .select("*, match_participants(*)")
+      .eq("match_participants.match_id", params.match_id);
 
-    console.log("Banned map with ID: ", matchBan.data?.id);
+    for (const player of mapPlayers.data) {
+      await locals.supabase.from("scores").insert({
+        match_map_id: matchMap.data[0].id,
+        match_participant_player_id: player.id,
+      });
+    }
+
+    console.log("Picked map with ID: ", mapId);
   },
 } satisfies Actions;

@@ -40,7 +40,7 @@
           )
         )
       ),
-      match_maps(*, scores(*)),
+      match_maps(*, maps(*, mapsets(*)), scores(*)),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
       .eq("id", data.match.id)
@@ -448,38 +448,17 @@
                         <form action="?/pickMap" method="post" use:enhance>
                           <input
                             type="hidden"
-                            name="map-pool-map-id"
-                            value={map.id}
-                          />
-                          <input
-                            type="hidden"
-                            name="pick-id"
-                            value={currentMatchBan?.id}
+                            name="map-id"
+                            value={map.map_id}
                           />
 
-                          {#if canBan(map)}
-                            <button
-                              type="submit"
-                              class="btn btn-success"
-                              disabled={data.match.rounds.match_player_bans ==
-                                0}
-                              style=" height: 100%; object-fit: cover"
-                              >PICK</button
-                            >
-                          {:else}
-                            <span
-                              use:tooltip
-                              data-bs-title={"Cannot pick this map."}
-                            >
-                              <button
-                                type="submit"
-                                class="btn btn-success"
-                                disabled
-                                style=" height: 100%; object-fit: cover"
-                                >PICK</button
-                              ></span
-                            >
-                          {/if}
+                          <button
+                            type="submit"
+                            class="btn btn-success"
+                            disabled={data.match.rounds.match_player_bans == 0}
+                            style=" height: 100%; object-fit: cover"
+                            >PICK</button
+                          >
                         </form>
                       </div>
                     </div>
