@@ -112,7 +112,19 @@ export const actions = {
     const { data, error } = await locals.supabase.functions.invoke(
       "send-osu-message",
       {
-        body: { channel: channel, messages: [message, message, message] },
+        body: { channel: channel, messages: [message] },
+      },
+    );
+
+    console.log(data, error);
+  },
+  makeMatch: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    const { data, error } = await locals.supabase.functions.invoke(
+      "make-osu-match",
+      {
+        body: {},
       },
     );
 

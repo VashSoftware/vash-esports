@@ -148,11 +148,15 @@
 </script>
 
 <!-- This match is being broadcasted on the following official channels: -->
-<!-- <form action="?/sendOsuMessage" method="post" use:enhance>
+<form action="?/sendOsuMessage" method="post" use:enhance>
   <input type="text" name="channel" placeholder="Channel" />
   <input type="text" name="message" placeholder="Message" />
   <button type="submit" class="btn btn-primary">Send</button>
-</form> -->
+</form>
+
+<form action="?/makeMatch" method="post" use:enhance>
+  <button type="submit" class="btn btn-primary">Make Match</button>
+</form>
 
 <div class="my-4 text-center">
   <a href="/events/{data.match.rounds.events.id}">
