@@ -19,24 +19,40 @@ Deno.serve(async (req) => {
   const { data, error } = await supabase
     .from("matches")
     .select(
-      `*,
-    match_participants(
-      *,
-      match_participant_players(
-        *,
-        team_members(
-          *,
-          user_profiles(*,
-            user_platforms(*
-
+      `*, 
+      rounds (*, 
+        map_pools(*,
+          map_pool_mods(*,
+            map_pool_mod_mods(*,
+              mods(*
+              )
+            ),
+            map_pool_maps(*,
+              maps(*, 
+                mapsets(*
+                )
+              )
             )
+          )
+        ),
+        events(*, event_groups(*))
+      ),
+      match_participants(*,
+        match_participant_players(*,
+          match_participant_player_states(*
+          ),
+          team_members(*, 
+            user_profiles(*
+            )
+          )
+        ),
+        participants(*, 
+          teams(*
           )
         )
       ),
-      participants(
-      teams(*))
-    )
-  `,
+      match_maps(*, maps(*, mapsets(*)), scores(*, match_participant_players(*))),
+      match_bans(*, match_participants(*, participants(*, teams(name))))`,
     )
     .gte("start_time", currentTime.toISOString())
     .lt("start_time", minuteLater.toISOString());
@@ -66,8 +82,6 @@ Deno.serve(async (req) => {
   discord.login(Deno.env.get("DISCORD_TOKEN"));
 
   async function sendDiscordMessage(match: any) {
-    // Logic to send a Discord message
-
     for (const match_participant of match.match_participants) {
       for (const player of match_participant.match_participant_players) {
         const discord_id = await supabase
@@ -95,35 +109,15 @@ Deno.serve(async (req) => {
   }
 
   for (const match of data) {
-    const messages = [{
-      type: "make_match",
-      body: `VASH: (${
-        match.match_participants[0].participants.teams.name
-      }) vs (${match.match_participants[1].participants.teams.name})`,
-    }];
-
-    const matchPlayers = match.match_participants.flatMap(
-      (participant) => participant.match_participant_players,
+    const { data, error } = await supabase.functions.invoke(
+      "make-osu-match",
+      {
+        body: {
+          match: match,
+        },
+      },
     );
 
-    for (const player of matchPlayers) {
-      messages.push({
-        type: "invite",
-        body: `!mp invite ${
-          player.team_members.user_profiles.user_platforms.filter(
-            (platform) => platform.platform_id == 1,
-          )[0].value
-        }`,
-      });
-    }
-
-    await supabase.functions.invoke("send-osu-message", {
-      body: {
-        channel: "BanchoBot",
-        messages,
-      },
-    });
-    // getStatuses();
     await sendDiscordMessage(match);
     // notifyPlayers();
     // notifyFollowers();

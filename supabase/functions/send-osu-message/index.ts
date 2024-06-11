@@ -22,8 +22,10 @@ async function handleIrc(channel: string, messages: string[]): Promise<string> {
     });
 
     client.on("nicklist", (message) => {
-      client.disconnect();
-      resolve(message.params.channel);
+      if (messages.length == 1) {
+        client.disconnect();
+        resolve(message.params.channel);
+      }
     });
 
     client.connect("irc.ppy.sh", 6667).catch(reject);

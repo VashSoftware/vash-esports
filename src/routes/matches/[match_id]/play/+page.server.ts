@@ -101,6 +101,24 @@ export const actions = {
       });
     }
 
+    const match = await locals.supabase
+      .from("matches")
+      .select(
+        `*`,
+      )
+      .eq("id", params.match_id)
+      .single();
+
+    const { data, error } = await locals.supabase.functions.invoke(
+      "send-osu-message",
+      {
+        body: {
+          channel: match.data.channel_name,
+          messages: [`!mp map ${matchMap.data.osu_id}`],
+        },
+      },
+    );
+
     console.log("Picked map with ID: ", mapId);
   },
   sendOsuMessage: async ({ locals, params, request }) => {
@@ -119,12 +137,49 @@ export const actions = {
     console.log(data, error);
   },
   makeMatch: async ({ locals, params, request }) => {
-    const formData = await request.formData();
+    const match = await locals.supabase
+      .from("matches")
+      .select(`*, 
+      rounds (*, 
+        map_pools(*,
+          map_pool_mods(*,
+            map_pool_mod_mods(*,
+              mods(*
+              )
+            ),
+            map_pool_maps(*,
+              maps(*, 
+                mapsets(*
+                )
+              )
+            )
+          )
+        ),
+        events(*, event_groups(*))
+      ),
+      match_participants(*,
+        match_participant_players(*,
+          match_participant_player_states(*
+          ),
+          team_members(*, 
+            user_profiles(*
+            )
+          )
+        ),
+        participants(*, 
+          teams(*
+          )
+        )
+      ),
+      match_maps(*, maps(*, mapsets(*)), scores(*, match_participant_players(*))),
+      match_bans(*, match_participants(*, participants(*, teams(name))))`)
+      .eq("id", params.match_id)
+      .single();
 
     const { data, error } = await locals.supabase.functions.invoke(
       "make-osu-match",
       {
-        body: {},
+        body: { match: match.data },
       },
     );
 
