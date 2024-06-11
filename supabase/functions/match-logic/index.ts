@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_ANON_KEY") ?? "",
     {
       global: { headers: { Authorization: req.headers.get("Authorization")! } },
-    }
+    },
   );
 
   const currentTime = new Date();
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       participants(
       teams(*))
     )
-  `
+  `,
     )
     .gte("start_time", currentTime.toISOString())
     .lt("start_time", minuteLater.toISOString());
@@ -65,17 +65,6 @@ Deno.serve(async (req) => {
 
   discord.login(Deno.env.get("DISCORD_TOKEN"));
 
-  async function makeMatch(match) {
-    const makeMatch = await supabase.functions.invoke("send-osu-message", {
-      body: {
-        channel: "BanchoBot",
-        message: `!mp make VASH: (${match.match_participants[0].participants.teams.name}) vs (${match.match_participants[1].participants.teams.name})`,
-      },
-    });
-
-    return makeMatch.data.newChannel;
-  }
-
   async function sendDiscordMessage(match: any) {
     // Logic to send a Discord message
 
@@ -90,7 +79,7 @@ Deno.serve(async (req) => {
         if (discord_id.data) {
           discord.users.send(
             discord_id.data[0].value,
-            `Your match has started. Visit https://esports.vash.software/matches/${match.id}/play to join.`
+            `Your match has started. Visit https://esports.vash.software/matches/${match.id}/play to join.`,
           );
         }
       }
@@ -106,28 +95,34 @@ Deno.serve(async (req) => {
   }
 
   for (const match of data) {
-    const channelId = await makeMatch(match);
+    const messages = [{
+      type: "make_match",
+      body: `VASH: (${
+        match.match_participants[0].participants.teams.name
+      }) vs (${match.match_participants[1].participants.teams.name})`,
+    }];
 
     const matchPlayers = match.match_participants.flatMap(
-      (participant) => participant.match_participant_players
+      (participant) => participant.match_participant_players,
     );
 
     for (const player of matchPlayers) {
-      const { data, error } = await supabase.functions.invoke(
-        "send-osu-message",
-        {
-          body: {
-            channel: channelId,
-            message: `!mp invite ${
-              player.team_members.user_profiles.user_platforms.filter(
-                (platform) => platform.platform_id == 1
-              )[0].value
-            }`,
-          },
-        }
-      );
+      messages.push({
+        type: "invite",
+        body: `!mp invite ${
+          player.team_members.user_profiles.user_platforms.filter(
+            (platform) => platform.platform_id == 1,
+          )[0].value
+        }`,
+      });
     }
-    
+
+    await supabase.functions.invoke("send-osu-message", {
+      body: {
+        channel: "BanchoBot",
+        messages,
+      },
+    });
     // getStatuses();
     await sendDiscordMessage(match);
     // notifyPlayers();

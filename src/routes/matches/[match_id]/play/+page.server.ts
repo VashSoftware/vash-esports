@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
         )
       ),
       match_maps(*, maps(*, mapsets(*)), scores(*, match_participant_players(*))),
-      match_bans(*, match_participants(*, participants(*, teams(name))))`
+      match_bans(*, match_participants(*, participants(*, teams(name))))`,
     )
     .eq("id", params.match_id)
     .order("priority", {
@@ -102,5 +102,20 @@ export const actions = {
     }
 
     console.log("Picked map with ID: ", mapId);
+  },
+  sendOsuMessage: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    const channel = formData.get("channel");
+    const message = formData.get("message");
+
+    const { data, error } = await locals.supabase.functions.invoke(
+      "send-osu-message",
+      {
+        body: { channel: channel, messages: [message, message, message] },
+      },
+    );
+
+    console.log(data, error);
   },
 } satisfies Actions;
