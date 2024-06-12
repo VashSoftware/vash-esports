@@ -40,31 +40,26 @@ export const actions = {
     const mods = await supabase.from("mods").select("*");
     if (mods.error) throw new Error(mods.error.message);
 
-    // Insert mods and their mappings
-    for (const mod of mods.data) {
+    quickPlayMaps.forEach(async (map, index) => {
       const mapPoolMod = await insertData("map_pool_mods", {
         type: "mod",
         map_pool_id: map_pool[0].id,
-        name: mod.name,
-        code: mod.code,
+        name: mods.data.filter((mod) => mod.id == modIds[index])[0].name,
+        code: mods.data.filter((mod) => mod.id == modIds[index])[0].code,
       });
 
       await insertData("map_pool_mod_mods", {
         map_pool_mod_id: mapPoolMod[0].id,
-        mod_id: mod.id,
+        mod_id: modIds[index],
       });
-    }
 
-    // Insert maps into the map pool
-    await insertData(
-      "map_pool_maps",
-      quickPlayMaps.map((map) => ({
+      await insertData("map_pool_maps", {
         map_pool_id: map_pool[0].id,
         mod_priority: 1,
-        map_pool_mod_id: mods.data[0].id,
+        map_pool_mod_id: mapPoolMod[0].id,
         map_id: map,
-      })),
-    );
+      });
+    });
 
     const round = await insertData("rounds", {
       event_id: event[0].id,
@@ -172,8 +167,6 @@ export const actions = {
         },
       },
     );
-
-    console.log(osuLobby);
 
     throw redirect(302, `/matches/${match.data[0].id}/play`);
   },

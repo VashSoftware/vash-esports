@@ -151,7 +151,7 @@
 <div class="my-4 text-center">
   <a href="/events/{data.match.rounds.events.id}">
     <h3>
-      {data.match.rounds.events.event_groups?.name}
+      {data.match.rounds.events.event_groups?.name ?? ""}
       {data.match.rounds.events.name}
     </h3>
   </a>
