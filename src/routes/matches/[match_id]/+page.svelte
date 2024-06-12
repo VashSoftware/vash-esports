@@ -92,7 +92,7 @@
         <iframe
           src="https://player.twitch.tv/?channel={data.match.rounds.events.event_links.filter(
             (event_link) => event_link.platforms.id == 4
-          )[0].link_param}&parent={data.hostname}"
+          )[0]?.link_param}&parent={data.hostname}"
           class="w-100 rounded"
           height="525"
           frameborder="0"
