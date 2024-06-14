@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .from("map_pools")
     .select(
       `*,
-      map_pool_mods(*, map_pool_mod_mods(*, mods(*)), map_pool_maps(*, maps(*, mapsets(*))))`
+      map_pool_mods(*, map_pool_mod_mods(*, mods(*)), map_pool_maps(*, maps(*, mapsets(*))))`,
     )
     .eq("id", params.map_pool_id)
     .order("mod_priority", {
@@ -58,7 +58,7 @@ export const actions = {
         if (modLengthDifference < 0) {
           console.log(
             `Deleting ${-modLengthDifference} map pool maps with map pool mod: `,
-            mapPoolMod.name
+            mapPoolMod.name,
           );
 
           const toBeDeleted = await locals.supabase
@@ -73,14 +73,14 @@ export const actions = {
             .delete()
             .in(
               "id",
-              toBeDeleted.data.map((map) => map.id)
+              toBeDeleted.data.map((map) => map.id),
             );
         }
 
         if (modLengthDifference > 0) {
           console.log(
             `Adding ${modLengthDifference} map pool maps with map pool mod: `,
-            mapPoolMod.name
+            mapPoolMod.name,
           );
 
           let mapPoolMaps = [];
@@ -96,7 +96,7 @@ export const actions = {
             .from("map_pool_maps")
             .insert(mapPoolMaps);
         }
-      })
+      }),
     );
   },
   deleteMapPoolMap: async ({ locals, params, request }) => {

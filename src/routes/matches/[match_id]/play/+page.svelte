@@ -40,7 +40,7 @@
           )
         )
       ),
-      match_maps(*, maps(*, mapsets(*)), scores(*, match_participant_players(*))),
+      match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
       .eq("id", data.match.id)
@@ -386,8 +386,8 @@
               <div class="text-center">
                 <img
                   class="img-thumbnail w-100 img-fluid"
-                  src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
-                    .osu_id}/covers/cover@2x.jpg"
+                  src="https://assets.ppy.sh/beatmaps/{map.map_pool_maps.maps
+                    .mapsets.osu_id}/covers/cover@2x.jpg"
                   alt="Match map cover"
                   style="filter: blur(1px) brightness(50%); height: 80px; object-fit: cover"
                 />
@@ -399,13 +399,15 @@
                 <div class="col">
                   <div>
                     <b
-                      >{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map
+                      >{map.map_pool_maps.maps.mapsets.artist} - {map
+                        .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
                         .maps.difficulty_name}]</b
                     >
                   </div>
 
                   <div>
-                    {map.maps.star_rating}★ - {map.maps.mapsets.bpm}BPM
+                    {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
+                      .maps.mapsets.bpm}BPM
                   </div>
                 </div>
               </div>
@@ -436,7 +438,7 @@
                       .osu_id}/covers/cover@2x.jpg"
                     class="card-img rounded-5"
                     style="filter: blur(1px) brightness({data.match.match_maps.filter(
-                      (match_map) => match_map.map_id == map.map_id
+                      (match_map) => match_map.map_pool_maps.id == map.id
                     ).length > 0
                       ? '30%'
                       : '70%'}); width: 300px; height: 80px; object-fit: cover;"
@@ -467,13 +469,13 @@
                         </div>
                       </div>
                       <form action="?/pickMap" method="post" use:enhance>
-                        <input type="hidden" name="map-id" value={map.map_id} />
+                        <input type="hidden" name="map-id" value={map.id} />
 
                         <button
                           type="submit"
                           class="btn btn-success"
                           disabled={data.match.match_maps.filter(
-                            (match_map) => match_map.map_id == map.map_id
+                            (match_map) => match_map.map_pool_maps.id == map.id
                           ).length > 0}
                           style=" height: 100%; object-fit: cover">PICK</button
                         >

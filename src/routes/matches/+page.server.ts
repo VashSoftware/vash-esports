@@ -159,9 +159,11 @@ export const actions = {
           )
         )
       ),
-      match_maps(*, maps(*, mapsets(*)), scores(*, match_participant_players(*))),
+      match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`)
       .eq("id", match[0].id);
+
+    console.log(match);
 
     const osuLobby = locals.supabase.functions.invoke(
       "make-osu-match",
