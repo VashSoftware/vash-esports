@@ -293,7 +293,8 @@
             <div>
               <b
                 >{map.map_pool_maps.maps.mapsets.artist} - {map.map_pool_maps
-                  .maps.mapsets.title} [{map.maps.difficulty_name}]</b
+                  .maps.mapsets.title} [{map.map_pool_maps.maps
+                  .difficulty_name}]</b
               >
             </div>
 
