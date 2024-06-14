@@ -40,7 +40,7 @@
           )
         )
       ),
-      match_maps(*, maps(*, mapsets(*)), scores(*)),
+      match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
       .eq("id", data.match.id)
@@ -145,13 +145,21 @@
 
   let currentTab = "bans";
   $: currentTab = currentMatchBan ? "bans" : "hello";
+
+  function getSettings() {
+    data.supabase.functions.invoke("fetch-match-data");
+  }
 </script>
+
+<form action="?/getSettings" method="post">
+  <button type="submit" class="btn btn-primary"> Get settings </button>
+</form>
 
 <!-- This match is being broadcasted on the following official channels: -->
 <div class="my-4 text-center">
   <a href="/events/{data.match.rounds.events.id}">
     <h3>
-      {data.match.rounds.events.event_groups?.name}
+      {data.match.rounds.events.event_groups?.name ?? ""}
       {data.match.rounds.events.name}
     </h3>
   </a>
@@ -185,24 +193,36 @@
   <div class="col text-center fs-1 fw-bold">
     {data.match.match_maps.filter(
       (match_map) =>
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[0].id
-        )[0]?.score >
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[1].id
-        )[0]?.score
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[0].id
+          )
+          .reduce((sum, score) => sum + score.score, 0) >
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[1].id
+          )
+          .reduce((sum, score) => sum + score.score, 0)
     ).length} - {data.match.match_maps.filter(
       (match_map) =>
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[1].id
-        )[0]?.score >
-        match_map.scores.filter(
-          (score) =>
-            score.match_participant_id == data.match.match_participants[0].id
-        )[0]?.score
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[1].id
+          )
+          .reduce((sum, score) => sum + score.score, 0) >
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              data.match.match_participants[0].id
+          )
+          .reduce((sum, score) => sum + score.score, 0)
     ).length}
   </div>
   <div class="col text-end">
@@ -346,9 +366,7 @@
   </div>
 </div>
 <div
-  class="tab-pane fade {currentTab === 'hello'
-    ? 'show active'
-    : ''} text-center"
+  class="tab-pane fade {currentTab === 'hello' ? 'show active' : ''}"
   id="playTab"
   role="tabpanel"
   aria-labelledby="pills-home-tab"
@@ -356,7 +374,7 @@
 >
   <div class="row">
     <div class="col">
-      <h1>Maps Played</h1>
+      <h1 class="text-center">Maps Played</h1>
 
       {#each data.match.match_maps as map}
         <div class="row py-1 align-items-center">
@@ -368,8 +386,8 @@
               <div class="text-center">
                 <img
                   class="img-thumbnail w-100 img-fluid"
-                  src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
-                    .osu_id}/covers/cover@2x.jpg"
+                  src="https://assets.ppy.sh/beatmaps/{map.map_pool_maps.maps
+                    .mapsets.osu_id}/covers/cover@2x.jpg"
                   alt="Match map cover"
                   style="filter: blur(1px) brightness(50%); height: 80px; object-fit: cover"
                 />
@@ -381,13 +399,15 @@
                 <div class="col">
                   <div>
                     <b
-                      >{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map
+                      >{map.map_pool_maps.maps.mapsets.artist} - {map
+                        .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
                         .maps.difficulty_name}]</b
                     >
                   </div>
 
                   <div>
-                    {map.maps.star_rating}★ - {map.maps.mapsets.bpm}BPM
+                    {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
+                      .maps.mapsets.bpm}BPM
                   </div>
                 </div>
               </div>
@@ -400,74 +420,73 @@
       {/each}
     </div>
     <div class="col">
-      <h1>Pick Maps</h1>
+      <h1 class="text-center">Pick Maps</h1>
 
-      {#each data.match.rounds.map_pools.map_pool_mods as mod}
-        {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
-          <div
-            class="d-flex align-items-center flex-wrap justify-content-center my-2"
-          >
-            {#each mod.map_pool_maps as map}
-              {#if map.maps}
-                <a
-                  href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
-                    .osu_id}#osu/{map.maps.osu_id}"
-                >
-                  <div class="card text-bg-dark m-1 rounded-5">
-                    <img
-                      src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                        .osu_id}/covers/cover@2x.jpg"
-                      class="card-img rounded-5"
-                      style="filter: blur(1px) brightness(70%); width: 350px; height: 60px; object-fit: cover;"
-                      alt="..."
-                    />
-                    <div class="card-img-overlay">
-                      <div
-                        class="d-flex justify-content-between align-items-center h-100"
-                      >
-                        <div class="d-flex flex-column justify-content-center">
-                          <h5 class="mb-0">
-                            <b>{mod.code}{map.mod_priority}</b>
-                          </h5>
-                        </div>
-                        <div class="text-center">
-                          <p
-                            class="card-title lh-sm my-0"
-                            style="font-size: smaller;"
-                          >
-                            {getShortenedMapName(map)}
-                          </p>
-                          <div>
-                            <small>
-                              <b>{map.maps?.star_rating}★</b> -
-                              <b>{map.maps?.mapsets.bpm}BPM</b> -
-                              <b>{formatSeconds(map.maps?.mapsets.time)}</b>
-                            </small>
-                          </div>
-                        </div>
-                        <form action="?/pickMap" method="post" use:enhance>
-                          <input
-                            type="hidden"
-                            name="map-id"
-                            value={map.map_id}
-                          />
-
-                          <button
-                            type="submit"
-                            class="btn btn-success"
-                            disabled={data.match.rounds.match_player_bans == 0}
-                            style=" height: 100%; object-fit: cover"
-                            >PICK</button
-                          >
-                        </form>
+      {#each data.match.rounds.map_pools.map_pool_mods.filter((mod) => mod.type != "tiebreaker") as mod}
+        <div
+          class="d-flex align-items-center flex-wrap justify-content-center my-2"
+        >
+          {#each mod.map_pool_maps as map}
+            {#if map.maps}
+              <a
+                href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
+                  .osu_id}#osu/{map.maps.osu_id}"
+              >
+                <div class="card text-bg-dark m-1 rounded-5">
+                  <img
+                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
+                      .osu_id}/covers/cover@2x.jpg"
+                    class="card-img rounded-5"
+                    style="filter: blur(1px) brightness({data.match.match_maps.filter(
+                      (match_map) => match_map.map_pool_maps.id == map.id
+                    ).length > 0
+                      ? '30%'
+                      : '70%'}); width: 300px; height: 80px; object-fit: cover;"
+                    alt="..."
+                  />
+                  <div class="card-img-overlay">
+                    <div
+                      class="d-flex justify-content-between align-items-center h-100"
+                    >
+                      <div class="d-flex flex-column justify-content-center">
+                        <h5 class="mb-0">
+                          <b>{mod.code}{map.mod_priority}</b>
+                        </h5>
                       </div>
+                      <div class="text-center">
+                        <p
+                          class="card-title lh-sm my-0"
+                          style="font-size: smaller;"
+                        >
+                          {getShortenedMapName(map)}
+                        </p>
+                        <div>
+                          <small>
+                            <b>{map.maps?.star_rating}★</b> -
+                            <b>{map.maps?.mapsets.bpm}BPM</b> -
+                            <b>{formatSeconds(map.maps?.mapsets.time)}</b>
+                          </small>
+                        </div>
+                      </div>
+                      <form action="?/pickMap" method="post" use:enhance>
+                        <input type="hidden" name="map-id" value={map.id} />
+
+                        <button
+                          type="submit"
+                          class="btn btn-success"
+                          disabled={data.match.match_maps.filter(
+                            (match_map) => match_map.map_pool_maps.id == map.id
+                          ).length > 0}
+                          style=" height: 100%; object-fit: cover">PICK</button
+                        >
+                      </form>
                     </div>
                   </div>
-                </a>
-              {/if}
-            {/each}
-          </div>
-        {/if}
+                </div>
+              </a>
+            {/if}
+          {/each}
+        </div>
       {/each}
     </div>
   </div>

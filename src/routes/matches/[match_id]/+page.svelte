@@ -10,7 +10,7 @@
         `*,
       rounds ( best_of, events (id, name, event_links(*, platforms(*)), event_groups(*))),
       match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
-      match_maps(maps(*, mapsets(*)), scores(*)),
+      match_maps(map_pool_maps(maps(*, mapsets(*))), scores(*)),
       match_predictions(*, user_profiles(*))`
       )
       .eq("id", data.match.id)
@@ -92,7 +92,7 @@
         <iframe
           src="https://player.twitch.tv/?channel={data.match.rounds.events.event_links.filter(
             (event_link) => event_link.platforms.id == 4
-          )[0].link_param}&parent={data.hostname}"
+          )[0]?.link_param}&parent={data.hostname}"
           class="w-100 rounded"
           height="525"
           frameborder="0"
@@ -279,7 +279,7 @@
         <div class="text-center">
           <img
             class="img-thumbnail w-100 img-fluid"
-            src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
+            src="https://assets.ppy.sh/beatmaps/{map.map_pool_maps.maps.mapsets
               .osu_id}/covers/cover@2x.jpg"
             alt="Match map cover"
             style="filter: blur(1px) brightness(50%); height: 80px; object-fit: cover"
@@ -292,13 +292,15 @@
           <div class="col">
             <div>
               <b
-                >{map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
+                >{map.map_pool_maps.maps.mapsets.artist} - {map.map_pool_maps
+                  .maps.mapsets.title} [{map.map_pool_maps.maps
                   .difficulty_name}]</b
               >
             </div>
 
             <div>
-              {map.maps.star_rating}★ - {map.maps.mapsets.bpm}BPM
+              {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps.maps
+                .mapsets.bpm}BPM
             </div>
           </div>
         </div>

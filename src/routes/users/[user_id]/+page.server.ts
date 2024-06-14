@@ -14,10 +14,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const userScores = await locals.supabase
     .from("scores")
     .select(
-      "*, match_participants(*, participants(*, teams(*, team_members(*, user_profiles(*)))))"
+      "*, match_participant_players(match_participants(*, participants(*, teams(*, team_members(*, user_profiles(*))))))"
     )
     .eq(
-      "match_participants.participants.teams.team_members.user_id",
+      "match_participant_players.match_participants.participants.teams.team_members.user_id",
       params.user_id
     );
 
