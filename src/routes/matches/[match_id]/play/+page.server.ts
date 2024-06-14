@@ -209,4 +209,12 @@ export const actions = {
 
     console.log(data, error);
   },
+  deleteMatch: async ({ locals, params, request }) => {
+    const match = await locals.supabase
+      .from("matches")
+      .delete()
+      .eq("id", params.match_id);
+
+    console.log("Deleted match with ID: ", params.match_id);
+  },
 } satisfies Actions;

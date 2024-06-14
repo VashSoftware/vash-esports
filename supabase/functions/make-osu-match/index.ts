@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js";
 async function sendOsuMessages(
   channel: string,
   messages: string[],
-  listen_for: string | null,
+  listen_once: string | null,
 ) {
   const res = await fetch(
     "https://mdixwlzweijevgjmcsmt.supabase.co/functions/v1/send-osu-message",
@@ -16,7 +16,7 @@ async function sendOsuMessages(
       body: JSON.stringify({
         channel: channel,
         messages: messages,
-        listen_for: listen_for,
+        listen_once: listen_once,
       }),
     },
   );

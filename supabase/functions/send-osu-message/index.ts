@@ -1,55 +1,44 @@
-/// <reference lib="deno.ns" />
-import { Client } from "https://deno.land/x/irc/mod.ts";
+import { Client } from "https://deno.land/x/irc@v0.15.0/mod.ts";
 
 Deno.serve(async (req) => {
-  const { channel, messages, listen_for } = await req.json();
+  const { channel, messages, listen_once } = await req.json();
 
   const client = new Client({
     nick: "jollyWudchip",
     serverPassword: Deno.env.get("OSU_IRC_PASSWORD"),
-    verbose: "formatted",
-    floodDelay: 1000,
+    verbose: (message) => {
+      console.log("Received message: ", message);
+    },
+    floodDelay: 2000,
     channels: [channel],
   });
 
-  const logs: string[] = [];
+  // Promise to handle the async operations
+  const processMessages = new Promise((resolve, reject) => {
+    client.on("register", async () => {
+      for (const message of messages) {
+        await client.privmsg(channel, message);
+      }
 
-  const connectToIRC = (): Promise<{ result: any; logs: string[] }> => {
-    return new Promise((resolve, reject) => {
-      client.on("register", () => {
-        for (const message of messages) {
-          client.privmsg(channel, message);
-        }
+      if (!listen_once) {
+        resolve(null);
+      }
+    });
 
-        client.on("privmsg", (message) => {
-          console.log(message);
-          logs.push(message.params.text);
-        });
-
-        if (listen_for) {
-          client.on(listen_for, (message) => {
-            client.disconnect();
-            console.log("Disconnected from IRC. Message: ", message);
-            console.log("Logs: ", logs);
-            resolve({ result: message, logs: logs });
-          });
-        } else {
-          resolve({ result: null, logs: logs });
-        }
+    if (listen_once) {
+      client.once(listen_once, (message) => {
+        client.disconnect();
+        resolve({ result: message });
       });
+    }
+  });
 
-      client.connect("irc.ppy.sh", 6667).catch(reject);
-    });
-  };
+  await client.connect("irc.ppy.sh", 6667);
 
-  try {
-    const result = await connectToIRC();
-    return new Response(JSON.stringify(result), {
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // Wait for the processMessages promise to resolve
+  const result = await processMessages;
+
+  return new Response(JSON.stringify(result || { success: true }), {
+    headers: { "Content-Type": "application/json" },
+  });
 });
