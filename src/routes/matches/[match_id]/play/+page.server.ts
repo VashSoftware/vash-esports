@@ -87,7 +87,7 @@ export const actions = {
     const matchMap = await locals.supabase
       .from("match_maps")
       .insert({ map_id: mapId, match_id: params.match_id })
-      .select("*");
+      .select("*, maps(*)");
 
     const mapPlayers = await locals.supabase
       .from("match_participant_players")
@@ -114,7 +114,7 @@ export const actions = {
       {
         body: {
           channel: match.data.channel_name,
-          messages: [`!mp map ${matchMap.data.osu_id}`],
+          messages: [`!mp map ${matchMap.data[0].maps.osu_id}`],
         },
       },
     );
@@ -181,6 +181,21 @@ export const actions = {
       {
         body: { match: match.data },
       },
+    );
+
+    console.log(data, error);
+  },
+  getSettings: async ({ locals, params, request }) => {
+    const match = await locals.supabase
+      .from("matches")
+      .select(
+        `*`,
+      )
+      .eq("id", params.match_id)
+      .single();
+
+    const { data, error } = await locals.supabase.functions.invoke(
+      "fetch-match-data",
     );
 
     console.log(data, error);

@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     .from("matches")
     .select(
       "*, rounds(events (name)), match_participants(participants(teams(name)))",
-    );
+    ).order("start_time", { ascending: false });
 
   return {
     matches: matches.data,
@@ -67,6 +67,10 @@ export const actions = {
       best_of: quickPlayMaps.length,
       match_player_bans: 0,
       name: "Stan vs Stan",
+    });
+
+    await supabase.from("matches").update({
+      ongoing: false,
     });
 
     let match = await insertData("matches", {

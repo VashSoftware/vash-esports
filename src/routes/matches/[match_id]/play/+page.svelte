@@ -145,7 +145,15 @@
 
   let currentTab = "bans";
   $: currentTab = currentMatchBan ? "bans" : "hello";
+
+  function getSettings() {
+    data.supabase.functions.invoke("fetch-match-data");
+  }
 </script>
+
+<form action="?/getSettings" method="post">
+  <button type="submit" class="btn btn-primary"> Get settings </button>
+</form>
 
 <!-- This match is being broadcasted on the following official channels: -->
 <div class="my-4 text-center">

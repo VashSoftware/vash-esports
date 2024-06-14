@@ -1,6 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
-async function sendOsuMessages(channel: string, messages: string[]) {
+async function sendOsuMessages(
+  channel: string,
+  messages: string[],
+  listen_for: string | null,
+) {
   const res = await fetch(
     "https://mdixwlzweijevgjmcsmt.supabase.co/functions/v1/send-osu-message",
     {
@@ -12,12 +16,14 @@ async function sendOsuMessages(channel: string, messages: string[]) {
       body: JSON.stringify({
         channel: channel,
         messages: messages,
+        listen_for: listen_for,
       }),
     },
   );
 
   const data = await res.json();
 
+  console.log(data);
   return data;
 }
 
@@ -26,11 +32,11 @@ Deno.serve(async (req) => {
 
   console.log(match);
 
-  const { channel } = await sendOsuMessages("BanchoBot", [
+  const { result, logs } = await sendOsuMessages("BanchoBot", [
     `!mp make VASH: (${
       match.match_participants[0].participants.teams.name
     }) vs (${match.match_participants[1].participants.teams.name})`,
-  ]);
+  ], "nicklist");
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -40,12 +46,16 @@ Deno.serve(async (req) => {
     },
   );
 
-  await supabase.from("matches").update({
-    channel_name: channel,
-  }).eq("id", match.id);
+  console.log(result, logs);
+
+  const updatedMatch = await supabase.from("matches").update({
+    channel_name: result.params.channel,
+  }).eq("id", match.id).select();
+
+  console.log(updatedMatch);
 
   await sendOsuMessages(
-    channel,
+    result.params.channel,
     [
       `!mp set 2 3 ${match.match_participants.length}`,
       `!mp invite ${
@@ -57,6 +67,7 @@ Deno.serve(async (req) => {
           .team_members.user_profiles.name
       }`,
     ],
+    null,
   );
 
   return new Response(
