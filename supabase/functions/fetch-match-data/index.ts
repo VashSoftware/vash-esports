@@ -12,7 +12,9 @@ Deno.serve(async (req) => {
 
   const ongoingMatches = await supabase
     .from("matches")
-    .select(`*`)
+    .select(
+      `*, match_participants(*, match_participant_players(*, team_members(*, user_profiles(*, user_platforms(*)))))`,
+    )
     .eq("ongoing", true);
 
   console.log("Ongoing matches: ", ongoingMatches.data!);
@@ -21,29 +23,35 @@ Deno.serve(async (req) => {
     const ircClient = new Client({
       nick: "jollyWudchip",
       serverPassword: Deno.env.get("OSU_IRC_PASSWORD"),
-      floodDelay: 2000,
+      floodDelay: 1000,
       channels: [match.channel_name, "Stan"],
     });
 
     const processMessages = new Promise((resolve, reject) => {
       ircClient.on("register", async () => {
-        await ircClient.privmsg(match.channel_name, "!mp settings");
+        ircClient.privmsg(match.channel_name, "!mp settings");
       });
 
-      ircClient.on("raw", (message) => {
+      ircClient.on("raw", async (message) => {
         for (const param of message.params) {
           if (
             param.includes(`BanchoBot!cho@ppy.sh PRIVMSG ${match.channel_name}`)
           ) {
-            const parsedData = parseMessage(param);
+            await handleSettings(param, match, supabase);
+          }
 
-            console.log(parsedData);
+          if (
+            param.includes(
+              `BanchoBot!cho@ppy.sh PRIVMSG ${match.channel_name} :The match has finished!`,
+            )
+          ) {
+            await handleResults(param, match, supabase);
           }
         }
       });
     });
 
-    await ircClient.connect("irc.ppy.sh", 6667);
+    ircClient.connect("irc.ppy.sh", 6667);
 
     await processMessages;
 
@@ -56,13 +64,83 @@ Deno.serve(async (req) => {
   );
 });
 
-function parseMessage(message: string) {
+async function handleSettings(param: string, match: any, supabase: any) {
+  const parsedData = parseSettings(param);
+  console.log(parsedData);
+
+  for (const match_participant of match.match_participants) {
+    for (
+      const match_participant_player of match_participant
+        .match_participant_players
+    ) {
+      const platform = match_participant_player.team_members.user_profiles
+        .user_platforms.filter(
+          (platform) => platform.platform_id == 1,
+        )[0];
+
+      const playerInLobby = parsedData.players.some(
+        (player) => player.id == platform.value,
+      );
+
+      const updatedPlayer = await supabase
+        .from("match_participant_players")
+        .update({ state: playerInLobby ? 3 : 1 })
+        .eq("id", match_participant_player.id)
+        .select();
+    }
+  }
+}
+
+async function handleResults(param: string, match: any, supabase: any) {
+  const parsedData = parseResults(param);
+  console.log(parsedData);
+
+  for (const player of parsedData.players) {
+    const matchParticipantPlayer = await supabase
+      .from("match_participant_players")
+      .select("*, team_members(*, user_profiles(*, user_platforms(*)))")
+      .in(
+        "match_participant_id",
+        match.match_participants.map((mp: any) => mp.id),
+      )
+      .eq("team_members.user_profiles.user_platforms.platform_id", 10)
+      .eq("team_members.user_profiles.user_platforms.value", player.name);
+
+    console.log(matchParticipantPlayer.data[0]);
+
+    const matchMap = await supabase
+      .from("match_maps")
+      .select("*")
+      .eq("match_id", match.id)
+      .order("created_at", { ascending: false });
+
+    const score = await supabase
+      .from("scores")
+      .update({
+        score: player.score,
+        failed: player.failed,
+      })
+      .eq("match_participant_player_id", matchParticipantPlayer.data[0].id)
+      .eq("match_map_id", matchMap.data[0].id)
+      .select();
+
+    console.log(score);
+  }
+}
+
+function parseSettings(message: string) {
   const data = {
     roomName: "",
     teamMode: "",
     winCondition: "",
     playerCount: 0,
-    players: [] as { id: string; name: string; team: string }[],
+    players: [] as {
+      id: string;
+      name: string;
+      team: string;
+      slot: number;
+      ready: boolean;
+    }[],
   };
 
   const roomNameRegex = /Room name: (.*), History/;
@@ -70,7 +148,7 @@ function parseMessage(message: string) {
   const winConditionRegex = /Win condition: (.*)/;
   const playerCountRegex = /Players: (\d+)/;
   const playerRegex =
-    /Slot \d+.*https:\/\/osu\.ppy\.sh\/u\/(\d+) (.*)\s+\[(.*)\]/;
+    /Slot (\d+)\s+(Ready|Not Ready)\s+https:\/\/osu\.ppy\.sh\/u\/(\d+)\s+(.*?)\s+\[(.*?)\]/;
 
   if (roomNameRegex.test(message)) {
     data.roomName = message.match(roomNameRegex)![1];
@@ -84,12 +162,38 @@ function parseMessage(message: string) {
   if (playerCountRegex.test(message)) {
     data.playerCount = parseInt(message.match(playerCountRegex)![1], 10);
   }
-  if (playerRegex.test(message)) {
-    const playerMatch = message.match(playerRegex)!;
+  const playerMatches = message.match(playerRegex);
+  if (playerMatches) {
+    const playerMatch = playerMatches;
     data.players.push({
-      id: playerMatch[1],
-      name: playerMatch[2].trim(),
-      team: playerMatch[3],
+      slot: parseInt(playerMatch[1], 10),
+      ready: playerMatch[2] === "Ready",
+      id: playerMatch[3],
+      name: playerMatch[4].trim(),
+      team: playerMatch[5],
+    });
+  }
+
+  return data;
+}
+
+function parseResults(param: string) {
+  const data = {
+    players: [] as {
+      name: string;
+      score: number;
+      failed: boolean;
+    }[],
+  };
+
+  const matchResultRegex =
+    /:BanchoBot!cho@ppy.sh PRIVMSG #\w+ :(\w+) finished playing \(Score: (\d+), (FAILED|PASSED)\)\./g;
+  let match;
+  while ((match = matchResultRegex.exec(param)) !== null) {
+    data.players.push({
+      name: match[1],
+      score: parseInt(match[2], 10),
+      failed: match[3] === "FAILED",
     });
   }
 

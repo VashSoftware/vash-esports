@@ -107,13 +107,14 @@
             <label for="exampleInputPassword1" class="form-label"
               >Opponent</label
             >
-            <select
-              class="form-select"
-              aria-label="Default select example"
+            <input
+              type="text"
+              class="form-control"
               id="exampleInputPassword1"
-            >
-              <option selected value="1">Stan</option>
-            </select>
+              name="opponent"
+              placeholder="Type to search..."
+              value="Stan"
+            />
           </div>
           <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label"
@@ -149,7 +150,7 @@
             </ul>
 
             <ul>
-              {#each availableMaps as mapPoolMap}
+              {#each availableMaps.slice(0, 10) as mapPoolMap}
                 <li class="d-flex justify-content-between align-items-center">
                   <div>
                     {mapPoolMap.mapsets.artist} - {mapPoolMap.mapsets.title}

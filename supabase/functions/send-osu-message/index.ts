@@ -6,39 +6,34 @@ Deno.serve(async (req) => {
   const client = new Client({
     nick: "jollyWudchip",
     serverPassword: Deno.env.get("OSU_IRC_PASSWORD"),
-    verbose: (message) => {
-      console.log("Received message: ", message);
-    },
-    floodDelay: 2000,
+    verbose: "formatted",
     channels: [channel],
   });
 
-  // Promise to handle the async operations
   const processMessages = new Promise((resolve, reject) => {
-    client.on("register", async () => {
-      for (const message of messages) {
-        await client.privmsg(channel, message);
-      }
-
-      if (!listen_once) {
-        resolve(null);
-      }
-    });
-
     if (listen_once) {
       client.once(listen_once, (message) => {
         client.disconnect();
         resolve({ result: message });
       });
     }
+
+    client.once("register", async () => {
+      for (const message of messages) {
+        await client.privmsg(channel, message);
+      }
+
+      if (!listen_once) {
+        resolve({ result: null });
+      }
+    });
   });
 
-  await client.connect("irc.ppy.sh", 6667);
-
-  // Wait for the processMessages promise to resolve
+  client.connect("irc.ppy.sh", 6667);
   const result = await processMessages;
+  client.disconnect();
 
-  return new Response(JSON.stringify(result || { success: true }), {
+  return new Response(JSON.stringify(result), {
     headers: { "Content-Type": "application/json" },
   });
 });

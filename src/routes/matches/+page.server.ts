@@ -165,7 +165,7 @@ export const actions = {
 
     console.log(match);
 
-    const osuLobby = locals.supabase.functions.invoke(
+    locals.supabase.functions.invoke(
       "make-osu-match",
       {
         body: {

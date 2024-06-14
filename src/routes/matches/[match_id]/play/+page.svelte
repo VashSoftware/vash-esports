@@ -152,8 +152,8 @@
 </script>
 
 <div class="d-flex justify-content-center gap-3 my-4">
-  <form action="?/getSettings" method="post" use:enhance>
-    <button type="submit" class="btn btn-primary"> Get settings </button>
+  <form action="?/startMap" method="post" use:enhance>
+    <button type="submit" class="btn btn-success"> Start map </button>
   </form>
 
   <form action="?/deleteMatch" method="post" use:enhance>
