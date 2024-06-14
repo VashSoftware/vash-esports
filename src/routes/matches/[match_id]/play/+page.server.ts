@@ -1,4 +1,5 @@
 import type { Actions, PageServerLoad } from "./$types";
+import { redirect } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
   const match = await locals.supabase
@@ -115,7 +116,7 @@ export const actions = {
       }
     }
 
-    const { data, error } = await locals.supabase.functions.invoke(
+    locals.supabase.functions.invoke(
       "send-osu-message",
       {
         body: {
@@ -136,14 +137,12 @@ export const actions = {
     const channel = formData.get("channel");
     const message = formData.get("message");
 
-    const { data, error } = await locals.supabase.functions.invoke(
+    locals.supabase.functions.invoke(
       "send-osu-message",
       {
         body: { channel: channel, messages: [message] },
       },
     );
-
-    console.log(data, error);
   },
   makeMatch: async ({ locals, params, request }) => {
     const match = await locals.supabase
@@ -185,28 +184,53 @@ export const actions = {
       .eq("id", params.match_id)
       .single();
 
-    const { data, error } = await locals.supabase.functions.invoke(
+    locals.supabase.functions.invoke(
       "make-osu-match",
       {
         body: { match: match.data },
       },
     );
-
-    console.log(data, error);
   },
-  getSettings: async ({ locals, params, request }) => {
+  startMap: async ({ locals, params, request }) => {
     const match = await locals.supabase
       .from("matches")
-      .select(
-        `*`,
-      )
+      .select("*")
       .eq("id", params.match_id)
       .single();
 
-    const { data, error } = await locals.supabase.functions.invoke(
-      "fetch-match-data",
+    locals.supabase.functions.invoke(
+      "send-osu-message",
+      {
+        body: {
+          channel: match.data.channel_name,
+          messages: [
+            `!mp start 5`,
+          ],
+        },
+      },
+    );
+  },
+  deleteMatch: async ({ locals, params, request }) => {
+    const match = await locals.supabase
+      .from("matches")
+      .update({ ongoing: false })
+      .eq("id", params.match_id)
+      .select("*");
+
+    locals.supabase.functions.invoke(
+      "send-osu-message",
+      {
+        body: {
+          channel: match.data.channel_name,
+          messages: [
+            `!mp close`,
+          ],
+        },
+      },
     );
 
-    console.log(data, error);
+    console.log("Deleted match with ID: ", params.match_id);
+
+    throw redirect(302, `/matches`);
   },
 } satisfies Actions;

@@ -3,25 +3,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js";
 async function sendOsuMessages(
   channel: string,
   messages: string[],
-  listen_for: string | null,
+  listen_once: string | null,
+  supabase: any,
 ) {
-  const res = await fetch(
-    "https://mdixwlzweijevgjmcsmt.supabase.co/functions/v1/send-osu-message",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
-      },
-      body: JSON.stringify({
-        channel: channel,
-        messages: messages,
-        listen_for: listen_for,
-      }),
+  const { data, error } = await supabase.functions.invoke("send-osu-message", {
+    body: {
+      channel: channel,
+      messages: messages,
+      listen_once: listen_once,
     },
-  );
-
-  const data = await res.json();
+  });
 
   console.log(data);
   return data;
@@ -32,12 +23,6 @@ Deno.serve(async (req) => {
 
   console.log(match);
 
-  const { result, logs } = await sendOsuMessages("BanchoBot", [
-    `!mp make VASH: (${
-      match.match_participants[0].participants.teams.name
-    }) vs (${match.match_participants[1].participants.teams.name})`,
-  ], "nicklist");
-
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -46,7 +31,18 @@ Deno.serve(async (req) => {
     },
   );
 
-  console.log(result, logs);
+  const { result } = await sendOsuMessages(
+    "BanchoBot",
+    [
+      `!mp make VASH: (${
+        match.match_participants[0].participants.teams.name
+      }) vs (${match.match_participants[1].participants.teams.name})`,
+    ],
+    "nicklist",
+    supabase,
+  );
+
+  console.log(result);
 
   const updatedMatch = await supabase.from("matches").update({
     channel_name: result.params.channel,
@@ -68,6 +64,7 @@ Deno.serve(async (req) => {
       }`,
     ],
     null,
+    supabase,
   );
 
   return new Response(

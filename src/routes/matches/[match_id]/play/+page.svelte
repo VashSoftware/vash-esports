@@ -151,9 +151,15 @@
   }
 </script>
 
-<form action="?/getSettings" method="post">
-  <button type="submit" class="btn btn-primary"> Get settings </button>
-</form>
+<div class="d-flex justify-content-center gap-3 my-4">
+  <form action="?/startMap" method="post" use:enhance>
+    <button type="submit" class="btn btn-success"> Start map </button>
+  </form>
+
+  <form action="?/deleteMatch" method="post" use:enhance>
+    <button type="submit" class="btn btn-danger"> Delete match </button>
+  </form>
+</div>
 
 <!-- This match is being broadcasted on the following official channels: -->
 <div class="my-4 text-center">
