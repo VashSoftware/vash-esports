@@ -14,7 +14,7 @@
     <button
       data-bs-toggle="modal"
       data-bs-target="#createEventModal"
-      class="btn btn-primary btn-lg"
+      class="btn btn-success btn-lg"
     >
       Create Event
     </button>

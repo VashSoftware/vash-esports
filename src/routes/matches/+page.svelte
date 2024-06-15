@@ -44,12 +44,12 @@
 </script>
 
 <div class="py-5 d-flex justify-content-between align-items-center">
-  <h1>Matches</h1>
+  <h1>Matches ({data.matches.length})</h1>
 
   <div>
     <button
       type="button"
-      class="btn btn-success"
+      class="btn btn-success btn-lg"
       data-bs-toggle="modal"
       data-bs-target="#exampleModal"
       on:click={fetchQuickPlayInfo}
