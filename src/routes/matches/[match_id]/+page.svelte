@@ -64,19 +64,23 @@
 <div class="py-5">
   <div>
     <div class="row align-items-center">
-      <div class="col"></div>
-      <div class="col">
-        <div class="text-center">
-          <a href="/events/{data.match.rounds.events.id}">
-            <h2>
-              {#if data.match.rounds.events.event_groups}{data.match.rounds
-                  .events.event_groups.name}
-              {/if}{data.match.rounds.events.name}
-            </h2></a
-          >
-          <h3>Grand Finals</h3>
+      {#if data.match.type == "event"}
+        <div class="col"></div>
+        <div class="col">
+          <div class="text-center">
+            <a href="/events/{data.match.rounds.events.id}">
+              <h2>
+                {#if data.match.rounds.events.event_groups}{data.match.rounds
+                    .events.event_groups.name}
+                {/if}
+
+                {data.match.rounds.events.name}
+              </h2></a
+            >
+            <h3>Grand Finals</h3>
+          </div>
         </div>
-      </div>
+      {/if}
       <div class="col d-flex justify-content-end gap-3">
         {#if data.match.ongoing}<a
             href="/matches/{data.match.id}/play"
