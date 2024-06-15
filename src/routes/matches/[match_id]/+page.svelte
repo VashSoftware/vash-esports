@@ -78,12 +78,17 @@
         </div>
       </div>
       <div class="col d-flex justify-content-end gap-3">
-        <a href="/matches/{data.match.id}/play" class="btn btn-primary">Play</a>
-        <form action="?/addToCalendar" method="post">
-          <button type="submit" class="btn btn-secondary"
-            >Add to Calendar</button
-          >
-        </form>
+        {#if data.match.ongoing}<a
+            href="/matches/{data.match.id}/play"
+            class="btn btn-primary">Play</a
+          >{/if}
+        {#if data.match.startdate < new Date()}
+          <form action="?/addToCalendar" method="post">
+            <button type="submit" class="btn btn-secondary"
+              >Add to Calendar</button
+            >
+          </form>
+        {/if}
       </div>
     </div>
 
