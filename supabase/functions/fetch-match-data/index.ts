@@ -132,14 +132,16 @@ async function handleResults(param: string, match: any, supabase: any) {
     (match_map) => match_map.scores[0]?.score > match_map.scores[1]?.score,
   ).length;
 
+  const scores 
+
   const scoreTeam2 = match.match_maps.filter(
     (match_map) => match_map.scores[1]?.score > match_map.scores[0]?.score,
   ).length;
 
   if (scoreTeam1 > bestOf / 2) {
     const matchWinner = await supabase
-      .from("match_participants")
-      .update({ state: 3 })
+      .from("matches")
+      .update({ ongoing: false })
       .eq("match_id", match.id)
       .eq("team_id", 1)
       .select();
@@ -147,10 +149,9 @@ async function handleResults(param: string, match: any, supabase: any) {
 
   if (scoreTeam2 > bestOf / 2) {
     const matchWinner = await supabase
-      .from("match_participants")
-      .update({ state: 3 })
-      .eq("match_id", match.id)
-      .eq("team_id", 2)
+      .from("matches")
+      .update({ ongoing: false, winner_participant_id:  })
+      .eq("id", match.id)
       .select();
   }
 }

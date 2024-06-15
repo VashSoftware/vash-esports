@@ -1,9 +1,20 @@
 <script lang="ts">
+  export let data;
+
   export let form;
+
+  let email = "";
+  let password = "";
+
+  async function signIn() {
+    await data.supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+  }
 </script>
 
 <div class="row justify-content-center text-center align-items-center">
-  
   <h1 class="py-5">Login</h1>
   <form class="d-flex col-4" method="post">
     <div class="col">
@@ -22,6 +33,7 @@
               class="form-control"
               placeholder=""
               aria-describedby="helpId"
+              bind:value={email}
             />
           </label>
         </div>
@@ -34,12 +46,15 @@
               class="form-control"
               placeholder=""
               aria-describedby="helpId"
+              bind:value={password}
             /></label
           >
         </div>
 
         <div class="text-center pt-3">
-          <button type="submit" class="btn btn-primary">Log in</button>
+          <button type="submit" class="btn btn-primary" on:click={signIn}
+            >Log in</button
+          >
         </div>
       </div>
     </div>

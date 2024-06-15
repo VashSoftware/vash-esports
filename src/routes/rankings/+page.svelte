@@ -2,6 +2,19 @@
   import { goto } from "$app/navigation";
 
   export let data;
+
+  function getUserMatchCount(id) {
+    const user = data.userRatings.find((userRating) => userRating.id === id);
+
+    let matchCount = 0;
+    for (const teamMember of user.team_members) {
+      for (const participant of teamMember.teams.participants) {
+        matchCount += 1;
+      }
+    }
+
+    return matchCount;
+  }
 </script>
 
 <div class="py-5 text-center">
@@ -73,7 +86,7 @@
           <tr role="button" on:click={() => goto(`/users/${userRating.id}`)}>
             <td>{i + 1}</td>
             <td>{userRating.name}</td>
-            <td>{data.matchesPlayed.length}</td>
+            <td>{getUserMatchCount(userRating.id)}</td>
             <td>{userRating.user_ratings[0]?.rating || "Not rated yet"}</td>
           </tr>
         {/each}
