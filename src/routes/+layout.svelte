@@ -243,14 +243,17 @@
           >
           </stripe-buy-button>
         </div>
-        <div class="col d-flex justify-content-center align-items-center">
-          <a class="text-decoration-none mx-2" href="/terms">Terms</a>
-          •
-          <a class="text-decoration-none mx-2" href="/privacy">Privacy</a>
-          •
-          <a class="text-decoration-none mx-2" href="/wiki">Wiki</a>
-          •
-          <a class="text-decoration-none mx-2" href="/status">Status</a>
+        <div class="col d-flex flex-column gap-2">
+          <div class="d-flex justify-content-center align-items-center gap-2">
+            <a class="text-decoration-none" href="/terms">Terms</a>
+            •
+            <a class="text-decoration-none" href="/privacy">Privacy</a>
+            •
+            <a class="text-decoration-none" href="/wiki">Wiki</a>
+            •
+            <a class="text-decoration-none" href="/status">Status</a>
+          </div>
+          <div>Made by <a href="https://vash.software">Vash Software</a></div>
         </div>
         <div class="col d-flex align-items-center justify-content-end gap-3">
           <a href="https://discord.gg/n3mZgWk"
