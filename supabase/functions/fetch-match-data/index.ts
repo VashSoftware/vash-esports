@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
   const ongoingMatches = await supabase
     .from("matches")
     .select(
-      `*, match_participants(*, match_participant_players(*, team_members(*, user_profiles(*, user_platforms(*)))))`,
+      `*, match_participants(*, match_participant_players(*, team_members(*, user_profiles(*, user_platforms(*))))), rounds(*)`,
     )
     .eq("ongoing", true);
 
@@ -125,6 +125,33 @@ async function handleResults(param: string, match: any, supabase: any) {
       .select();
 
     console.log(score);
+  }
+
+  const bestOf = match.rounds.best_of;
+  const scoreTeam1 = match.match_maps.filter(
+    (match_map) => match_map.scores[0]?.score > match_map.scores[1]?.score,
+  ).length;
+
+  const scoreTeam2 = match.match_maps.filter(
+    (match_map) => match_map.scores[1]?.score > match_map.scores[0]?.score,
+  ).length;
+
+  if (scoreTeam1 > bestOf / 2) {
+    const matchWinner = await supabase
+      .from("match_participants")
+      .update({ state: 3 })
+      .eq("match_id", match.id)
+      .eq("team_id", 1)
+      .select();
+  }
+
+  if (scoreTeam2 > bestOf / 2) {
+    const matchWinner = await supabase
+      .from("match_participants")
+      .update({ state: 3 })
+      .eq("match_id", match.id)
+      .eq("team_id", 2)
+      .select();
   }
 }
 
