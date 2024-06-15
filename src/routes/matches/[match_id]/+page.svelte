@@ -107,23 +107,21 @@
           frameborder="0"
           scrolling="no"
           allowfullscreen={true}
-          title="Twitch Embed"
+          title="Twitch Player Embed"
         >
         </iframe>
       </div>
       <div class="col">
-        <h2>Live Chat</h2>
-
-        {#each [1, 2, 3, 4, 5] as message}
-          <div class="py-1">
-            <b>Username:</b>
-            {message}
-          </div>
-        {/each}
-        <div>
-          <input type="text" class="form-control" placeholder="Chat" />
-          <button class="btn btn-primary">Send</button>
-        </div>
+        <iframe
+          src="https://www.twitch.tv/embed/{data.match.rounds.events.event_links.filter(
+            (event_link) => event_link.platforms.id == 4
+          )[0]?.link_param}/chat?parent={data.hostname}"
+          height="525"
+          width="350"
+          class="w-100 rounded"
+          title="Twitch Chat Embed"
+        >
+        </iframe>
       </div>
     </div>
 
