@@ -1,4 +1,5 @@
-import type { PageServerLoad } from "./$types";
+import { redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
   const { data, error } = await locals.supabase
@@ -53,3 +54,20 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     userScores: userScores.data,
   };
 };
+
+export const actions = {
+  updateAccount: async ({ params, locals, request }) => {
+    const formData = await request.formData();
+
+    await locals.supabase
+      .from("user_profiles")
+      .update({ name: formData.get("name") })
+      .eq("id", params.user_id)
+      .select();
+  },
+  signOut: async ({ locals }) => {
+    await locals.supabase.auth.signOut();
+
+    throw redirect(302, `/`);
+  },
+} satisfies Actions;

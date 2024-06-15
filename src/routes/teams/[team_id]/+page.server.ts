@@ -1,5 +1,4 @@
-import type { PageServerLoad } from "./$types";
-import type { Actions } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const { data, error } = await locals.supabase
