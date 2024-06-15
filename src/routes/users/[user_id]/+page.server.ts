@@ -4,7 +4,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const { data, error } = await locals.supabase
     .from("user_profiles")
     .select(
-      "*, organisation_members(*, organisations(*)), team_members(*, teams(*)), user_badges(*, badges(*))"
+      "*, organisation_members(*, organisations(*)), team_members(*, teams(*)), user_badges(*, badges(*))",
     )
     .eq("id", params.user_id)
     .single();
@@ -14,11 +14,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const userScores = await locals.supabase
     .from("scores")
     .select(
-      "*, match_participant_players(match_participants(*, participants(*, teams(*, team_members(*, user_profiles(*))))))"
+      "*, match_participant_players(match_participants(*, participants(*, teams(*, team_members(*, user_profiles(*))))))",
     )
     .eq(
       "match_participant_players.match_participants.participants.teams.team_members.user_id",
-      params.user_id
+      params.user_id,
     );
 
   // console.log(userScores);
@@ -37,6 +37,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   let teamPublicUrls = [];
   for (let i = 0; i < data?.team_members.length; i++) {
+    if (data.team_members[i].teams.is_personal_team) continue;
+
     const teamPublicUrl = await locals.supabase.storage
       .from("team_icons")
       .getPublicUrl(data.team_members[i].team_id);
