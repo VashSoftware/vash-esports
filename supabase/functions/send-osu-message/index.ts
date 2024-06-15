@@ -11,25 +11,23 @@ Deno.serve(async (req) => {
   });
 
   const processMessages = new Promise((resolve, reject) => {
-    if (listen_once) {
-      client.once(listen_once, (message) => {
-        client.disconnect();
-        resolve({ result: message });
-      });
-    }
-
     client.once("register", async () => {
       for (const message of messages) {
         await client.privmsg(channel, message);
       }
 
-      if (!listen_once) {
+      if (listen_once) {
+        client.once(listen_once, (message) => {
+          client.disconnect();
+          resolve({ result: message });
+        });
+      } else {
         resolve({ result: null });
       }
     });
   });
 
-  client.connect("irc.ppy.sh", 6667);
+  await client.connect("irc.ppy.sh", 6667);
   const result = await processMessages;
   client.disconnect();
 
