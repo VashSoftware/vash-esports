@@ -216,6 +216,24 @@
           .match_participant_player_states.emoji}
       </div>
     {/if}
+
+    {#if data.match.match_participants[0].match_participant_players[0].match_participant_player_states.id == 1}
+      <form
+        action="?/invitePlayer"
+        method="post"
+        class="text-center"
+        use:enhance
+      >
+        <input
+          type="hidden"
+          name="match-participant-player-id"
+          value={data.match.match_participants[0].match_participant_players[0]
+            .id}
+        />
+
+        <button type="submit" class="btn btn-primary"> Invite to Lobby </button>
+      </form>
+    {/if}
   </div>
   <div class="col text-center fs-1 fw-bold">
     {data.match.match_maps.filter(
@@ -282,6 +300,24 @@
         {data.match.match_participants[1].match_participant_players[0]
           .match_participant_player_states.emoji}
       </div>
+    {/if}
+
+    {#if data.match.match_participants[1].match_participant_players[0].match_participant_player_states.id == 1}
+      <form
+        action="?/invitePlayer"
+        method="post"
+        class="text-center"
+        use:enhance
+      >
+        <input
+          type="hidden"
+          name="match-participant-player-id"
+          value={data.match.match_participants[1].match_participant_players[0]
+            .id}
+        />
+
+        <button type="submit" class="btn btn-primary"> Invite to Lobby </button>
+      </form>
     {/if}
   </div>
 </div>

@@ -233,4 +233,41 @@ export const actions = {
 
     throw redirect(302, `/matches`);
   },
+  invitePlayer: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    const matchParticipantPlayerId = formData.get(
+      "match-participant-player-id",
+    );
+
+    const matchParticipantPlayer = await locals.supabase
+      .from("match_participant_players")
+      .select(
+        "*, match_participants(matches(channel_name)), team_members(user_profiles(name, user_platforms(*)))",
+      )
+      .eq("id", matchParticipantPlayerId)
+      .single();
+
+    locals.supabase.functions.invoke(
+      "send-osu-message",
+      {
+        body: {
+          channel:
+            matchParticipantPlayer.data.match_participants.matches.channel_name,
+          messages: [
+            `!mp invite ${
+              matchParticipantPlayer.data.team_members.user_profiles
+                .user_platforms.filter((platform) => platform.platform_id == 1)
+                .value
+            }`,
+          ],
+        },
+      },
+    );
+
+    console.log(
+      "Invited player: ",
+      matchParticipantPlayer.data.team_members.user_profiles.name,
+    );
+  },
 } satisfies Actions;

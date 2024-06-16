@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
 
 async function handleSettings(param: string, match: any, supabase: any) {
   const parsedData = parseSettings(param);
-  console.log("Parsed data: ", parsedData);
+  console.log("Parsed settings: ", parsedData);
 
   for (const match_participant of match.match_participants) {
     for (
@@ -77,6 +77,13 @@ async function handleSettings(param: string, match: any, supabase: any) {
         .user_platforms.filter(
           (platform) => platform.platform_id == 1,
         )[0];
+
+      console.log(
+        "Platform: ",
+        platform,
+        match_participant_player.id,
+        parsedData.players.map((player) => player.name),
+      );
 
       const playerInLobby = parsedData.players.some(
         (player) => player.id == platform.value,
@@ -93,7 +100,7 @@ async function handleSettings(param: string, match: any, supabase: any) {
 
 async function handleResults(param: string, match: any, supabase: any) {
   const parsedData = parseResults(param);
-  console.log("Parsed data: ", parsedData);
+  console.log("Parsed results: ", parsedData);
 
   for (const player of parsedData.players) {
     const matchParticipantPlayer = await supabase
