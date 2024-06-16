@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
           )
         )
       ),
-      match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
+      match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`,
     )
     .eq("id", params.match_id)
@@ -221,7 +221,7 @@ export const actions = {
       "send-osu-message",
       {
         body: {
-          channel: match.data.channel_name,
+          channel: match.data[0].channel_name,
           messages: [
             `!mp close`,
           ],

@@ -40,7 +40,7 @@
           )
         )
       ),
-      match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
+      match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
       .eq("id", data.match.id)
@@ -146,8 +146,17 @@
   let currentTab = "bans";
   $: currentTab = currentMatchBan ? "bans" : "hello";
 
-  function getSettings() {
-    data.supabase.functions.invoke("fetch-match-data");
+  function canPickMap(map) {
+    if (
+      data.match.match_maps[data.match.match_maps.length - 1]?.scores.reduce(
+        (sum, score) => sum + score.score,
+        0
+      ) == 0
+    ) {
+      return false;
+    }
+
+    return true;
   }
 </script>
 
@@ -432,7 +441,7 @@
         <div
           class="d-flex align-items-center flex-wrap justify-content-center my-2"
         >
-          {#each mod.map_pool_maps as map}
+          {#each mod.map_pool_maps.filter((map) => !data.match.match_maps.some((match_map) => match_map.map_pool_maps.map_id == map.map_id)) as map}
             {#if map.maps}
               <a
                 href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
@@ -480,9 +489,7 @@
                         <button
                           type="submit"
                           class="btn btn-success"
-                          disabled={data.match.match_maps.filter(
-                            (match_map) => match_map.map_pool_maps.id == map.id
-                          ).length > 0}
+                          disabled={!canPickMap(map)}
                           style=" height: 100%; object-fit: cover">PICK</button
                         >
                       </form>

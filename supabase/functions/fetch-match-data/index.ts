@@ -13,18 +13,18 @@ Deno.serve(async (req) => {
   const ongoingMatches = await supabase
     .from("matches")
     .select(
-      `*, match_participants(*, match_participant_players(*, team_members(*, user_profiles(*, user_platforms(*))))), rounds(*)`,
+      `*, match_participants(*, match_participant_players(*, team_members(*, user_profiles(*, user_platforms(*))))), rounds(*), match_maps(*, scores(*))`,
     )
     .eq("ongoing", true);
 
-  console.log("Ongoing matches: ", ongoingMatches.data!);
+  console.log("Ongoing matches: ", ongoingMatches.data);
 
   for (const match of ongoingMatches.data!) {
     const ircClient = new Client({
       nick: "jollyWudchip",
       serverPassword: Deno.env.get("OSU_IRC_PASSWORD"),
       floodDelay: 1000,
-      channels: [match.channel_name, "Stan"],
+      channels: [match.channel_name],
     });
 
     const processMessages = new Promise((resolve, reject) => {
@@ -73,6 +73,10 @@ async function handleSettings(param: string, match: any, supabase: any) {
       const match_participant_player of match_participant
         .match_participant_players
     ) {
+      console.log(
+        match_participant_player.team_members.user_profiles.user_platforms,
+      );
+
       const platform = match_participant_player.team_members.user_profiles
         .user_platforms.filter(
           (platform) => platform.platform_id == 1,
@@ -106,8 +110,6 @@ async function handleResults(param: string, match: any, supabase: any) {
       .eq("team_members.user_profiles.user_platforms.platform_id", 10)
       .eq("team_members.user_profiles.user_platforms.value", player.name);
 
-    console.log(matchParticipantPlayer.data[0]);
-
     const matchMap = await supabase
       .from("match_maps")
       .select("*")
@@ -123,8 +125,6 @@ async function handleResults(param: string, match: any, supabase: any) {
       .eq("match_participant_player_id", matchParticipantPlayer.data[0].id)
       .eq("match_map_id", matchMap.data[0].id)
       .select();
-
-    console.log(score);
   }
 
   const bestOf = match.rounds.best_of;
@@ -132,27 +132,49 @@ async function handleResults(param: string, match: any, supabase: any) {
     (match_map) => match_map.scores[0]?.score > match_map.scores[1]?.score,
   ).length;
 
-  const scores 
-
   const scoreTeam2 = match.match_maps.filter(
     (match_map) => match_map.scores[1]?.score > match_map.scores[0]?.score,
   ).length;
 
-  if (scoreTeam1 > bestOf / 2) {
+  console.log("Scores: ", scoreTeam1, scoreTeam2, bestOf);
+
+  if (scoreTeam1 > Math.floor(bestOf / 2) + 1) {
     const matchWinner = await supabase
       .from("matches")
       .update({ ongoing: false })
       .eq("match_id", match.id)
       .eq("team_id", 1)
       .select();
+
+    console.log(matchWinner);
+
+    await supabase.functions.invoke("send-osu-message", {
+      body: {
+        channel: match.channel_name,
+        messages: [
+          `!mp close`,
+        ],
+      },
+    });
   }
 
-  if (scoreTeam2 > bestOf / 2) {
+  if (scoreTeam2 > Math.floor(bestOf / 2) + 1) {
     const matchWinner = await supabase
       .from("matches")
-      .update({ ongoing: false, winner_participant_id:  })
+      .update({ ongoing: false })
       .eq("id", match.id)
       .select();
+
+    console.log(matchWinner);
+
+    await supabase.functions.invoke("send-osu-message", {
+      body: {
+        channel: match.channel_name,
+        messages: [
+          `!mp close`,
+        ],
+      },
+    });
   }
 }
 
