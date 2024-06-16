@@ -15,11 +15,16 @@
   async function search(event: Event) {
     const foundOpponents = await supabase
       .from("teams")
-      .select("id, name")
+      .select("id, name, team_members(user_profiles(user_id))")
       .ilike("name", `%${event.target.value}%`)
       .eq("is_personal_team", true);
 
-    searchResults = foundOpponents.data;
+    searchResults = foundOpponents.data.filter(
+      (opponent) =>
+        !opponent.team_members.find(
+          (teamMember) => teamMember.user_profiles.user_id === session.user.id
+        )
+    );
   }
 
   let availableMaps = [];
@@ -46,6 +51,10 @@
 
   function addQuickPlayMap(map) {
     quickPlayMaps = [...quickPlayMaps, map];
+
+    availableMaps = availableMaps.filter(
+      (availableMap) => availableMap.id !== map.id
+    );
   }
 
   $: canMakeQuickMatch = quickPlayMaps.length > 0 && selectedTeamId !== null;

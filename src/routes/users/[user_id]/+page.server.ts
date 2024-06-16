@@ -20,7 +20,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     .eq(
       "match_participant_players.match_participants.participants.teams.team_members.user_id",
       params.user_id,
-    );
+    )
+    .order("score", { ascending: false });
 
   // console.log(userScores);
 

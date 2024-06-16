@@ -10,26 +10,26 @@ Deno.serve(async (req) => {
     channels: [channel],
   });
 
-  const processMessages = new Promise((resolve, reject) => {
-    client.once("register", async () => {
+  // deno-lint-ignore no-async-promise-executor
+  const processMessages = new Promise(async (resolve, _reject) => {
+    client.once("register", () => {
       for (const message of messages) {
-        await client.privmsg(channel, message);
+        client.privmsg(channel, message);
       }
 
       if (listen_once) {
         client.once(listen_once, (message) => {
-          client.disconnect();
           resolve({ result: message });
         });
       } else {
         resolve({ result: null });
       }
     });
+
+    await client.connect("irc.ppy.sh", 6667);
   });
 
-  await client.connect("irc.ppy.sh", 6667);
   const result = await processMessages;
-  client.disconnect();
 
   return new Response(JSON.stringify(result), {
     headers: { "Content-Type": "application/json" },

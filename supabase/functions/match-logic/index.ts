@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
           )
         )
       ),
-      match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
+      match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`,
     )
     .gte("start_time", currentTime.toISOString())
