@@ -253,7 +253,7 @@
           <div>Made by <a href="https://vash.software">Vash Software</a></div>
         </div>
         <div
-          class="col-12 col-md d-flex justify-content-center justify-content-md-end align-items-center gap-3"
+          class="col-12 col-md d-flex justify-content-center justify-content-md-end align-items-center gap-4"
         >
           <a href="https://discord.gg/n3mZgWk">
             <svg
