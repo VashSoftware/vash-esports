@@ -31,6 +31,21 @@ Deno.serve(async (req) => {
     },
   );
 
+  const matchParticipantsPlayers = match.match_participants.flatMap(
+    (participant) => participant.match_participant_players,
+  );
+
+  for (const player of matchParticipantsPlayers) {
+    const notification = await supabase.from("notifications").insert({
+      user_id: player.team_members.user_profiles.id,
+      title: "Match Created",
+      body: `You have been invited to a match: ${
+        match.match_participants[0].participants.teams.name
+      } vs ${match.match_participants[1].participants.teams.name}`,
+      href: `/matches/${match.id}/play`,
+    });
+  }
+
   const { result } = await sendOsuMessages(
     "BanchoBot",
     [

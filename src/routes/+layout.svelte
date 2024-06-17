@@ -171,20 +171,18 @@
               class="dropdown-menu dropdown-menu-end"
               style="min-width: 350px; width: fit-content; "
             >
+              <h1>Notifications</h1>
               {#each data.notifications as notification, i}
                 <li
                   class="dropdown-item d-flex m-2 align-items-center justify-content-between"
                 >
                   <div>
                     <h5>
-                      {notification.notifications.title}
+                      {notification.title}
                     </h5>
-                    <p>{notification.notifications.description}</p>
+                    <p>{notification.body}</p>
                   </div>
-                  <a
-                    class="btn btn-primary"
-                    href={notification.notifications.href}>Go</a
-                  >
+                  <a class="btn btn-primary" href={notification.href}>Go</a>
                   <form
                     action="/?/dismissNotification"
                     method="post"

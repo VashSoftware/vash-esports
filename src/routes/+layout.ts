@@ -32,7 +32,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
           return cookie[key];
         },
       },
-    }
+    },
   );
 
   const {
@@ -52,8 +52,9 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   const organisationsPromise = supabase.from("organisations").select("*");
 
   const notificationsPromise = supabase
-    .from("notification_recipients")
-    .select("*, notifications(*)")
+    .from("notifications")
+    .select("*, user_profiles(user_id)")
+    .eq("user_profiles.user_id", (await supabase.auth.getUser()).data.user.id)
     .is("dismissed_at", null)
     .order("created_at", { ascending: false });
 
