@@ -66,21 +66,24 @@ Deno.serve(async (req) => {
 
 async function handleSettings(param: string, match: any, supabase: any) {
   const parsedData = parseSettings(param);
-  console.log(parsedData);
+  console.log("Parsed settings: ", parsedData);
 
   for (const match_participant of match.match_participants) {
     for (
       const match_participant_player of match_participant
         .match_participant_players
     ) {
-      console.log(
-        match_participant_player.team_members.user_profiles.user_platforms,
-      );
-
       const platform = match_participant_player.team_members.user_profiles
         .user_platforms.filter(
           (platform) => platform.platform_id == 1,
         )[0];
+
+      console.log(
+        "Platform: ",
+        platform,
+        match_participant_player.id,
+        parsedData.players.map((player) => player.name),
+      );
 
       const playerInLobby = parsedData.players.some(
         (player) => player.id == platform.value,
@@ -97,7 +100,7 @@ async function handleSettings(param: string, match: any, supabase: any) {
 
 async function handleResults(param: string, match: any, supabase: any) {
   const parsedData = parseResults(param);
-  console.log(parsedData);
+  console.log("Parsed results: ", parsedData);
 
   for (const player of parsedData.players) {
     const matchParticipantPlayer = await supabase
@@ -146,7 +149,7 @@ async function handleResults(param: string, match: any, supabase: any) {
       .eq("team_id", 1)
       .select();
 
-    console.log(matchWinner);
+    console.log("MATCH WINNER: ", matchWinner);
 
     await supabase.functions.invoke("send-osu-message", {
       body: {
@@ -165,7 +168,7 @@ async function handleResults(param: string, match: any, supabase: any) {
       .eq("id", match.id)
       .select();
 
-    console.log(matchWinner);
+    console.log("MATCH WINNER: ", matchWinner);
 
     await supabase.functions.invoke("send-osu-message", {
       body: {

@@ -142,11 +142,10 @@ export const actions = {
       .from("teams")
       .select("*, team_members(*, user_profiles(*))")
       .eq("is_personal_team", true)
-      .eq("team_members.user_profiles.user_id", session.user.id)
-      .single();
+      .eq("team_members.user_profiles.user_id", session.user.id);
 
     const participant_1 = await insertData("participants", {
-      team_id: userPersonalTeam.data.id,
+      team_id: userPersonalTeam.data[0].id,
       event_id: event[0].id,
     });
 

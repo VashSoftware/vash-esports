@@ -171,15 +171,18 @@
 </div>
 
 <!-- This match is being broadcasted on the following official channels: -->
-<div class="my-4 text-center">
-  <a href="/events/{data.match.rounds.events.id}">
-    <h3>
-      {data.match.rounds.events.event_groups?.name ?? ""}
-      {data.match.rounds.events.name}
-    </h3>
-  </a>
-  <h4>{data.match.rounds.name}</h4>
-</div>
+
+{#if data.match.type == "event"}
+  <div class="my-4 text-center">
+    <a href="/events/{data.match.rounds.events.id}">
+      <h3>
+        {data.match.rounds.events.event_groups?.name ?? ""}
+        {data.match.rounds.events.name}
+      </h3>
+    </a>
+    <h4>{data.match.rounds.name}</h4>
+  </div>
+{/if}
 
 <div class="row my-5 align-items-center">
   <div class="col">
@@ -189,21 +192,48 @@
       </h2>
     </a>
 
-    <div class="row row-cols-2 justify-content-center">
-      {#each data.match.match_participants[0].match_participant_players as player}
-        <div class="p-2">
-          <div class="card col p-2">
-            <div class="row">
-              <div class="col">{player.team_members.user_profiles.name}</div>
-              <div class="col text-end">
-                {player.match_participant_player_states.name}
-                {player.match_participant_player_states.emoji}
+    {#if data.match.type == "event"}
+      <div class="row row-cols-2 justify-content-center">
+        {#each data.match.match_participants[0].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    {:else}
+      <div class=" p-2 text-center">
+        {data.match.match_participants[0].match_participant_players[0]
+          .match_participant_player_states.name}
+        {data.match.match_participants[0].match_participant_players[0]
+          .match_participant_player_states.emoji}
+      </div>
+    {/if}
+
+    {#if data.match.match_participants[0].match_participant_players[0].match_participant_player_states.id == 1}
+      <form
+        action="?/invitePlayer"
+        method="post"
+        class="text-center"
+        use:enhance
+      >
+        <input
+          type="hidden"
+          name="match-participant-player-id"
+          value={data.match.match_participants[0].match_participant_players[0]
+            .id}
+        />
+
+        <button type="submit" class="btn btn-primary"> Invite to Lobby </button>
+      </form>
+    {/if}
   </div>
   <div class="col text-center fs-1 fw-bold">
     {data.match.match_maps.filter(
@@ -247,23 +277,48 @@
       </h2>
     </a>
 
-    <div class="row row-cols-2 justify-content-center">
-      {#each data.match?.match_participants[1].match_participant_players as player}
-        <div class="p-2">
-          <div class="card col p-2">
-            <div class="row">
-              <div class="col text-start">
-                {player.team_members.user_profiles.name}
-              </div>
-              <div class="col text-end">
-                {player.match_participant_player_states.name}
-                {player.match_participant_player_states.emoji}
+    {#if data.match.type == "event"}
+      <div class="row row-cols-2 justify-content-center">
+        {#each data.match.match_participants[1].match_participant_players as player}
+          <div class="p-2">
+            <div class="card col p-2">
+              <div class="row">
+                <div class="col">{player.team_members.user_profiles.name}</div>
+                <div class="col text-end">
+                  {player.match_participant_player_states.name}
+                  {player.match_participant_player_states.emoji}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    {:else}
+      <div class=" p-2 text-center">
+        {data.match.match_participants[1].match_participant_players[0]
+          .match_participant_player_states.name}
+        {data.match.match_participants[1].match_participant_players[0]
+          .match_participant_player_states.emoji}
+      </div>
+    {/if}
+
+    {#if data.match.match_participants[1].match_participant_players[0].match_participant_player_states.id == 1}
+      <form
+        action="?/invitePlayer"
+        method="post"
+        class="text-center"
+        use:enhance
+      >
+        <input
+          type="hidden"
+          name="match-participant-player-id"
+          value={data.match.match_participants[1].match_participant_players[0]
+            .id}
+        />
+
+        <button type="submit" class="btn btn-primary"> Invite to Lobby </button>
+      </form>
+    {/if}
   </div>
 </div>
 

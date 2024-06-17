@@ -141,7 +141,7 @@
 
 <h2>Pinned Plays</h2>
 
-<h2>Top Plays</h2>
+<h2>Top Plays ({data.userScores.length})</h2>
 <div class="table-responsive">
   <table class="table">
     <thead>
@@ -152,11 +152,22 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.userScores as score}
+      {#each data.userScores.slice(0, 10) as score}
         <tr>
-          <td>{score.score}</td>
-          <td>{score.accuracy}</td>
-          <td>{score.max_combo}</td>
+          <td>
+            <a href="/matches/{score.match_maps.match_id}">
+              {score.score}
+            </a>
+          </td>
+
+          <td
+            ><a href="/matches/{score.match_maps.match_id}">{score.accuracy}</a
+            ></td
+          >
+          <td
+            ><a href="/matches/{score.match_maps.match_id}">{score.max_combo}</a
+            ></td
+          >
         </tr>
       {/each}
     </tbody>
