@@ -7,6 +7,7 @@ import {
   PUBLIC_SUPABASE_URL,
 } from "$env/static/public";
 import { JWT_SECRET } from "$env/static/private";
+import type { Session } from "@supabase/supabase-js";
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.supabase = createServerClient(
@@ -45,7 +46,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       const decoded = jwt.verify(
         session.access_token,
         JWT_SECRET,
-      ) as SupabaseJwt;
+      );
 
       /**
        * Create a validated session.
