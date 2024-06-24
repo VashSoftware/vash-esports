@@ -2,10 +2,10 @@ import type { Actions } from "./$types";
 import { fail, redirect } from "@sveltejs/kit";
 
 export const actions = {
-  default: async ({ request, locals }) => {
+  default: async ({ request, locals: { supabase } }) => {
     const reqData = await request.formData();
 
-    const { data, error } = await locals.supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: reqData.get("email") as string,
       password: reqData.get("password") as string,
     });

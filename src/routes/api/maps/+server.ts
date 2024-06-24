@@ -1,5 +1,5 @@
 import type { RequestHandler } from "./$types";
-import { v2, auth } from "osu-api-extended";
+import { auth, v2 } from "osu-api-extended";
 import { OSU_CLIENT_ID, OSU_CLIENT_SECRET } from "$env/static/private";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
