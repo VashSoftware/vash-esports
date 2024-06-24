@@ -121,7 +121,7 @@
           />
         </svg>
       </div>
-      {#if data.session.user.id == data.user.user_id}
+      {#if data.session.user.id == data.user?.user_id}
         <a
           href="/account"
           class="btn btn-secondary"
