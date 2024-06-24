@@ -1,7 +1,18 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { Session, SupabaseClient } from "@supabase/supabase-js";
 
-declare namespace App {
-    interface Locals {
-        supabase: SupabaseClient;
+declare global {
+    namespace App {
+        interface Locals {
+            supabase: SupabaseClient;
+            getSession(): Promise<Session | null>;
+        }
+        interface PageData {
+            session: Session | null;
+            supabase: SupabaseClient;
+        }
+        // interface Error {}
+        // interface Platform {}
     }
 }
+
+export {};

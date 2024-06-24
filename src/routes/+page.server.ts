@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     .order("created_at", { ascending: false })
     .limit(10);
 
-  const session = await locals.getSession();
+  const session = await locals.session;
   if (session) {
     events.data.forEach((event) => {
       event.participants.forEach((participant) => {
@@ -137,12 +137,11 @@ export const actions = {
       type: "quick",
     });
 
-    const session = await locals.getSession();
     const userPersonalTeam = await locals.supabase
       .from("teams")
       .select("*, team_members(*, user_profiles(*))")
       .eq("is_personal_team", true)
-      .eq("team_members.user_profiles.user_id", session.user.id);
+      .eq("team_members.user_profiles.user_id", locals.user.id);
 
     const participant_1 = await insertData("participants", {
       team_id: userPersonalTeam.data[0].id,

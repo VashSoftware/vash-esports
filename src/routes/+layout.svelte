@@ -3,12 +3,26 @@
   import type { LayoutData } from "./$types";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
-
-  onMount(async () => {
-    await import("bootstrap/js/dist/dropdown");
-  });
+  import { invalidate } from "$app/navigation";
 
   export let data: LayoutData;
+
+  let { supabase, session } = data;
+  $: ({ supabase, session } = data);
+
+  onMount(() => {
+    import("bootstrap/js/dist/dropdown");
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, _session) => {
+      if (_session?.expires_at !== session?.expires_at) {
+        invalidate("supabase:auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  });
 
   let searchQuery = "";
 
@@ -20,23 +34,30 @@
     // );
 
     const foundEvents = data.events.filter((vashEvent) =>
-      vashEvent.name.toLowerCase().includes(event.target.value.toLowerCase())
+      vashEvent.name
+        .toLowerCase()
+        .includes((event.target as HTMLInputElement).value.toLowerCase())
     );
 
     const foundUsers = data.users.filter((user) =>
-      user.name.toLowerCase().includes(event.target.value.toLowerCase())
+      user.name
+        .toLowerCase()
+        .includes((event.target as HTMLInputElement).value.toLowerCase())
     );
 
     const foundTeams = data.teams
       .filter((team) =>
-        team.name.toLowerCase().includes(event.target.value.toLowerCase())
+        team.name
+          .toLowerCase()
+          .includes((event.target as HTMLInputElement).value.toLowerCase())
       )
       .filter((team) => team.is_personal_team === false);
 
     const foundOrganisations = data.organisations.filter((organisation) =>
-      organisation.name.toLowerCase().includes(event.target.value.toLowerCase())
+      organisation.name
+        .toLowerCase()
+        .includes((event.target as HTMLInputElement).value.toLowerCase())
     );
-
     searchResults = [
       // ...foundMatches,
       ...foundEvents,
@@ -47,7 +68,7 @@
   }
 
   function getNotificationsCount() {
-    return data.notifications.length > 0
+    return data.notifications?.length > 0
       ? `(${data.notifications.length}) `
       : "";
   }
@@ -132,7 +153,7 @@
             class:active={$page.url.pathname === "/map-pools"}>Map Pools</a
           >
         </li>
-        {#if data.session?.user}
+        {#if session}
           <li
             class="nav-item mx-2 ms-3 dropdown d-flex flex-column align-items-center"
           >
@@ -158,7 +179,7 @@
               </g>
             </svg>
 
-            {#if data.notifications.length > 0}
+            {#if data.notifications?.length > 0}
               <span
                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
               >
@@ -204,7 +225,7 @@
             </ul>
           </li>
           <li class="nav-item ms-2">
-            <a class="nav-link" href="/users/{data.user.data.id}"
+            <a class="nav-link" href="/users/{data.userProfile.data?.id}"
               ><img
                 class="rounded-circle"
                 height={64}

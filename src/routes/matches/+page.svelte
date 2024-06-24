@@ -37,7 +37,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each matches as match}
+        {#each data.matches as match}
           <tr role="button" on:click={() => goto(`/matches/${match.id}`)}>
             <td>{match.rounds.events.name}</td>
             <td>{match.match_participants[0].participants.teams.name}</td>
