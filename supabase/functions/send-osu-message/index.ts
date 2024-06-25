@@ -1,37 +1,28 @@
-import { Client } from "https://deno.land/x/irc@v0.15.0/mod.ts";
+import Banchojs from "npm:bancho.js";
 
 Deno.serve(async (req) => {
-  const { channel, messages, listen_once } = await req.json();
+  const { channel, messages } = await req.json();
 
-  const client = new Client({
-    nick: "jollyWudchip",
-    serverPassword: Deno.env.get("OSU_IRC_PASSWORD"),
-    verbose: "formatted",
-    channels: [channel],
+  const banchoClient = new Banchojs.BanchoClient({
+    username: "jollyWudchip",
+    password: Deno.env.get("OSU_IRC_KEY")!,
+    apiKey: Deno.env.get("OSU_API_KEY"),
   });
 
-  // deno-lint-ignore no-async-promise-executor
-  const processMessages = new Promise(async (resolve, _reject) => {
-    client.once("register", () => {
-      for (const message of messages) {
-        client.privmsg(channel, message);
-      }
+  await banchoClient.connect();
 
-      if (listen_once) {
-        client.once(listen_once, (message) => {
-          resolve({ result: message });
-        });
-      } else {
-        resolve({ result: null });
-      }
-    });
-  });
+  const osuChannel = banchoClient.getChannel(channel);
+  await osuChannel.join();
 
-  client.connect("irc.ppy.sh", 6667);
-  const result = await processMessages;
-  client.disconnect();
+  for (const message of messages) {
+    console.log(`Sending message to ${channel}: ${message}`);
 
-  return new Response(JSON.stringify(result), {
+    await osuChannel.sendMessage(message);
+  }
+
+  banchoClient.disconnect();
+
+  return new Response(JSON.stringify({ result: "success" }), {
     headers: { "Content-Type": "application/json" },
   });
 });

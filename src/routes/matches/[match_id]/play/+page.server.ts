@@ -120,10 +120,10 @@ export const actions = {
       "send-osu-message",
       {
         body: {
-          channel: match.data.channel_name,
+          channel: match.data.lobby_id,
           messages: [
             `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
-            `!mp mods ${mapPoolMap.data.map_pool_mods.code}`,
+            `!mp mods NF ${mapPoolMap.data.map_pool_mods.code}`,
           ],
         },
       },
@@ -202,7 +202,7 @@ export const actions = {
       "send-osu-message",
       {
         body: {
-          channel: match.data.channel_name,
+          channel: match.data.lobby_id,
           messages: [
             `!mp start 5`,
           ],
@@ -221,7 +221,7 @@ export const actions = {
       "send-osu-message",
       {
         body: {
-          channel: match.data[0].channel_name,
+          channel: match.data[0].lobby_id,
           messages: [
             `!mp close`,
           ],
@@ -243,17 +243,22 @@ export const actions = {
     const matchParticipantPlayer = await locals.supabase
       .from("match_participant_players")
       .select(
-        "*, match_participants(matches(channel_name)), team_members(user_profiles(name, user_platforms(*)))",
+        "*, match_participants(matches(lobby_id)), team_members(user_profiles(name, user_platforms(*)))",
       )
       .eq("id", matchParticipantPlayerId)
       .single();
+
+    console.log(
+      "#mp_" +
+        matchParticipantPlayer.data.match_participants.matches.lobby_id,
+    );
 
     locals.supabase.functions.invoke(
       "send-osu-message",
       {
         body: {
           channel:
-            matchParticipantPlayer.data.match_participants.matches.channel_name,
+            matchParticipantPlayer.data.match_participants.matches.lobby_id,
           messages: [
             `!mp invite ${
               matchParticipantPlayer.data.team_members.user_profiles
