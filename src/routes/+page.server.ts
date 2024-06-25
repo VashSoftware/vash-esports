@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     .order("created_at", { ascending: false })
     .limit(10);
 
-  const session = await locals.session;
+  const session = await locals.getSession();
   if (session) {
     events.data.forEach((event) => {
       event.participants.forEach((participant) => {
@@ -137,11 +137,16 @@ export const actions = {
       type: "quick",
     });
 
+    console.log(await locals.getSession());
+
     const userPersonalTeam = await locals.supabase
       .from("teams")
       .select("*, team_members(*, user_profiles(*))")
       .eq("is_personal_team", true)
-      .eq("team_members.user_profiles.user_id", locals.user.id);
+      .eq(
+        "team_members.user_profiles.user_id",
+        (await locals.supabase.auth.getUser()).data.user.id,
+      );
 
     const participant_1 = await insertData("participants", {
       team_id: userPersonalTeam.data[0].id,
@@ -225,16 +230,11 @@ export const actions = {
         match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
         match_bans(*, match_participants(*, participants(*, teams(name))))`,
       )
-      .eq("id", match[0].id);
+      .eq("id", match[0].id)
+      .single();
 
     console.log(match);
 
-    locals.supabase.functions.invoke("make-osu-match", {
-      body: {
-        match: match.data[0],
-      },
-    });
-
-    throw redirect(302, `/matches/${match.data[0].id}/play`);
+    throw redirect(302, `/matches/${match.data.id}/play`);
   },
 } satisfies Actions;
