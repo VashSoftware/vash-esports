@@ -116,33 +116,21 @@ export const actions = {
       }
     }
 
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: {
-          channel: match.data.lobby_id,
-          messages: [
-            `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
-            `!mp mods NF ${mapPoolMap.data.map_pool_mods.code}`,
-          ],
-        },
+    await fetch('http://osu.esports.vash.software/send-messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        match: match.data.id,
+        messages: [
+          `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
+          `!mp mods NF ${mapPoolMap.data.map_pool_mods.code}`,
+        ],
+      }),
+    });
 
     console.log("Picked map with ID: ", mapId);
-  },
-  sendOsuMessage: async ({ locals, params, request }) => {
-    const formData = await request.formData();
-
-    const channel = formData.get("channel");
-    const message = formData.get("message");
-
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: { channel: channel, messages: [message] },
-      },
-    );
   },
   makeMatch: async ({ locals, params, request }) => {
     const match = await locals.supabase
@@ -184,12 +172,13 @@ export const actions = {
       .eq("id", params.match_id)
       .single();
 
-    locals.supabase.functions.invoke(
-      "make-osu-match",
-      {
-        body: { match: match.data },
+    fetch("http://localhost:3000/create-match", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({ id: match.data.id }),
+    });
   },
   startMap: async ({ locals, params, request }) => {
     const match = await locals.supabase
@@ -197,16 +186,20 @@ export const actions = {
       .select("*")
       .eq("id", params.match_id)
       .single();
-
-    locals.supabase.functions.invoke(
-      "send-osu-message",
+    
+    await fetch(
+      "http://osu.esports.vash.software/send-messages",
       {
-        body: {
-          channel: match.data.lobby_id,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          match: match.data.id,
           messages: [
             `!mp start 5`,
           ],
-        },
+        }),
       },
     );
   },
@@ -215,19 +208,21 @@ export const actions = {
       .from("matches")
       .update({ ongoing: false })
       .eq("id", params.match_id)
-      .select("*");
-
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: {
-          channel: match.data[0].lobby_id,
-          messages: [
-            `!mp close`,
-          ],
-        },
+      .select("*")
+      .single();
+    
+    await fetch('http://osu.esports.vash.software/send-messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        match: match.data.id,
+        messages: [
+          `!mp close`,
+        ],
+      }),
+    });
 
     console.log("Deleted match with ID: ", params.match_id);
 
@@ -253,22 +248,22 @@ export const actions = {
         matchParticipantPlayer.data.match_participants.matches.lobby_id,
     );
 
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: {
-          channel:
-            matchParticipantPlayer.data.match_participants.matches.lobby_id,
-          messages: [
-            `!mp invite ${
-              matchParticipantPlayer.data.team_members.user_profiles
-                .user_platforms.filter((platform) => platform.platform_id == 1)
-                .value
-            }`,
-          ],
-        },
+    await fetch('http://osu.esports.vash.software/send-messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        match: matchParticipantPlayer.data.match_participants.matches.id,
+        messages: [
+          `!mp invite ${
+            matchParticipantPlayer.data.team_members.user_profiles
+              .user_platforms.filter((platform) => platform.platform_id == 1)
+              .value
+          }`,
+        ],
+      }),
+    });
 
     console.log(
       "Invited player: ",
