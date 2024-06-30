@@ -45,8 +45,6 @@ export const actions = {
       user_id: user.data.id,
       winning_participant_id: teamId,
     });
-
-    console.log(pred)
   },
   addToCalendar: async ({ locals, params }) => {
     const match = await locals.supabase
