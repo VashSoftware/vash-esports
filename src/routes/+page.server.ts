@@ -235,6 +235,15 @@ export const actions = {
 
     console.log(match);
 
+    fetch('http://osu.esports.vash.software/create-match', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: match.data.id }),
+    
+    })
+
     throw redirect(302, `/matches/${match.data.id}/play`);
   },
 } satisfies Actions;

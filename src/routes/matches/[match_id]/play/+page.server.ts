@@ -122,7 +122,7 @@ export const actions = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        match: match.data.id,
+        channelId: match.data.lobby_id,
         messages: [
           `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
           `!mp mods NF ${mapPoolMap.data.map_pool_mods.code}`,
@@ -195,7 +195,7 @@ export const actions = {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          match: match.data.id,
+          channelId: match.data.lobby_id,
           messages: [
             `!mp start 5`,
           ],
@@ -217,7 +217,7 @@ export const actions = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        match: match.data.id,
+        channelId: match.data.lobby_id,
         messages: [
           `!mp close`,
         ],
@@ -243,25 +243,16 @@ export const actions = {
       .eq("id", matchParticipantPlayerId)
       .single();
 
-    console.log(
-      "#mp_" +
-        matchParticipantPlayer.data.match_participants.matches.lobby_id,
-    );
-
     await fetch('http://osu.esports.vash.software/send-messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        match: matchParticipantPlayer.data.match_participants.matches.id,
-        messages: [
-          `!mp invite ${
-            matchParticipantPlayer.data.team_members.user_profiles
-              .user_platforms.filter((platform) => platform.platform_id == 1)
-              .value
-          }`,
-        ],
+        messages: ["!mp invite "+ matchParticipantPlayer.data.team_members.user_profiles.user_platforms.filter(
+          (pf: any) => pf.platform_id == 1,
+        )[0].value],
+        channelId: matchParticipantPlayer.data.match_participants.matches.lobby_id
       }),
     });
 

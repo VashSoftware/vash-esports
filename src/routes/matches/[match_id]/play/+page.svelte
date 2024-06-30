@@ -217,7 +217,7 @@
       </div>
     {/if}
 
-    {#if data.match.match_participants[0].match_participant_players[0].match_participant_player_states.id == 1}
+    {#if data.match.match_participants[0].match_participant_players[0].match_participant_player_states.id == 2}
       <form
         action="?/invitePlayer"
         method="post"
@@ -302,7 +302,7 @@
       </div>
     {/if}
 
-    {#if data.match.match_participants[1].match_participant_players[0].match_participant_player_states.id == 1}
+    {#if data.match.match_participants[1].match_participant_players[0].match_participant_player_states.id == 2}
       <form
         action="?/invitePlayer"
         method="post"
