@@ -247,7 +247,7 @@
           aria-valuenow="90"
           aria-valuemin="0"
           aria-valuemax="100"
-          style="width: {participant1PredictionPercentage}%; height: 50px"
+          style="width: {participant1PredictionPercentage || 0}%; height: 50px"
         >
           <div class="progress-bar fs-5">
             <b
@@ -264,7 +264,7 @@
           aria-valuenow="10"
           aria-valuemin="0"
           aria-valuemax="100"
-          style="width:{participant2PredictionPercentage}%; height: 50px"
+          style="width:{participant2PredictionPercentage || 0}%; height: 50px"
         >
           <div class="progress-bar bg-danger fs-5">
             <b

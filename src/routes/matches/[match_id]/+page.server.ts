@@ -26,16 +26,16 @@ export const actions = {
 
     const existingPrediction = await locals.supabase
       .from("match_predictions")
-      .select("*")
+      .select("*, user_profiles(user_id)")
       .eq("match_id", params.match_id)
-      .eq("user_id", locals.user.id);
+      .eq("user_profiles.user_id", (await locals.getSession()).user.id);
     if (existingPrediction.data.length > 0) {
       return false;
     }
 
     await locals.supabase.from("match_predictions").upsert({
       match_id: params.match_id,
-      user_id: locals.user.id,
+      user_id: (await locals.getSession()).user.id,
       winning_participant_id: teamId,
     });
   },
