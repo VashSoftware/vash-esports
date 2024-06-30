@@ -24,20 +24,29 @@ export const actions = {
     const formData = await request.formData();
     const teamId = formData.get("participantId");
 
+    const user = await locals.supabase
+      .from("user_profiles")
+      .select("id")
+      .eq("user_id", (await locals.getSession()).user.id)
+      .single();
+
     const existingPrediction = await locals.supabase
       .from("match_predictions")
       .select("*, user_profiles(user_id)")
       .eq("match_id", params.match_id)
       .eq("user_profiles.user_id", (await locals.getSession()).user.id);
+    
     if (existingPrediction.data.length > 0) {
       return false;
     }
 
-    await locals.supabase.from("match_predictions").upsert({
+    const pred = await locals.supabase.from("match_predictions").upsert({
       match_id: params.match_id,
-      user_id: (await locals.getSession()).user.id,
+      user_id: user.data.id,
       winning_participant_id: teamId,
     });
+
+    console.log(pred)
   },
   addToCalendar: async ({ locals, params }) => {
     const match = await locals.supabase
