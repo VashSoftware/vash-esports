@@ -43,7 +43,7 @@
       match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
-      .eq("id", data.match.id)
+      .eq("id", data.match?.id)
       .order("priority", {
         referencedTable: "rounds.map_pools.map_pool_mods",
         ascending: true,
