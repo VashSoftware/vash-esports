@@ -139,18 +139,15 @@
     <a href="/teams/{getMatchParticipant(0).id}">
       {#if data.match.type == "event"}
         <img
-          src="https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/team_icons/{getMatchParticipant(
-            0
-          ).id}"
+          src={data.match.match_participants[0].participants.teams.picture_url}
           height="256"
           alt="Team Icon"
           class="w-8 h-8 mr-2 rounded"
         />
       {:else}
         <img
-          src="https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/user_pictures/{getMatchParticipant(
-            0
-          ).id}"
+          src={data.match.match_participants[0].participants.teams
+            .team_members[0].user_profiles.picture_url}
           height="256"
           alt="User Icon"
           class="w-8 h-8 mr-2 rounded-circle"
@@ -183,18 +180,15 @@
     <a href="/teams/{getMatchParticipant(1).id}">
       {#if data.match.type == "event"}
         <img
-          src="https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/team_icons/{getMatchParticipant(
-            1
-          ).id}"
+          src={data.match.match_participants[1].participants.teams.picture_url}
           height="256"
           alt="Team Icon"
           class="w-8 h-8 mr-2 rounded"
         />
       {:else}
         <img
-          src="https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/user_pictures/{getMatchParticipant(
-            1
-          ).id}"
+          src={data.match.match_participants[1].participants.teams
+            .team_members[0].user_profiles.picture_url}
           height="256"
           alt="User Icon"
           class="w-8 h-8 mr-2 rounded-circle"

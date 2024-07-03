@@ -79,13 +79,8 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     userProfilePromise,
   ]);
 
-  const userPictureUrl = supabase.storage
-    .from("user_pictures")
-    .getPublicUrl(userProfile.data?.id);
-
   return {
     supabase,
-    userPictureUrl: userPictureUrl.data.publicUrl,
     userProfile,
     session,
     events: events.data,
