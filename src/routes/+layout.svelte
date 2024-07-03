@@ -229,7 +229,7 @@
               ><img
                 class="rounded-circle"
                 height={64}
-                src={data.userPictureUrl}
+                src={data.userProfile.data?.picture_url}
                 alt="User"
               /></a
             >

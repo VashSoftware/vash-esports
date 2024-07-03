@@ -25,10 +25,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   // console.log(userScores);
 
-  const userPictureUrl = await locals.supabase.storage
-    .from("user_pictures")
-    .getPublicUrl(params.user_id);
-
   let organisationPublicUrls = [];
   for (let i = 0; i < data?.organisation_members.length; i++) {
     const organisationPublicUrl = await locals.supabase.storage
@@ -41,15 +37,12 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   for (let i = 0; i < data?.team_members.length; i++) {
     if (data.team_members[i].teams.is_personal_team) continue;
 
-    const teamPublicUrl = await locals.supabase.storage
-      .from("team_icons")
-      .getPublicUrl(data.team_members[i].team_id);
+    const teamPublicUrl = data.team_members[i].teams.picture_url;
     teamPublicUrls.push(teamPublicUrl);
   }
 
   return {
     user: data,
-    userPictureUrl: userPictureUrl.data.publicUrl,
     organisationPublicUrls: organisationPublicUrls,
     teamPublicUrls: teamPublicUrls,
     userScores: userScores.data,

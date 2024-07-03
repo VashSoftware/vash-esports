@@ -21,7 +21,7 @@
     property="og:description"
     content="View {data.user?.name}'s profile on Vash Esports"
   />
-  <meta property="og:image" content={data.userPictureUrl} />
+  <meta property="og:image" content={data.user.picture_url} />
   <meta property="og:url" content={$page.url.href} />
   <meta property="og:type" content="profile" />
 </svelte:head>
@@ -29,7 +29,7 @@
 <div class="row align-items-center py-5">
   <div class="col d-flex align-items-center">
     <img
-      src={data.userPictureUrl}
+      src={data.user.picture_url}
       height="128"
       class="rounded-circle me-4"
       alt="User profile"
@@ -59,12 +59,7 @@
 
           {#each data.teamPublicUrls as team, i}
             <a href="/teams/{data.user.team_members[i].teams.id}">
-              <img
-                height={32}
-                class="rounded"
-                src={team.data.publicUrl}
-                alt="Team logo"
-              /></a
+              <img height={32} class="rounded" src={team} alt="Team logo" /></a
             >
           {/each}
         </div>
@@ -209,8 +204,8 @@
           <div class="mb-3">
             <label for="profile-pic" class="form-label">Profile Picture</label>
 
-            {#if data.userPictureUrl}
-              <img src={data.userPictureUrl} height="64" alt="User" />
+            {#if data.user.picture_url}
+              <img src={data.user.picture_url} height="64" alt="User" />
             {/if}
 
             <input
