@@ -1,9 +1,92 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { tooltip } from "$lib/bootstrapTooltip";
+  import { writable } from "svelte/store";
   import RegisterButton from "../../components/registerButton.svelte";
+  import {
+    createColumnHelper,
+    createSvelteTable,
+    flexRender,
+    getCoreRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    renderComponent,
+    type ColumnDef,
+  } from "@tanstack/svelte-table";
 
   export let data;
+
+  type Event = {
+    id: number;
+    created_at: Date;
+    name: string;
+    game_id: number;
+    organisations: { name: string };
+    event_options: { max_registrations: number };
+    event_groups: { name: string };
+    event_status_id: number;
+    description: string;
+    quick_event: boolean;
+    participants: { length: number };
+  };
+
+  const columnHelper = createColumnHelper<Event>();
+
+  const defaultColumns: ColumnDef<Event>[] = [
+    {
+      accessorKey: "organisations.name",
+      header: "Organisation",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorFn: (row) => row.participants.length,
+      header: "Registrations",
+      cell: (info) => info.getValue(),
+    },
+    columnHelper.display({
+      id: "actions",
+      header: "Register",
+      cell: (props) =>
+        renderComponent(RegisterButton, {
+          event: props.row.original,
+          teams: data.teams,
+        }),
+    }),
+  ];
+
+  const options = writable({
+    columns: defaultColumns,
+    data: data.events,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: {
+        pageSize: 15,
+        pageIndex: 0,
+      },
+    },
+  });
+
+  const table = createSvelteTable(options);
+
+  function setCurrentPage(page: number) {
+    options.update((o) => ({
+      ...o,
+      state: {
+        ...o.state,
+        pagination: {
+          ...o.state.pagination,
+          pageIndex: page,
+        },
+      },
+    }));
+  }
 </script>
 
 <div class="row py-5">
@@ -21,60 +104,82 @@
   </div>
 </div>
 
-<div>
-  <table class="table-striped table table-hover">
-    <thead>
+<table class="table-striped table table-hover">
+  <thead>
+    {#each $table.getHeaderGroups() as headerGroup}
       <tr>
-        <th scope="col">Organisation</th>
-        <th scope="col">Name</th>
-        <th scope="col">Registrations</th>
-        <th scope="col">Register</th>
+        {#each headerGroup.headers as header}
+          <th scope="col" colSpan={header.colSpan}>
+            <button
+              class="btn btn-dark"
+              on:click={header.column.getToggleSortingHandler()}
+            >
+              <svelte:component
+                this={flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+              /></button
+            >
+          </th>
+        {/each}
       </tr>
-    </thead>
-    <tbody>
-      {#each data.events as event}
-        <tr>
-          <td role="button" on:click={() => goto(`/events/${event.id}`)}
-            >{event.organisations?.name}</td
-          >
-          <td role="button" on:click={() => goto(`/events/${event.id}`)}>
-            {#if event.event_groups}<b>{event.event_groups?.name}</b>
-            {/if}{event.name}</td
-          >
-          <td role="button" on:click={() => goto(`/events/${event.id}`)}
-            >{event.participants.length} / {event.event_options
-              .max_registrations
-              ? event.event_options.max_registrations
-              : "∞"}</td
-          >
-          <td class="col-1">
-            <RegisterButton {event} teams={data.teams} />
+    {/each}
+  </thead>
+  <tbody>
+    {#each $table.getRowModel().rows as row}
+      <tr>
+        {#each row.getVisibleCells() as cell}
+          <td>
+            <svelte:component
+              this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+            />
           </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-
-  <nav aria-label="Event pagination">
-    <ul class="pagination justify-content-center">
-      <li class="page-item">
-        <button type="submit" class="page-link">Previous</button>
-      </li>
-      {#each new Array(Math.floor(data.eventsCount / 10 + 1)) as tab, i}
-        <li class="page-item">
-          <a
-            href="?page={i + 1}"
-            class="page-link {() =>
-              i + 1 == Math.floor(data.eventsCount / 10 + 1) ? 'active' : ''}"
-            >{i + 1}</a
-          >
-        </li>
-      {/each}
-      <li class="page-item">
-        <button type="submit" class="page-link">Next</button>
-      </li>
-    </ul>
-  </nav>
+        {/each}
+      </tr>
+    {/each}
+  </tbody>
+</table>
+<div class="d-flex align-items-center justify-content-center">
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage(0)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {"<<"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getState().pagination.pageIndex - 1)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {"<"}
+  </button>
+  <span> Page </span>
+  <input
+    class="form-control mx-2"
+    type="number"
+    value={$table.getState().pagination.pageIndex + 1}
+    min={1}
+    max={$table.getPageCount()}
+    on:change={(e) => setCurrentPage(parseInt(e.target?.value) - 1)}
+    style="width: 50px;"
+  />
+  <span>{" of "}{$table.getPageCount()}</span>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getState().pagination.pageIndex + 1)}
+    disabled={!$table.getCanNextPage()}
+  >
+    {">"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getPageCount() - 1)}
+    disabled={!$table.getCanNextPage()}
+  >
+    {">>"}
+  </button>
 </div>
 
 <form action="?/createEvent" method="post">
