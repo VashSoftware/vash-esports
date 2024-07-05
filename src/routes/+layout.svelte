@@ -72,6 +72,18 @@
       ? `(${data.notifications.length}) `
       : "";
   }
+
+  export let form;
+
+  let email = "";
+  let password = "";
+
+  async function signIn() {
+    await data.supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+  }
 </script>
 
 <svelte:head>
@@ -235,13 +247,124 @@
             >
           </li>
         {:else}
-          <li class="nav-item">
-            <a class="nav-link" href="/login">
-              <button class="btn btn-primary">Login</button>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/register"> Register </a>
+          <li class="nav-item mx-3">
+            <div class="dropdown" style="position: relative;">
+              <button
+                class="btn btn-primary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Log in / Register
+              </button>
+              <ul
+                class="dropdown-menu my-4"
+                style="width: 400px; position: absolute; left: 50%; transform: translateX(-50%);"
+              >
+                <div
+                  class="justify-content-center text-center align-items-center"
+                >
+                  <h1 class="my-4">Log in / Register</h1>
+
+                  <p>Or log in with one of these providers:</p>
+                  <div class="d-flex justify-content-center gap-2">
+                    <form action="?/logInOauth" method="post">
+                      <button
+                        name="provider"
+                        value="google"
+                        class="btn btn-primary"
+                      >
+                        Google
+                      </button>
+                    </form>
+
+                    <!-- <form action="?/logInOauth" method="post">
+                      <button
+                        name="provider"
+                        value="apple"
+                        class="btn btn-primary"
+                      >
+                        Apple
+                      </button>
+                    </form> -->
+
+                    <form action="?/logInOauth" method="post">
+                      <button
+                        name="provider"
+                        value="osu"
+                        class="btn btn-primary"
+                      >
+                        osu!
+                      </button>
+                    </form>
+
+                    <form action="?/logInOauth" method="post">
+                      <button
+                        name="provider"
+                        value="discord"
+                        class="btn btn-primary"
+                      >
+                        Discord
+                      </button>
+                    </form>
+                  </div>
+
+                  <form action="/?/logIn" method="post">
+                    <div class="col">
+                      {#if form?.error}
+                        <div class="alert alert-danger" role="alert">
+                          {form.error.message}
+                        </div>
+                      {/if}
+                      <div class="mb-3">
+                        <div class="my-3">
+                          <label class="form-label"
+                            >E-mail
+                            <input
+                              type="text"
+                              name="email"
+                              class="form-control"
+                              placeholder=""
+                              aria-describedby="helpId"
+                              bind:value={email}
+                            />
+                          </label>
+                        </div>
+
+                        <div class="my-3">
+                          <label for="" class="form-label"
+                            >Password
+                            <input
+                              type="password"
+                              name="password"
+                              class="form-control"
+                              placeholder=""
+                              aria-describedby="helpId"
+                              style="width: 100%;"
+                              bind:value={password}
+                            /></label
+                          >
+                        </div>
+
+                        <div class="text-center my-3">
+                          <button
+                            type="submit"
+                            class="btn btn-primary"
+                            on:click={signIn}>Log in</button
+                          >
+
+                          <button
+                            type="submit"
+                            class="btn btn-secondary"
+                            on:click={signIn}>Register</button
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </ul>
+            </div>
           </li>
         {/if}
       </ul>
