@@ -25,6 +25,7 @@ export const actions = {
     await locals.supabase.from("user_profiles").upsert({
       user_id: data.user.id,
       name,
+      picture_url: 'https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/user_pictures/default'
     });
 
     if (data.user) {
