@@ -6,12 +6,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const { data, error } = await locals.supabase
     .from("user_profiles")
     .select(
-      "*, organisation_members(*, organisations(*)), team_members(*, teams(*)), user_badges(*, badges(*))",
+      "*, organisation_members(*, organisations(*)), team_members(*, teams!inner(*)), user_badges(*, badges(*))",
     )
     .eq("id", params.user_id)
+    .eq('team_members.teams.is_personal_team', false)
     .single();
-
-  // console.log(error);
 
   const userScores = await locals.supabase
     .from("scores")
@@ -23,9 +22,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
       params.user_id,
     )
     .order("score", { ascending: false });
-
-  // console.log(userScores);
-
   let organisationPublicUrls = [];
   for (let i = 0; i < data?.organisation_members.length; i++) {
     const organisationPublicUrl = locals.supabase.storage
@@ -36,8 +32,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   let teamPublicUrls = [];
   for (let i = 0; i < data?.team_members.length; i++) {
-    if (data.team_members[i].teams.is_personal_team) continue;
-
     const teamPublicUrl = data.team_members[i].teams.picture_url;
     teamPublicUrls.push(teamPublicUrl);
   }
