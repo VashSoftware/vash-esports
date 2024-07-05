@@ -23,7 +23,10 @@
       alt="Team icon"
       class="rounded me-4"
     />
-    <h1>{data.team.name}</h1>
+    <div>
+      <h1>{data.team.name}</h1>
+      <p>{data.team.bio || ""}</p>
+    </div>
   </div>
 
   <div class="col text-end d-flex justify-content-end align-items-center">

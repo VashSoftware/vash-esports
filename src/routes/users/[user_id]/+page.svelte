@@ -129,21 +129,18 @@
               <img height={32} class="rounded" src={team} alt="Team logo" /></a
             >
           {/each}
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#createTeamModal"
+          >
+            +
+          </button>
         </div>
       </div>
       <div class="d-flex gap-2 my-2">
-        {#each data.user.user_badges as badge}
-          <img
-            src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
-            alt=""
-          />
-        {/each}
-        {#each data.user.user_badges as badge}
-          <img
-            src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
-            alt=""
-          />
-        {/each}
         {#each data.user.user_badges as badge}
           <img
             src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
@@ -363,6 +360,64 @@
                 </button>
               </form>
             </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">Close</button
+          >
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="?/createTeam" method="post" enctype="multipart/form-data">
+  <div
+    class="modal fade"
+    id="createTeamModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Create Team</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="name" class="form-label">Team Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="bio" name="bio"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="logo" class="form-label">Logo</label>
+            <input
+              type="file"
+              class="form-control"
+              id="logo"
+              name="logo"
+              accept="image/*"
+            />
           </div>
         </div>
         <div class="modal-footer">
