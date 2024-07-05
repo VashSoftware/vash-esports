@@ -104,64 +104,82 @@
   </div>
 </div>
 
-<div>
-  <table class="table-striped table table-hover">
-    <thead>
-      {#each $table.getHeaderGroups() as headerGroup}
-        <tr>
-          {#each headerGroup.headers as header}
-            <th scope="col" colSpan={header.colSpan}>
-              <button
-                class="btn btn-dark"
-                on:click={header.column.getToggleSortingHandler()}
-              >
-                <svelte:component
-                  this={flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                /></button
-              >
-            </th>
-          {/each}
-        </tr>
-      {/each}
-    </thead>
-    <tbody>
-      {#each $table.getRowModel().rows as row}
-        <tr>
-          {#each row.getVisibleCells() as cell}
-            <td>
+<table class="table-striped table table-hover">
+  <thead>
+    {#each $table.getHeaderGroups() as headerGroup}
+      <tr>
+        {#each headerGroup.headers as header}
+          <th scope="col" colSpan={header.colSpan}>
+            <button
+              class="btn btn-dark"
+              on:click={header.column.getToggleSortingHandler()}
+            >
               <svelte:component
-                this={flexRender(cell.column.columnDef.cell, cell.getContext())}
-              />
-            </td>
-          {/each}
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-
-  <nav aria-label="Event pagination">
-    <ul class="pagination justify-content-center">
-      <li class="page-item">
-        <button type="submit" class="page-link">Previous</button>
-      </li>
-      {#each new Array(Math.floor(data.eventsCount / 10 + 1)) as tab, i}
-        <li class="page-item">
-          <a
-            href="?page={i + 1}"
-            class="page-link {() =>
-              i + 1 == Math.floor(data.eventsCount / 10 + 1) ? 'active' : ''}"
-            >{i + 1}</a
-          >
-        </li>
-      {/each}
-      <li class="page-item">
-        <button type="submit" class="page-link">Next</button>
-      </li>
-    </ul>
-  </nav>
+                this={flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+              /></button
+            >
+          </th>
+        {/each}
+      </tr>
+    {/each}
+  </thead>
+  <tbody>
+    {#each $table.getRowModel().rows as row}
+      <tr>
+        {#each row.getVisibleCells() as cell}
+          <td>
+            <svelte:component
+              this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+            />
+          </td>
+        {/each}
+      </tr>
+    {/each}
+  </tbody>
+</table>
+<div class="d-flex align-items-center justify-content-center">
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage(0)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {"<<"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getState().pagination.pageIndex - 1)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {"<"}
+  </button>
+  <span> Page </span>
+  <input
+    class="form-control mx-2"
+    type="number"
+    value={$table.getState().pagination.pageIndex + 1}
+    min={0}
+    max={$table.getPageCount() - 1}
+    on:change={(e) => setCurrentPage(parseInt(e.target?.value) - 1)}
+    style="width: 50px;"
+  />
+  <span>{" of "}{$table.getPageCount()}</span>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getState().pagination.pageIndex + 1)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {">"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getPageCount() - 1)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {">>"}
+  </button>
 </div>
 
 <form action="?/createEvent" method="post">
