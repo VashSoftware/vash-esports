@@ -1,5 +1,6 @@
-import { redirect } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
+import type { Provider } from "@supabase/supabase-js";
 
 export const load: PageServerLoad = async ({ locals }) => {
   const matches = await locals.supabase
@@ -245,5 +246,47 @@ export const actions = {
     })
 
     throw redirect(302, `/matches/${match.data.id}/play`);
+  },
+  logInEmail: async ({ request, locals: { supabase } }) => {
+    const reqData = await request.formData();
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: reqData.get("email") as string,
+      password: reqData.get("password") as string,
+    });
+
+    if (error) {
+      return fail(error.status, {
+        error: {
+          message: error.message,
+        },
+      });
+    }
+  },
+  logInOauth: async ({ request, url, locals: { supabase }}) => {
+    const formData = await request.formData()
+    const provider = formData.get('provider') as Provider
+
+    /**
+     * Sign-in will not happen yet, because we're on the server-side, 
+     * but we need the returned url.
+     */
+    const { data, error } = await supabase.auth.signInWithOAuth({ 
+      provider,
+      options: {
+        redirectTo: `${url.origin}/auth/callback?next=/`
+      }
+    })
+
+    if (error) {
+      return fail(error.status, {
+        error: {
+          message: error.message,
+        },
+      });
+    }
+
+    /* Now authorize sign-in on browser. */
+    if (data.url) redirect(303, data.url)
   },
 } satisfies Actions;
