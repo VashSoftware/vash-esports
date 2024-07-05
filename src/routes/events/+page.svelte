@@ -160,8 +160,8 @@
     class="form-control mx-2"
     type="number"
     value={$table.getState().pagination.pageIndex + 1}
-    min={0}
-    max={$table.getPageCount() - 1}
+    min={1}
+    max={$table.getPageCount()}
     on:change={(e) => setCurrentPage(parseInt(e.target?.value) - 1)}
     style="width: 50px;"
   />
@@ -169,14 +169,14 @@
   <button
     class="btn btn-dark"
     on:click={() => setCurrentPage($table.getState().pagination.pageIndex + 1)}
-    disabled={!$table.getCanPreviousPage()}
+    disabled={!$table.getCanNextPage()}
   >
     {">"}
   </button>
   <button
     class="btn btn-dark"
     on:click={() => setCurrentPage($table.getPageCount() - 1)}
-    disabled={!$table.getCanPreviousPage()}
+    disabled={!$table.getCanNextPage()}
   >
     {">>"}
   </button>
