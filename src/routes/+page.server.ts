@@ -46,20 +46,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions = {
-  register: async ({ locals, request }) => {
-    const formData = await request.formData();
-    const teamId = formData.get("team-id");
-    const eventId = formData.get("event-id");
 
-    const participant = await locals.supabase.from("participants").insert([
-      {
-        team_id: teamId,
-        event_id: eventId,
-      },
-    ]);
-
-    console.log(participant);
-  },
   dismissNotification: async ({ locals, request }) => {
     const formData = await request.formData();
 
@@ -247,6 +234,20 @@ export const actions = {
 
     throw redirect(302, `/matches/${match.data.id}/play`);
   },
+  register: async ({ locals, request }) => {
+    const formData = await request.formData();
+    const teamId = formData.get("team-id");
+    const eventId = formData.get("event-id");
+
+    const participant = await locals.supabase.from("participants").insert([
+      {
+        team_id: teamId,
+        event_id: eventId,
+      },
+    ]);
+
+    console.log(participant);
+  },
   logInEmail: async ({ request, locals: { supabase } }) => {
     const reqData = await request.formData();
 
@@ -274,7 +275,7 @@ export const actions = {
     const { data, error } = await supabase.auth.signInWithOAuth({ 
       provider,
       options: {
-        redirectTo: `${url.origin}/auth/callback?next=/`
+        redirectTo: `${url.origin}/auth/callback`
       }
     })
 

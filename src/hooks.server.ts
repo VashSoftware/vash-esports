@@ -103,6 +103,18 @@ export const handle: Handle = async ({ event, resolve }) => {
     redirect(307, "/auth");
   }
 
+  const user = await event.locals.supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('user_id', session?.user.id)
+
+  if (session
+    && user.data[0].finished_setup == false
+    && event.route.id !== `/users/[user_id]/welcome`
+    && event.route.id !== `/auth/callback/osu`) {
+    redirect(307, `/users/${user.data[0]?.id}/welcome`);
+  }
+
   return resolve(event, {
     filterSerializedResponseHeaders(name) {
       return name === "content-range" || name === "x-supabase-api-version";
