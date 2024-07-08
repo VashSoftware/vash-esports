@@ -1,6 +1,7 @@
 import type { RequestHandler } from "./$types";
 import { auth, v2 } from "osu-api-extended";
-import { OSU_CLIENT_ID, OSU_CLIENT_SECRET } from "$env/static/private";
+import { OSU_CLIENT_SECRET } from "$env/static/private";
+import { PUBLIC_OSU_CLIENT_ID } from "$env/static/public";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   let { id } = await request.json();
@@ -58,7 +59,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 
 async function getOsuMap(id: number) {
-  await auth.login(Number(OSU_CLIENT_ID), OSU_CLIENT_SECRET, ["public"]);
+  await auth.login(Number(PUBLIC_OSU_CLIENT_ID), OSU_CLIENT_SECRET, ["public"]);
 
   const map = await v2.beatmap.id.details(id);
 

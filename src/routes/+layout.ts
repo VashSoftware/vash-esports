@@ -51,8 +51,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   const userProfilePromise = supabase
     .from("user_profiles")
     .select("*")
-    .eq("user_id", session?.user.id)
-    .single();
+    .eq("user_id", session?.user.id);
 
   const notificationsPromise = supabase
     .from("notifications")
