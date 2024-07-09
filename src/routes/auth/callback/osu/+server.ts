@@ -17,7 +17,7 @@ export const GET = async ({ url, locals: { supabase, getSession } }) => {
         client_secret: OSU_CLIENT_SECRET,
         code,
         grant_type: "authorization_code",
-        redirect_uri: "http://localhost:5173/auth/callback/osu",
+        redirect_uri: `${url.origin}/auth/callback/osu`,
       }),
     });
 

@@ -28,7 +28,7 @@
         <div class="text-center row mx-0">
           {#if !data.user.user_platforms?.find((platform) => platform.platform_id == 1)}
             <a
-              href={`https://osu.ppy.sh/oauth/authorize?client_id=${PUBLIC_OSU_CLIENT_ID}&redirect_uri=http://localhost:5173/auth/callback/osu&response_type=code&scope=public identify`}
+              href={`https://osu.ppy.sh/oauth/authorize?client_id=${PUBLIC_OSU_CLIENT_ID}&redirect_uri=${$page.url.origin}/auth/callback/osu&response_type=code&scope=public identify`}
               class="btn"
               style="background-color: #EA67A4; border-color: #EA67A4;"
             >
