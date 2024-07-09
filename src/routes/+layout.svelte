@@ -11,8 +11,6 @@
   $: ({ supabase, session } = data);
 
   onMount(() => {
-    import("bootstrap/js/dist/dropdown");
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, _session) => {
