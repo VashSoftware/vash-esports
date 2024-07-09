@@ -1,12 +1,13 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Provider } from "@supabase/supabase-js";
+import { description } from "osu-api-extended/dist/utility/mods";
 
 export const load: PageServerLoad = async ({ locals }) => {
   const matches = await locals.supabase
     .from("matches")
     .select(
-      `*, rounds (name, events (id, name, event_groups(*)) ), match_participants (participants (teams (name))), spectators(count), match_maps(*, scores(*))`,
+      `*, rounds (name, events (id, name, event_groups(*)) ), match_participants (participants (teams (name))), spectators(count), match_maps(*, scores(*))`
     )
     .eq("ongoing", true)
     .is("spectators.stopped_at", null);
@@ -14,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   const events = await locals.supabase
     .from("events")
     .select(
-      `*, participants(teams(team_members( user_profiles(*)))), organisations(name), event_groups(*), event_options(*)`,
+      `*, participants(teams(team_members( user_profiles(*)))), organisations(name), event_groups(*), event_options(*)`
     )
     .neq("event_status_id", 1)
     .order("created_at", { ascending: false })
@@ -46,7 +47,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions = {
-
   dismissNotification: async ({ locals, request }) => {
     const formData = await request.formData();
 
@@ -64,10 +64,9 @@ export const actions = {
   makeQuickMatch: async ({ locals, request }) => {
     const formData = await request.formData();
 
-    const selectedTeamId = formData.get("team-id");
+    const selectedTeamId = formData.get("teams");
+    const mapPoolId = formData.get("map_pools");
     const bestOf = formData.get("best-of");
-    const quickPlayMaps = formData.getAll("map-ids");
-    const modIds = formData.getAll("mod-ids");
 
     const insertData = async (table, data) => {
       const result = await locals.supabase.from(table).insert(data).select("*");
@@ -80,52 +79,20 @@ export const actions = {
       quick_event: true,
     });
 
-    const map_pool = await insertData("map_pools", {
-      name: `Quick Play Map Pool ${"Stan"} vs ${"Stan"}`,
-    });
-
-    const mods = await locals.supabase.from("mods").select("*");
-    if (mods.error) throw new Error(mods.error.message);
-
-    quickPlayMaps.forEach(async (map, index) => {
-      const mapPoolMod = await insertData("map_pool_mods", {
-        type: "mod",
-        map_pool_id: map_pool[0].id,
-        name: mods.data.filter((mod) => mod.id == modIds[index])[0].name,
-        code: mods.data.filter((mod) => mod.id == modIds[index])[0].code,
-      });
-
-      const mapPoolModMod = await insertData("map_pool_mod_mods", {
-        map_pool_mod_id: mapPoolMod[0].id,
-        mod_id: 1,
-      });
-
-      console.log(mapPoolModMod);
-
-      await insertData("map_pool_maps", {
-        map_pool_id: map_pool[0].id,
-        mod_priority: 1,
-        map_pool_mod_id: mapPoolMod[0].id,
-        map_id: map,
-      });
-    });
-
     const round = await insertData("rounds", {
       event_id: event[0].id,
-      map_pool_id: map_pool[0].id,
+      map_pool_id: mapPoolId,
       best_of: bestOf,
       match_player_bans: 0,
       name: "Stan vs Stan",
     });
 
-    let match = await insertData("matches", {
+    const match = await insertData("matches", {
       ongoing: true,
       start_time: new Date(),
       round_id: round[0].id,
       type: "quick",
     });
-
-    console.log(await locals.getSession());
 
     const userPersonalTeam = await locals.supabase
       .from("teams")
@@ -133,7 +100,9 @@ export const actions = {
       .eq("is_personal_team", true)
       .eq(
         "team_members.user_profiles.user_id",
-        (await locals.supabase.auth.getUser()).data.user.id,
+        (
+          await locals.supabase.auth.getUser()
+        ).data.user.id
       );
 
     const participant_1 = await insertData("participants", {
@@ -164,8 +133,6 @@ export const actions = {
       })
       .select("*, participants(teams(team_members(*)))");
 
-    console.log(match_participant_1);
-
     await insertData("match_participant_players", {
       match_participant_id: match_participant_1.data[0].id,
       team_member:
@@ -180,59 +147,15 @@ export const actions = {
       state: 1,
     });
 
-    match = await locals.supabase
-      .from("matches")
-      .select(
-        `*, 
-        rounds (*, 
-          map_pools(*,
-            map_pool_mods(*,
-              map_pool_mod_mods(*,
-                mods(*
-                )
-              ),
-              map_pool_maps(*,
-                maps(*, 
-                  mapsets(*
-                  )
-                )
-              )
-            )
-          ),
-          events(*, event_groups(*))
-        ),
-        match_participants(*,
-          match_participant_players(*,
-            match_participant_player_states(*
-            ),
-            team_members(*, 
-              user_profiles(*
-              )
-            )
-          ),
-          participants(*, 
-            teams(*
-            )
-          )
-        ),
-        match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
-        match_bans(*, match_participants(*, participants(*, teams(name))))`,
-      )
-      .eq("id", match[0].id)
-      .single();
-
-    console.log(match);
-
-    fetch('http://osu.esports.vash.software/create-match', {
-      method: 'POST',
+    fetch("http://osu.esports.vash.software/create-match", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id: match.data.id }),
-    
-    })
+      body: JSON.stringify({ id: match[0].id }),
+    });
 
-    throw redirect(302, `/matches/${match.data.id}/play`);
+    throw redirect(302, `/matches/${match[0].id}/play`);
   },
   register: async ({ locals, request }) => {
     const formData = await request.formData();
@@ -264,20 +187,20 @@ export const actions = {
       });
     }
   },
-  logInOauth: async ({ request, url, locals: { supabase }}) => {
-    const formData = await request.formData()
-    const provider = formData.get('provider') as Provider
+  logInOauth: async ({ request, url, locals: { supabase } }) => {
+    const formData = await request.formData();
+    const provider = formData.get("provider") as Provider;
 
     /**
-     * Sign-in will not happen yet, because we're on the server-side, 
+     * Sign-in will not happen yet, because we're on the server-side,
      * but we need the returned url.
      */
-    const { data, error } = await supabase.auth.signInWithOAuth({ 
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${url.origin}/auth/callback`
-      }
-    })
+        redirectTo: `${url.origin}/auth/callback`,
+      },
+    });
 
     if (error) {
       return fail(error.status, {
@@ -288,6 +211,27 @@ export const actions = {
     }
 
     /* Now authorize sign-in on browser. */
-    if (data.url) redirect(303, data.url)
+    if (data.url) redirect(303, data.url);
+  },
+  createMapPool: async ({ locals, request }) => {
+    const formData = await request.formData();
+
+    const mapPool = await locals.supabase
+      .from("map_pools")
+      .insert({
+        name: formData.get("name"),
+        description: formData.get("description"),
+      })
+      .select("*");
+
+    if (mapPool.error) {
+      return fail(500, {
+        error: {
+          message: mapPool.error.message,
+        },
+      });
+    }
+
+    throw redirect(303, `/map-pools/${mapPool.data[0].id}`);
   },
 } satisfies Actions;

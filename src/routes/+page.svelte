@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import MakeMapPoolModal from "../components/makeMapPoolModal.svelte";
   import QuickPlayButton from "../components/quickPlayButton.svelte";
   import RegisterButton from "../components/registerButton.svelte";
 
@@ -131,3 +132,5 @@
     </table>
   </div>
 </div>
+
+<MakeMapPoolModal />
