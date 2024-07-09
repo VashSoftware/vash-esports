@@ -18,7 +18,7 @@ export const GET = async ({ url, locals: { supabase } }) => {
       )
       .select("id");
 
-    redirect(303, `/users/${userProfile.data[0].id}/welcome`);
+    redirect(303, `/`);
   }
 
   /* Return the user to an error page with instructions */
