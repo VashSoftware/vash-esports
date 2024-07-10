@@ -4,13 +4,19 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { invalidate } from "$app/navigation";
+  import { browser } from "$app/environment";
 
   export let data: LayoutData;
 
   let { supabase, session } = data;
   $: ({ supabase, session } = data);
 
-  onMount(() => {
+  onMount(async () => {
+    if (!browser) return;
+
+    // this is enough for most components
+    await import("bootstrap"); // some components require a bootstrap instance, to fulfil their job. In that case, use this:// const bootstrap = await import("bootstrap");// sample usage: // const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, _session) => {
