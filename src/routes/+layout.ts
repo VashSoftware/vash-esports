@@ -55,8 +55,8 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const notificationsPromise = supabase
     .from("notifications")
-    .select("*, user_profiles(user_id), match_invites(id)")
-    .eq("user_profiles.user_id", data.session?.user.id)
+    .select("*, user_profiles!inner(user_id), match_invites(id)")
+    .eq("user_profiles.user_id", session?.user.id)
     .is("dismissed_at", null)
     .order("created_at", { ascending: false });
 
