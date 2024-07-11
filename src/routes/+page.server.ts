@@ -120,40 +120,6 @@ export const actions = {
       .update({ dismissed_at: new Date() })
       .eq("id", matchInvite.data.notification_id);
 
-    const event = await insertData("events", {
-      name: "Stan vs Stan",
-      quick_event: true,
-    });
-
-    const round = await insertData("rounds", {
-      event_id: event[0].id,
-      map_pool_id: matchInvite.data.pool_id,
-      best_of: matchInvite.data.best_of,
-      match_player_bans: 0,
-      name: "Stan vs Stan",
-    });
-
-    const match = await insertData("matches", {
-      ongoing: true,
-      start_time: new Date(),
-      round_id: round[0].id,
-      type: "quick",
-    });
-
-    const notif = await locals.supabase
-      .from("notifications")
-      .insert({
-        user_id: matchInvite.data.teams.team_members[0].user_profiles.id,
-        title: "Match Accepted",
-        body: "Your match invite has been accepted!",
-        href: `/matches/${match[0].id}/play`,
-        type: "message",
-      })
-      .select("id")
-      .single();
-
-    console.dir(notif, { depth: null });
-
     const userPersonalTeam = await locals.supabase
       .from("teams")
       .select("*, team_members(*, user_profiles(*))")
@@ -164,6 +130,38 @@ export const actions = {
           await locals.supabase.auth.getUser()
         ).data.user.id
       );
+
+    const event = await insertData("events", {
+      name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams[0].name}`,
+      quick_event: true,
+    });
+
+    const round = await insertData("rounds", {
+      event_id: event[0].id,
+      map_pool_id: matchInvite.data.pool_id,
+      best_of: matchInvite.data.best_of,
+      match_player_bans: 0,
+      name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams[0].name}`,
+    });
+
+    const match = await insertData("matches", {
+      ongoing: true,
+      start_time: new Date(),
+      round_id: round[0].id,
+      type: "quick",
+    });
+
+    await locals.supabase
+      .from("notifications")
+      .insert({
+        user_id: matchInvite.data.teams.team_members[0].user_profiles.id,
+        title: "Match Accepted",
+        body: "Your match invite has been accepted!",
+        href: `/matches/${match[0].id}/play`,
+        type: "message",
+      })
+      .select("id")
+      .single();
 
     const participant_1 = await insertData("participants", {
       team_id: userPersonalTeam.data[0].id,
