@@ -172,7 +172,10 @@
   </div>
   <div class="col">
     <div class="d-flex justify-content-end gap-3 align-items-center">
-      <a href="https://osu.ppy.sh/users/11212255" class="text-white">
+      <a
+        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platform_id == 1)[0].value}`}
+        class="text-white"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="3em"
