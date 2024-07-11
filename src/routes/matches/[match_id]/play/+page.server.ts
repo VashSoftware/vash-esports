@@ -1,3 +1,4 @@
+import { PUBLIC_OSU_SERVER_ENDPOINT } from "$env/static/public";
 import type { Actions, PageServerLoad } from "./$types";
 import { redirect } from "@sveltejs/kit";
 
@@ -114,7 +115,7 @@ export const actions = {
       }
     }
 
-    await fetch("http://osu.esports.vash.software/send-messages", {
+    await fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -172,7 +173,7 @@ export const actions = {
       .eq("id", params.match_id)
       .single();
 
-    fetch("http://osu.esports.vash.software/create-match", {
+    fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/create-match", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -187,7 +188,7 @@ export const actions = {
       .eq("id", params.match_id)
       .single();
 
-    await fetch("http://osu.esports.vash.software/send-messages", {
+    await fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -206,7 +207,7 @@ export const actions = {
       .select("*")
       .single();
 
-    await fetch("http://osu.esports.vash.software/send-messages", {
+    await fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -236,7 +237,7 @@ export const actions = {
       .eq("id", matchParticipantPlayerId)
       .single();
 
-    await fetch("http://osu.esports.vash.software/send-messages", {
+    await fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
