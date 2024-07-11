@@ -9,25 +9,37 @@
   let selectedItem = null;
 
   async function search(event: Event) {
-    const filter = (query) => {}
-    
-    const foundItems = await supabase
+    let foundItems = await supabase
       .from(searchKey)
       .select(selectKey)
       .ilike("name", `%${(event.target as HTMLInputElement).value}%`)
       .limit(10);
 
-    items = foundItems.data;
+    foundItems = foundItems.data.filter((item) => {
+      for (let key in filters) {
+        if (item[key] !== filters[key]) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    items = foundItems;
   }
 </script>
 
-<input type="hidden" name={searchKey} value={selectedItem?.team_members[0].user_profiles.id} />
+<input
+  type="hidden"
+  name={searchKey}
+  value={selectedItem?.team_members[0].user_profiles.id}
+/>
 <div class="dropdown w-100">
   <button
     class="btn btn-secondary dropdown-toggle w-100"
     type="button"
     data-bs-toggle="dropdown"
     aria-expanded="false"
+    on:click={() => search(null)}
   >
     {selectedItem ? selectedItem?.name : text}
   </button>
