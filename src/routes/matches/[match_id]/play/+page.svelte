@@ -1,14 +1,16 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip.js";
+  import { onMount } from "svelte";
 
   export let data;
 
-  const getMatch = async () => {
-    let updatedMatch = await data.supabase
-      .from("matches")
-      .select(
-        `*, 
+  onMount(() => {
+    const getMatch = async () => {
+      let updatedMatch = await data.supabase
+        .from("matches")
+        .select(
+          `*, 
       rounds (*, 
         map_pools(*,
           map_pool_mods(*,
@@ -42,34 +44,35 @@
       ),
       match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
+        )
+        .eq("id", data.match?.id)
+        .order("priority", {
+          referencedTable: "rounds.map_pools.map_pool_mods",
+          ascending: true,
+        })
+        .single();
+
+      data.match = updatedMatch.data;
+
+      if (!data.match.ongoing) {
+        const bootstrap = await import("bootstrap");
+        const matchOverModal = new bootstrap.Modal("#matchOverModal");
+        matchOverModal.show();
+      }
+    };
+
+    data.supabase
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+        },
+        (payload) => getMatch()
       )
-      .eq("id", data.match?.id)
-      .order("priority", {
-        referencedTable: "rounds.map_pools.map_pool_mods",
-        ascending: true,
-      })
-      .single();
-
-    data.match = updatedMatch.data;
-
-    if (!data.match.ongoing) {
-      const bootstrap = await import("bootstrap");
-      const matchOverModal = new bootstrap.Modal("#matchOverModal");
-      matchOverModal.show();
-    }
-  };
-
-  data.supabase
-    .channel("schema-db-changes")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-      },
-      (payload) => getMatch()
-    )
-    .subscribe();
+      .subscribe();
+  });
 
   function getShortenedMapName(map) {
     let artist = map.maps?.mapsets.artist;
