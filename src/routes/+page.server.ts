@@ -53,7 +53,7 @@ export const actions = {
     const notificationId = formData.get("notification-id");
 
     const updated = await locals.supabase
-      .from("notification_recipients")
+      .from("notifications")
       .update({ dismissed_at: new Date() })
       .eq("id", notificationId)
       .select("*")
@@ -64,15 +64,58 @@ export const actions = {
   makeQuickMatch: async ({ locals, request }) => {
     const formData = await request.formData();
 
-    const selectedTeamId = formData.get("teams");
+    const userId = formData.get("teams");
     const mapPoolId = formData.get("map_pools");
     const bestOf = formData.get("best-of");
 
+    const user = await locals.supabase
+      .from("user_profiles")
+      .select("id, name, team_members(teams!inner(id))")
+      .eq("user_id", (await locals.supabase.auth.getUser()).data.user.id)
+      .eq("team_members.teams.is_personal_team", true)
+      .single();
+
+    const notification = await locals.supabase
+      .from("notifications")
+      .insert({
+        user_id: userId,
+        title: "Match Invite",
+        body: `You have been invited to a match against ${user.data.name}!`,
+        type: "match_invite",
+      })
+      .select("id")
+      .single();
+
+    const invite = await locals.supabase.from("match_invites").insert({
+      //@ts-ignore
+      sender_id: user.data.team_members[0].teams.id,
+      pool_id: mapPoolId,
+      best_of: bestOf,
+      notification_id: notification.data.id,
+    });
+  },
+  acceptMatchInvite: async ({ locals, request }) => {
+    const formData = await request.formData();
+
+    const matchInviteId = formData.get("match-invite-id");
+
     const insertData = async (table, data) => {
       const result = await locals.supabase.from(table).insert(data).select("*");
+
       if (result.error) throw new Error(result.error.message);
       return result.data;
     };
+
+    const matchInvite = await locals.supabase
+      .from("match_invites")
+      .select("*")
+      .eq("id", matchInviteId)
+      .single();
+
+    await locals.supabase
+      .from("notifications")
+      .update({ dismissed_at: new Date() })
+      .eq("id", matchInvite.data.notification_id);
 
     const event = await insertData("events", {
       name: "Stan vs Stan",
@@ -81,8 +124,8 @@ export const actions = {
 
     const round = await insertData("rounds", {
       event_id: event[0].id,
-      map_pool_id: mapPoolId,
-      best_of: bestOf,
+      map_pool_id: matchInvite.data.pool_id,
+      best_of: matchInvite.data.best_of,
       match_player_bans: 0,
       name: "Stan vs Stan",
     });
@@ -111,7 +154,7 @@ export const actions = {
     });
 
     const participant_2 = await insertData("participants", {
-      team_id: selectedTeamId,
+      team_id: matchInvite.data.sender_id,
       event_id: event[0].id,
     });
 
@@ -133,14 +176,14 @@ export const actions = {
       })
       .select("*, participants(teams(team_members(*)))");
 
-    await insertData("match_participant_players", {
+    insertData("match_participant_players", {
       match_participant_id: match_participant_1.data[0].id,
       team_member:
         match_participant_1.data[0].participants.teams.team_members[0].id,
       state: 1,
     });
 
-    await insertData("match_participant_players", {
+    insertData("match_participant_players", {
       match_participant_id: match_participant_2.data[0].id,
       team_member:
         match_participant_2.data[0].participants.teams.team_members[0].id,

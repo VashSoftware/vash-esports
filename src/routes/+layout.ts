@@ -22,22 +22,22 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const supabase = isBrowser()
     ? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-      global: { fetch },
-      cookies: {
-        get(key) {
-          const cookie = parse(document.cookie);
-          return cookie[key];
+        global: { fetch },
+        cookies: {
+          get(key) {
+            const cookie = parse(document.cookie);
+            return cookie[key];
+          },
         },
-      },
-    })
+      })
     : createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-      global: { fetch },
-      cookies: {
-        get() {
-          return JSON.stringify(data.session);
+        global: { fetch },
+        cookies: {
+          get() {
+            return JSON.stringify(data.session);
+          },
         },
-      },
-    });
+      });
 
   const session = isBrowser()
     ? (await supabase.auth.getSession()).data.session
@@ -55,7 +55,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const notificationsPromise = supabase
     .from("notifications")
-    .select("*, user_profiles(user_id)")
+    .select("*, user_profiles(user_id), match_invites(id)")
     .eq("user_profiles.user_id", data.session?.user.id)
     .is("dismissed_at", null)
     .order("created_at", { ascending: false });

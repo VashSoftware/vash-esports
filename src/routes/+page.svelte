@@ -29,7 +29,7 @@
 </div>
 
 <div class="text-center my-5">
-  <QuickPlayButton supabase={data.supabase} session={data.session} />
+  <QuickPlayButton supabase={data.supabase} />
 </div>
 
 <div class="my-3">

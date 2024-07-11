@@ -40,6 +40,8 @@
             >
             <DropdownSearch
               searchKey="teams"
+              selectKey="*, team_members(user_profiles(id))"
+              filters={{ is_personal_team: true }}
               {supabase}
               text="Choose an Opponent"
             />
@@ -50,6 +52,7 @@
             <div class="d-flex gap-2">
               <DropdownSearch
                 searchKey="map_pools"
+                selectKey="*"
                 {supabase}
                 text="Choose a Map Pool"
               />
