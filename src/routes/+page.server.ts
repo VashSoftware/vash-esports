@@ -1,7 +1,7 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Provider } from "@supabase/supabase-js";
-import { description } from "osu-api-extended/dist/utility/mods";
+import { PUBLIC_OSU_SERVER_ENDPOINT } from "$env/static/public";
 
 export const load: PageServerLoad = async ({ locals }) => {
   const matches = await locals.supabase
@@ -110,7 +110,7 @@ export const actions = {
 
     const matchInvite = await locals.supabase
       .from("match_invites")
-      .select("*, teams!inner(team_members(user_profiles(id)))")
+      .select("*, teams!inner(name, team_members(user_profiles(id)))")
       .eq("id", matchInviteId)
       .eq("teams.is_personal_team", true)
       .single();
@@ -132,7 +132,7 @@ export const actions = {
       );
 
     const event = await insertData("events", {
-      name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams[0].name}`,
+      name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams.name}`,
       quick_event: true,
     });
 
@@ -141,7 +141,7 @@ export const actions = {
       map_pool_id: matchInvite.data.pool_id,
       best_of: matchInvite.data.best_of,
       match_player_bans: 0,
-      name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams[0].name}`,
+      name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams.name}`,
     });
 
     const match = await insertData("matches", {
@@ -205,7 +205,7 @@ export const actions = {
       state: 1,
     });
 
-    fetch("http://osu.esports.vash.software/create-match", {
+    fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/create-match", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
