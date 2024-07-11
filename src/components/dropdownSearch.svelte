@@ -1,15 +1,19 @@
 <script lang="ts">
   export let text;
   export let searchKey;
+  export let selectKey;
+  export let filters = {};
   export let supabase;
 
   let items = [];
   let selectedItem = null;
 
   async function search(event: Event) {
+    const filter = (query) => {}
+    
     const foundItems = await supabase
       .from(searchKey)
-      .select("*")
+      .select(selectKey)
       .ilike("name", `%${(event.target as HTMLInputElement).value}%`)
       .limit(10);
 
@@ -17,7 +21,7 @@
   }
 </script>
 
-<input type="hidden" name={searchKey} value={selectedItem?.id} />
+<input type="hidden" name={searchKey} value={selectedItem?.team_members[0].user_profiles.id} />
 <div class="dropdown w-100">
   <button
     class="btn btn-secondary dropdown-toggle w-100"

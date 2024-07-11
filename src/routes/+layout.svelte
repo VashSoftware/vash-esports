@@ -14,8 +14,7 @@
   onMount(async () => {
     if (!browser) return;
 
-    // this is enough for most components
-    await import("bootstrap"); // some components require a bootstrap instance, to fulfil their job. In that case, use this:// const bootstrap = await import("bootstrap");// sample usage: // const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+    await import("bootstrap");
 
     const {
       data: { subscription },
@@ -208,34 +207,83 @@
               class="dropdown-menu dropdown-menu-end"
               style="min-width: 350px; width: fit-content; "
             >
-              <h1>Notifications</h1>
+              <h2 class="mx-4 my-3">
+                Notifications {#if data.notifications.length > 0}({data
+                    .notifications.length}){/if}
+              </h2>
+              <li><hr class="dropdown-divider" /></li>
               {#each data.notifications as notification, i}
-                <li
-                  class="dropdown-item d-flex m-2 align-items-center justify-content-between"
-                >
-                  <div>
-                    <h5>
-                      {notification.title}
-                    </h5>
-                    <p>{notification.body}</p>
-                  </div>
-                  <a class="btn btn-primary" href={notification.href}>Go</a>
-                  <form
-                    action="/?/dismissNotification"
-                    method="post"
-                    use:enhance
+                {#if notification.type == "message"}
+                  <li
+                    class="dropdown-item d-flex align-items-center justify-content-between"
                   >
-                    <input
-                      type="hidden"
-                      name="notification-id"
-                      value={notification.id}
-                    />
+                    <div class="me-5">
+                      <h5>
+                        {notification.title}
+                      </h5>
+                      <p>{notification.body}</p>
+                    </div>
+                    <form
+                      action="/?/dismissNotification"
+                      method="post"
+                      use:enhance
+                    >
+                      <input
+                        type="hidden"
+                        name="notification-id"
+                        value={notification.id}
+                      />
 
-                    <button type="submit" class="btn-close"></button>
-                  </form>
-                </li>
-                {#if i !== data.notifications.length - 1}
-                  <li><hr class="dropdown-divider" /></li>
+                      <button type="submit" class="btn-close"></button>
+                    </form>
+                  </li>
+                  {#if i !== data.notifications.length - 1}
+                    <li><hr class="dropdown-divider" /></li>
+                  {/if}
+                {:else if notification.type == "match_invite"}
+                  <li
+                    class="dropdown-item d-flex align-items-center justify-content-between"
+                  >
+                    <div class="me-5">
+                      <h5>
+                        {notification.title}
+                      </h5>
+                      <p>{notification.body}</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <form
+                        action="/?/acceptMatchInvite"
+                        method="post"
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="match-invite-id"
+                          value={notification.match_invites[0].id}
+                        />
+
+                        <button type="submit" class="btn btn-success"
+                          >Accept
+                        </button>
+                      </form>
+                      <form
+                        action="/?/dismissNotification"
+                        method="post"
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="notification-id"
+                          value={notification.id}
+                        />
+
+                        <button type="submit" class="btn-close"></button>
+                      </form>
+                    </div>
+                  </li>
+                  {#if i !== data.notifications.length - 1}
+                    <li><hr class="dropdown-divider" /></li>
+                  {/if}
                 {/if}
               {/each}
             </ul>
