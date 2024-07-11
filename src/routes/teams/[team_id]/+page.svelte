@@ -10,7 +10,7 @@
   <meta name="og:url" content={$page.url.href} />
   <meta name="og:title" content={data.team.name} />
   <meta name="og:description" content={data.team.bio} />
-  <meta name="og:image" content={data.teamPicture.data.publicUrl} />
+  <meta name="og:image" content={data.team.picture_url} />
 
   <meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
@@ -18,12 +18,15 @@
 <div class="py-5 row">
   <div class="col d-flex align-items-center">
     <img
-      src={data.teamPicture.data.publicUrl}
+      src={data.team.picture_url}
       height="128"
       alt="Team icon"
       class="rounded me-4"
     />
-    <h1>{data.team.name}</h1>
+    <div>
+      <h1>{data.team.name}</h1>
+      <p>{data.team.bio || ""}</p>
+    </div>
   </div>
 
   <div class="col text-end d-flex justify-content-end align-items-center">

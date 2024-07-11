@@ -43,7 +43,7 @@
       match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
       match_bans(*, match_participants(*, participants(*, teams(name))))`
       )
-      .eq("id", data.match.id)
+      .eq("id", data.match?.id)
       .order("priority", {
         referencedTable: "rounds.map_pools.map_pool_mods",
         ascending: true,
@@ -51,6 +51,12 @@
       .single();
 
     data.match = updatedMatch.data;
+
+    if (!data.match.ongoing) {
+      const bootstrap = await import("bootstrap");
+      const matchOverModal = new bootstrap.Modal("#matchOverModal");
+      matchOverModal.show();
+    }
   };
 
   data.supabase
@@ -165,9 +171,18 @@
     <button type="submit" class="btn btn-success"> Start map </button>
   </form>
 
-  <form action="?/deleteMatch" method="post" use:enhance>
-    <button type="submit" class="btn btn-danger"> Delete match </button>
+  <form action="?/endMatch" method="post" use:enhance>
+    <button type="submit" class="btn btn-danger"> End match </button>
   </form>
+
+  <button
+    type="submit"
+    class="btn btn-danger"
+    data-bs-toggle="modal"
+    data-bs-target="#matchOverModal"
+  >
+    End match
+  </button>
 </div>
 
 <!-- This match is being broadcasted on the following official channels: -->
@@ -217,7 +232,7 @@
       </div>
     {/if}
 
-    {#if data.match.match_participants[0].match_participant_players[0].match_participant_player_states.id == 1}
+    {#if data.match.match_participants[0].match_participant_players[0].match_participant_player_states.id == 2}
       <form
         action="?/invitePlayer"
         method="post"
@@ -302,7 +317,7 @@
       </div>
     {/if}
 
-    {#if data.match.match_participants[1].match_participant_players[0].match_participant_player_states.id == 1}
+    {#if data.match.match_participants[1].match_participant_players[0].match_participant_player_states.id == 2}
       <form
         action="?/invitePlayer"
         method="post"
@@ -627,6 +642,89 @@
             >Confirm</button
           >
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="matchOverModal"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Match Ended</h1>
+      </div>
+      <div class="modal-body text-center">
+        <div class="d-flex justify-content-around align-items-center">
+          <div>
+            <img
+              src={data.match.match_participants[0].participants.teams
+                .picture_url}
+              alt=""
+              height="192"
+            />
+            <h2>{data.match.match_participants[0].participants.teams.name}</h2>
+          </div>
+          <div>
+            <h2>
+              {data.match.match_maps.filter(
+                (match_map) =>
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[0].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0) >
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[1].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0)
+              ).length} - {data.match.match_maps.filter(
+                (match_map) =>
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[1].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0) >
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[0].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0)
+              ).length}
+            </h2>
+          </div>
+          <div>
+            <img
+              src={data.match.match_participants[1].participants.teams
+                .picture_url}
+              alt=""
+              height="192"
+            />
+            <h2>{data.match.match_participants[1].participants.teams.name}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="/">
+          <button class="btn btn-success" data-bs-dismiss="modal">
+            Back to Home
+          </button>
+        </a>
       </div>
     </div>
   </div>

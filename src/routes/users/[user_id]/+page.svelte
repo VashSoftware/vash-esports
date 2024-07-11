@@ -2,11 +2,98 @@
   import { enhance } from "$app/forms";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import { writable } from "svelte/store";
+  import {
+    createColumnHelper,
+    createSvelteTable,
+    flexRender,
+    getCoreRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    renderComponent,
+    type ColumnDef,
+  } from "@tanstack/svelte-table";
 
   export let data;
 
   async function signOut() {
     await data.supabase.auth.signOut();
+  }
+
+  type Score = {
+    score: number;
+    accuracy: number;
+    max_combo: number;
+    match_maps: { match_id: number };
+  };
+
+  const columnHelper = createColumnHelper<Score>();
+
+  const defaultColumns: ColumnDef<Score>[] = [
+    {
+      accessorKey: "score",
+      header: "Score",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: (info) => info.getValue(),
+    },
+  ];
+
+  const options = writable({
+    columns: defaultColumns,
+    data: data.userScores,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: {
+        pageSize: 15,
+        pageIndex: 0,
+      },
+    },
+  });
+
+  const table = createSvelteTable(options);
+
+  function setCurrentPage(page: number) {
+    options.update((o) => ({
+      ...o,
+      state: {
+        ...o.state,
+        pagination: {
+          ...o.state.pagination,
+          pageIndex: page,
+        },
+      },
+    }));
+  }
+
+  async function updateProfilePic(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+
+    const upload = await data.supabase.storage
+      .from("user_pictures")
+      .upload($page.params.user_id, file, {
+        cacheControl: "0",
+        upsert: true,
+        contentType: file.type,
+      });
+
+    await data.supabase
+      .from("user_profiles")
+      .update({
+        picture_url: `https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/${upload.data.fullPath}`,
+      })
+      .eq("id", $page.params.user_id)
+      .select();
   }
 </script>
 
@@ -21,7 +108,7 @@
     property="og:description"
     content="View {data.user?.name}'s profile on Vash Esports"
   />
-  <meta property="og:image" content={data.userPictureUrl} />
+  <meta property="og:image" content={data.user.picture_url} />
   <meta property="og:url" content={$page.url.href} />
   <meta property="og:type" content="profile" />
 </svelte:head>
@@ -29,7 +116,7 @@
 <div class="row align-items-center py-5">
   <div class="col d-flex align-items-center">
     <img
-      src={data.userPictureUrl}
+      src={data.user.picture_url}
       height="128"
       class="rounded-circle me-4"
       alt="User profile"
@@ -59,29 +146,21 @@
 
           {#each data.teamPublicUrls as team, i}
             <a href="/teams/{data.user.team_members[i].teams.id}">
-              <img
-                height={32}
-                class="rounded"
-                src={team.data.publicUrl}
-                alt="Team logo"
-              /></a
+              <img height={32} class="rounded" src={team} alt="Team logo" /></a
             >
           {/each}
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#createTeamModal"
+          >
+            +
+          </button>
         </div>
       </div>
       <div class="d-flex gap-2 my-2">
-        {#each data.user.user_badges as badge}
-          <img
-            src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
-            alt=""
-          />
-        {/each}
-        {#each data.user.user_badges as badge}
-          <img
-            src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
-            alt=""
-          />
-        {/each}
         {#each data.user.user_badges as badge}
           <img
             src="https://assets.ppy.sh/profile-badges/{badge.badges.osu_id}.png"
@@ -93,7 +172,10 @@
   </div>
   <div class="col">
     <div class="d-flex justify-content-end gap-3 align-items-center">
-      <a href="https://osu.ppy.sh/users/11212255" class="text-white">
+      <a
+        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platform_id == 1)[0].value}`}
+        class="text-white"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="3em"
@@ -142,42 +224,181 @@
 <h2>Pinned Plays</h2>
 
 <h2>Top Plays ({data.userScores.length})</h2>
-<div class="table-responsive">
-  <table class="table">
-    <thead>
+<table class="table-striped table table-hover">
+  <thead>
+    {#each $table.getHeaderGroups() as headerGroup}
       <tr>
-        <th>Column 1</th>
-        <th>Column 2</th>
-        <th>Column 3</th>
+        {#each headerGroup.headers as header}
+          <th scope="col" colSpan={header.colSpan}>
+            <button
+              class="btn btn-dark"
+              on:click={header.column.getToggleSortingHandler()}
+            >
+              <svelte:component
+                this={flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+              /></button
+            >
+          </th>
+        {/each}
       </tr>
-    </thead>
-    <tbody>
-      {#each data.userScores.slice(0, 10) as score}
-        <tr>
+    {/each}
+  </thead>
+  <tbody>
+    {#each $table.getRowModel().rows as row}
+      <tr>
+        {#each row.getVisibleCells() as cell}
           <td>
-            <a href="/matches/{score.match_maps.match_id}">
-              {score.score}
-            </a>
+            <svelte:component
+              this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+            />
           </td>
-
-          <td
-            ><a href="/matches/{score.match_maps.match_id}">{score.accuracy}</a
-            ></td
-          >
-          <td
-            ><a href="/matches/{score.match_maps.match_id}">{score.max_combo}</a
-            ></td
-          >
-        </tr>
-      {/each}
-    </tbody>
-  </table>
+        {/each}
+      </tr>
+    {/each}
+  </tbody>
+</table>
+<div class="d-flex align-items-center justify-content-center">
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage(0)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {"<<"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getState().pagination.pageIndex - 1)}
+    disabled={!$table.getCanPreviousPage()}
+  >
+    {"<"}
+  </button>
+  <span> Page </span>
+  <input
+    class="form-control mx-2"
+    type="number"
+    value={$table.getState().pagination.pageIndex + 1}
+    min={1}
+    max={$table.getPageCount()}
+    on:change={(e) => setCurrentPage(parseInt(e.target?.value) - 1)}
+    style="width: 50px;"
+  />
+  <span>{" of "}{$table.getPageCount()}</span>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getState().pagination.pageIndex + 1)}
+    disabled={!$table.getCanNextPage()}
+  >
+    {">"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($table.getPageCount() - 1)}
+    disabled={!$table.getCanNextPage()}
+  >
+    {">>"}
+  </button>
 </div>
 
-<form action="?/updateAccount" method="post">
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Manage account</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="name" class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            value={data.user?.name}
+            name="username"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="profile-pic" class="form-label">Profile Picture</label>
+
+          <div class="d-flex align-items-center gap-2">
+            {#if data.user.picture_url}
+              <img
+                src={data.user.picture_url}
+                height="64"
+                alt="User"
+                class="rounded-circle"
+              />
+            {/if}
+
+            <input
+              type="file"
+              accept="image/*"
+              class="form-control"
+              id="profile-pic"
+              name="profilePicture"
+              on:change={updateProfilePic}
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            value={data.session.user.email}
+            name="email"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Enter new password"
+            name="password"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="actions" class="form-label">Actions</label>
+          <div>
+            <form action="?/signOut" method="post" use:enhance>
+              <button
+                type="submit"
+                class="btn btn-danger"
+                data-bs-dismiss="modal"
+                on:click={signOut}
+                >Sign Out
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form action="?/createTeam" method="post">
   <div
     class="modal fade"
-    id="exampleModal"
+    id="createTeamModal"
     tabindex="-1"
     aria-labelledby="exampleModalLabel"
     aria-hidden="true"
@@ -185,9 +406,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">
-            Manage account
-          </h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Create Team</h1>
           <button
             type="button"
             class="btn-close"
@@ -197,64 +416,28 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="name" class="form-label">Username</label>
+            <label for="name" class="form-label">Team Name</label>
             <input
               type="text"
               class="form-control"
               id="name"
-              value={data.user?.name}
-              name="username"
+              name="name"
+              required
             />
           </div>
           <div class="mb-3">
-            <label for="profile-pic" class="form-label">Profile Picture</label>
-
-            {#if data.userPictureUrl}
-              <img src={data.userPictureUrl} height="64" alt="User" />
-            {/if}
-
+            <label for="bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="bio" name="bio"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="logo" class="form-label">Logo</label>
             <input
               type="file"
               class="form-control"
-              id="profile-pic"
-              name="profilePicture"
+              id="logo"
+              name="logo"
+              accept="image/*"
             />
-          </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              value={data.session.user.email}
-              name="email"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              id="password"
-              placeholder="Enter new password"
-              name="password"
-            />
-          </div>
-
-          <div class="mb-3">
-            <label for="actions" class="form-label">Actions</label>
-            <div>
-              <form action="?/signOut" method="post" use:enhance>
-                <button
-                  type="submit"
-                  class="btn btn-danger"
-                  data-bs-dismiss="modal"
-                  on:click={signOut}
-                  >Sign Out
-                </button>
-              </form>
-            </div>
           </div>
         </div>
         <div class="modal-footer">

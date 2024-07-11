@@ -22,22 +22,22 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const supabase = isBrowser()
     ? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-      global: { fetch },
-      cookies: {
-        get(key) {
-          const cookie = parse(document.cookie);
-          return cookie[key];
+        global: { fetch },
+        cookies: {
+          get(key) {
+            const cookie = parse(document.cookie);
+            return cookie[key];
+          },
         },
-      },
-    })
+      })
     : createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-      global: { fetch },
-      cookies: {
-        get() {
-          return JSON.stringify(data.session);
+        global: { fetch },
+        cookies: {
+          get() {
+            return JSON.stringify(data.session);
+          },
         },
-      },
-    });
+      });
 
   const session = isBrowser()
     ? (await supabase.auth.getSession()).data.session
@@ -51,13 +51,12 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   const userProfilePromise = supabase
     .from("user_profiles")
     .select("*")
-    .eq("user_id", session?.user.id)
-    .single();
+    .eq("user_id", session?.user.id);
 
   const notificationsPromise = supabase
     .from("notifications")
-    .select("*, user_profiles(user_id)")
-    .eq("user_profiles.user_id", data.session?.user.id)
+    .select("*, user_profiles!inner(user_id), match_invites(id)")
+    .eq("user_profiles.user_id", session?.user.id)
     .is("dismissed_at", null)
     .order("created_at", { ascending: false });
 
@@ -79,13 +78,8 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     userProfilePromise,
   ]);
 
-  const userPictureUrl = supabase.storage
-    .from("user_pictures")
-    .getPublicUrl(userProfile.data?.id);
-
   return {
     supabase,
-    userPictureUrl: userPictureUrl.data.publicUrl,
     userProfile,
     session,
     events: events.data,

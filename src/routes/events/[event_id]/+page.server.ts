@@ -45,9 +45,7 @@ export async function load({ params, locals }) {
 
   let participantIcons = [];
   for (let i = 0; i < event.data.participants.length; i++) {
-    const publicUrl = await locals.supabase.storage
-      .from("team_icons")
-      .getPublicUrl(event.data.participants[i].teams.id);
+    const publicUrl = event.data.participants[i].teams.picture_url;
 
     participantIcons = [...participantIcons, publicUrl];
   }

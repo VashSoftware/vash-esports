@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .select(
       `*,
       rounds ( best_of, events (id, name, event_links(*, platforms(*)), event_groups(*))),
-      match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
+      match_participants(participants(id, teams(id, name, picture_url, team_members(*, user_profiles(*))))),
       match_maps(map_pool_maps(maps(*, mapsets(*))), scores(*)),
       match_predictions(*, user_profiles(*))`,
     )
@@ -24,18 +24,25 @@ export const actions = {
     const formData = await request.formData();
     const teamId = formData.get("participantId");
 
+    const user = await locals.supabase
+      .from("user_profiles")
+      .select("id")
+      .eq("user_id", (await locals.getSession()).user.id)
+      .single();
+
     const existingPrediction = await locals.supabase
       .from("match_predictions")
-      .select("*")
+      .select("*, user_profiles(user_id)")
       .eq("match_id", params.match_id)
-      .eq("user_id", locals.user.id);
+      .eq("user_profiles.user_id", (await locals.getSession()).user.id);
+    
     if (existingPrediction.data.length > 0) {
       return false;
     }
 
-    await locals.supabase.from("match_predictions").upsert({
+    const pred = await locals.supabase.from("match_predictions").upsert({
       match_id: params.match_id,
-      user_id: locals.user.id,
+      user_id: user.data.id,
       winning_participant_id: teamId,
     });
   },

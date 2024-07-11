@@ -29,3 +29,5 @@ dist-ssr
 bun.lockb
 
 .vercel
+server/k8s/secret.yaml
+ord/k8s/secret.yaml

@@ -38,7 +38,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
         )
       ),
       match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
-      match_bans(*, match_participants(*, participants(*, teams(name))))`,
+      match_bans(*, match_participants(*, participants(*, teams(name))))`
     )
     .eq("id", params.match_id)
     .order("priority", {
@@ -88,7 +88,7 @@ export const actions = {
     const match = await locals.supabase
       .from("matches")
       .select(
-        `*, match_participants(match_participant_players(id)), rounds(map_pool_id)`,
+        `*, match_participants(match_participant_players(id)), rounds(map_pool_id)`
       )
       .eq("id", params.match_id)
       .single();
@@ -105,9 +105,7 @@ export const actions = {
       .select("id, map_pool_maps(maps(*))")
       .single();
 
-    for (
-      const participant of match.data.match_participants
-    ) {
+    for (const participant of match.data.match_participants) {
       for (const player of participant.match_participant_players) {
         await locals.supabase.from("scores").insert({
           match_map_id: matchMap.data.id,
@@ -116,38 +114,27 @@ export const actions = {
       }
     }
 
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: {
-          channel: match.data.lobby_id,
-          messages: [
-            `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
-            `!mp mods NF ${mapPoolMap.data.map_pool_mods.code}`,
-          ],
-        },
+    await fetch("http://osu.esports.vash.software/send-messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        channelId: match.data.lobby_id,
+        messages: [
+          `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
+          `!mp mods NF ${mapPoolMap.data.map_pool_mods.code}`,
+        ],
+      }),
+    });
 
     console.log("Picked map with ID: ", mapId);
-  },
-  sendOsuMessage: async ({ locals, params, request }) => {
-    const formData = await request.formData();
-
-    const channel = formData.get("channel");
-    const message = formData.get("message");
-
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: { channel: channel, messages: [message] },
-      },
-    );
   },
   makeMatch: async ({ locals, params, request }) => {
     const match = await locals.supabase
       .from("matches")
-      .select(`*, 
+      .select(
+        `*, 
       rounds (*, 
         map_pools(*,
           map_pool_mods(*,
@@ -180,16 +167,18 @@ export const actions = {
         )
       ),
       match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
-      match_bans(*, match_participants(*, participants(*, teams(name))))`)
+      match_bans(*, match_participants(*, participants(*, teams(name))))`
+      )
       .eq("id", params.match_id)
       .single();
 
-    locals.supabase.functions.invoke(
-      "make-osu-match",
-      {
-        body: { match: match.data },
+    fetch("http://osu.esports.vash.software/create-match", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({ id: match.data.id }),
+    });
   },
   startMap: async ({ locals, params, request }) => {
     const match = await locals.supabase
@@ -198,36 +187,35 @@ export const actions = {
       .eq("id", params.match_id)
       .single();
 
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: {
-          channel: match.data.lobby_id,
-          messages: [
-            `!mp start 5`,
-          ],
-        },
+    await fetch("http://osu.esports.vash.software/send-messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        channelId: match.data.lobby_id,
+        messages: [`!mp start 5`],
+      }),
+    });
   },
-  deleteMatch: async ({ locals, params, request }) => {
+  endMatch: async ({ locals, params, request }) => {
     const match = await locals.supabase
       .from("matches")
       .update({ ongoing: false })
       .eq("id", params.match_id)
-      .select("*");
+      .select("*")
+      .single();
 
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: {
-          channel: match.data[0].lobby_id,
-          messages: [
-            `!mp close`,
-          ],
-        },
+    await fetch("http://osu.esports.vash.software/send-messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        channelId: match.data.lobby_id,
+        messages: [`!mp close`],
+      }),
+    });
 
     console.log("Deleted match with ID: ", params.match_id);
 
@@ -237,42 +225,37 @@ export const actions = {
     const formData = await request.formData();
 
     const matchParticipantPlayerId = formData.get(
-      "match-participant-player-id",
+      "match-participant-player-id"
     );
 
     const matchParticipantPlayer = await locals.supabase
       .from("match_participant_players")
       .select(
-        "*, match_participants(matches(lobby_id)), team_members(user_profiles(name, user_platforms(*)))",
+        "*, match_participants(matches(lobby_id)), team_members(user_profiles(name, user_platforms(*)))"
       )
       .eq("id", matchParticipantPlayerId)
       .single();
 
-    console.log(
-      "#mp_" +
-        matchParticipantPlayer.data.match_participants.matches.lobby_id,
-    );
-
-    locals.supabase.functions.invoke(
-      "send-osu-message",
-      {
-        body: {
-          channel:
-            matchParticipantPlayer.data.match_participants.matches.lobby_id,
-          messages: [
-            `!mp invite ${
-              matchParticipantPlayer.data.team_members.user_profiles
-                .user_platforms.filter((platform) => platform.platform_id == 1)
-                .value
-            }`,
-          ],
-        },
+    await fetch("http://osu.esports.vash.software/send-messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        messages: [
+          "!mp invite " +
+            matchParticipantPlayer.data.team_members.user_profiles.user_platforms.filter(
+              (pf: any) => pf.platform_id == 1
+            )[0].value,
+        ],
+        channelId:
+          matchParticipantPlayer.data.match_participants.matches.lobby_id,
+      }),
+    });
 
     console.log(
       "Invited player: ",
-      matchParticipantPlayer.data.team_members.user_profiles.name,
+      matchParticipantPlayer.data.team_members.user_profiles.name
     );
   },
 } satisfies Actions;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import MakeMapPoolModal from "../components/makeMapPoolModal.svelte";
   import QuickPlayButton from "../components/quickPlayButton.svelte";
   import RegisterButton from "../components/registerButton.svelte";
 
@@ -28,7 +29,7 @@
 </div>
 
 <div class="text-center my-5">
-  <QuickPlayButton supabase={data.supabase} session={data.session} />
+  <QuickPlayButton supabase={data.supabase} />
 </div>
 
 <div class="my-3">
@@ -131,3 +132,5 @@
     </table>
   </div>
 </div>
+
+<MakeMapPoolModal />

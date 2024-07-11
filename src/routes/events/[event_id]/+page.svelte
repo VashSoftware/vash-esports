@@ -7,7 +7,8 @@
 </script>
 
 <svelte:head>
-  <title>{data.event.event_groups?.name} {data.event.name} | Vash Esports</title>
+  <title>{data.event.event_groups?.name} {data.event.name} | Vash Esports</title
+  >
   <meta name="description" content={data.event.description} />
   <meta name="og:url" content={$page.url.href} />
   <meta name="og:title" content={data.event.name} />
@@ -209,7 +210,7 @@
             <div class="row g-0">
               <div class="col-md-4">
                 <img
-                  src={data.participantIcons[i].data.publicUrl}
+                  src={data.participantIcons[i]}
                   class="img-fluid rounded-start"
                   alt="Team Icon"
                 />
