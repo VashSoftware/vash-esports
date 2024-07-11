@@ -198,7 +198,7 @@ export const actions = {
       }),
     });
   },
-  deleteMatch: async ({ locals, params, request }) => {
+  endMatch: async ({ locals, params, request }) => {
     const match = await locals.supabase
       .from("matches")
       .update({ ongoing: false })
