@@ -34,7 +34,9 @@
 <input
   type="hidden"
   name={searchKey}
-  value={selectedItem?.team_members[0].user_profiles.id}
+  value={searchKey == "teams"
+    ? selectedItem?.team_members[0]?.user_profiles.id
+    : selectedItem?.id}
 />
 <div class="dropdown w-100">
   <button
@@ -42,7 +44,7 @@
     type="button"
     data-bs-toggle="dropdown"
     aria-expanded="false"
-    on:click={() => search(null)}
+    on:click={search}
   >
     {selectedItem ? selectedItem?.name : text}
   </button>
