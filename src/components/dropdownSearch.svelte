@@ -12,7 +12,10 @@
     let foundItems = await supabase
       .from(searchKey)
       .select(selectKey)
-      .ilike("name", `%${(event.target as HTMLInputElement).value}%`)
+      .ilike(
+        "name",
+        `%${event ? (event.target as HTMLInputElement).value : ""}%`
+      )
       .limit(10);
 
     foundItems = foundItems.data.filter((item) => {
