@@ -65,7 +65,10 @@
         <button
           type="button"
           class="dropdown-item"
-          on:click={() => (selectedItem = item)}>{item.name}</button
+          on:click={() => {
+            selectedItem = item;
+            console.dir(selectedItem?.team_members);
+          }}>{item.name}</button
         >
       </li>
     {/each}

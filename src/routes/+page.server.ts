@@ -84,7 +84,7 @@ export const actions = {
         type: "match_invite",
       })
       .select("id")
-      .single();
+      .single()
 
     const invite = await locals.supabase.from("match_invites").insert({
       //@ts-ignore
