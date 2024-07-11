@@ -75,6 +75,26 @@
       },
     }));
   }
+
+  async function updateProfilePic(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+
+    const upload = await data.supabase.storage
+      .from("user_pictures")
+      .upload($page.params.user_id, file, {
+        cacheControl: "0",
+        upsert: true,
+        contentType: file.type,
+      });
+
+    await data.supabase
+      .from("user_profiles")
+      .update({
+        picture_url: `https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/${upload.data.fullPath}`,
+      })
+      .eq("id", $page.params.user_id)
+      .select();
+  }
 </script>
 
 <svelte:head>
@@ -279,103 +299,100 @@
   </button>
 </div>
 
-<form action="?/updateAccount" method="post">
-  <div
-    class="modal fade"
-    id="exampleModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">
-            Manage account
-          </h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Manage account</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="name" class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            value={data.user?.name}
+            name="username"
+          />
         </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="name" class="form-label">Username</label>
-            <input
-              type="text"
-              class="form-control"
-              id="name"
-              value={data.user?.name}
-              name="username"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="profile-pic" class="form-label">Profile Picture</label>
+        <div class="mb-3">
+          <label for="profile-pic" class="form-label">Profile Picture</label>
 
+          <div class="d-flex align-items-center gap-2">
             {#if data.user.picture_url}
-              <img src={data.user.picture_url} height="64" alt="User" />
+              <img
+                src={data.user.picture_url}
+                height="64"
+                alt="User"
+                class="rounded-circle"
+              />
             {/if}
 
             <input
               type="file"
+              accept="image/*"
               class="form-control"
               id="profile-pic"
               name="profilePicture"
+              on:change={updateProfilePic}
             />
-          </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              value={data.session.user.email}
-              name="email"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              id="password"
-              placeholder="Enter new password"
-              name="password"
-            />
-          </div>
-
-          <div class="mb-3">
-            <label for="actions" class="form-label">Actions</label>
-            <div>
-              <form action="?/signOut" method="post" use:enhance>
-                <button
-                  type="submit"
-                  class="btn btn-danger"
-                  data-bs-dismiss="modal"
-                  on:click={signOut}
-                  >Sign Out
-                </button>
-              </form>
-            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">Close</button
-          >
-          <button type="submit" class="btn btn-primary">Save changes</button>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            value={data.session.user.email}
+            name="email"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Enter new password"
+            name="password"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="actions" class="form-label">Actions</label>
+          <div>
+            <form action="?/signOut" method="post" use:enhance>
+              <button
+                type="submit"
+                class="btn btn-danger"
+                data-bs-dismiss="modal"
+                on:click={signOut}
+                >Sign Out
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</form>
+</div>
 
-<form action="?/createTeam" method="post" enctype="multipart/form-data">
+<form action="?/createTeam" method="post">
   <div
     class="modal fade"
     id="createTeamModal"
