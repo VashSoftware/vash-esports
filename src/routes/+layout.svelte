@@ -259,7 +259,7 @@
                         <input
                           type="hidden"
                           name="match-invite-id"
-                          value={notification.match_invites[0].id}
+                          value={notification.match_invites[0]?.id}
                         />
 
                         <button type="submit" class="btn btn-success"
