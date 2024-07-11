@@ -223,23 +223,36 @@
                       </h5>
                       <p>{notification.body}</p>
                     </div>
-                    <form
-                      action="/?/dismissNotification"
-                      method="post"
-                      use:enhance
-                    >
-                      <input
-                        type="hidden"
-                        name="notification-id"
-                        value={notification.id}
-                      />
+                    <div class="d-flex align-items-center gap-2">
+                      <form
+                        action="/?/dismissNotification"
+                        method="post"
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="notification-id"
+                          value={notification.id}
+                        />
+                        <button type="submit" class="btn btn-success"
+                          >Go
+                        </button>
+                      </form>
+                      <form
+                        action="/?/dismissNotification"
+                        method="post"
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="notification-id"
+                          value={notification.id}
+                        />
 
-                      <button type="submit" class="btn-close"></button>
-                    </form>
+                        <button type="submit" class="btn-close"></button>
+                      </form>
+                    </div>
                   </li>
-                  {#if i !== data.notifications.length - 1}
-                    <li><hr class="dropdown-divider" /></li>
-                  {/if}
                 {:else if notification.type == "match_invite"}
                   <li
                     class="dropdown-item d-flex align-items-center justify-content-between"
@@ -281,9 +294,9 @@
                       </form>
                     </div>
                   </li>
-                  {#if i !== data.notifications.length - 1}
-                    <li><hr class="dropdown-divider" /></li>
-                  {/if}
+                {/if}
+                {#if i !== data.notifications.length - 1}
+                  <li><hr class="dropdown-divider" /></li>
                 {/if}
               {/each}
             </ul>

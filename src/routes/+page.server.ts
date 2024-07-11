@@ -59,7 +59,9 @@ export const actions = {
       .select("*")
       .single();
 
-    console.log(updated);
+    if (updated.data.href) {
+      throw redirect(302, updated.data.href);
+    }
   },
   makeQuickMatch: async ({ locals, request }) => {
     const formData = await request.formData();
@@ -84,7 +86,7 @@ export const actions = {
         type: "match_invite",
       })
       .select("id")
-      .single()
+      .single();
 
     const invite = await locals.supabase.from("match_invites").insert({
       //@ts-ignore
@@ -108,8 +110,9 @@ export const actions = {
 
     const matchInvite = await locals.supabase
       .from("match_invites")
-      .select("*")
+      .select("*, teams!inner(team_members(user_profiles(id)))")
       .eq("id", matchInviteId)
+      .eq("teams.is_personal_team", true)
       .single();
 
     await locals.supabase
@@ -136,6 +139,20 @@ export const actions = {
       round_id: round[0].id,
       type: "quick",
     });
+
+    const notif = await locals.supabase
+      .from("notifications")
+      .insert({
+        user_id: matchInvite.data.teams.team_members[0].user_profiles.id,
+        title: "Match Accepted",
+        body: "Your match invite has been accepted!",
+        href: `/matches/${match[0].id}/play`,
+        type: "message",
+      })
+      .select("id")
+      .single();
+
+    console.dir(notif, { depth: null });
 
     const userPersonalTeam = await locals.supabase
       .from("teams")
