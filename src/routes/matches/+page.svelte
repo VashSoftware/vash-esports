@@ -25,12 +25,12 @@
       cell: (info) => info.getValue(),
     },
     {
-      accessorFn: (row) => row.match_participants[0].participants.teams.name,
+      accessorFn: (row) => row.match_participants[0]?.participants.teams.name,
       header: "Team 1",
       cell: (info) => info.getValue(),
     },
     {
-      accessorFn: (row) => row.match_participants[1].participants.teams.name,
+      accessorFn: (row) => row.match_participants[1]?.participants.teams.name,
       header: "Team 2",
       cell: (info) => info.getValue(),
     },

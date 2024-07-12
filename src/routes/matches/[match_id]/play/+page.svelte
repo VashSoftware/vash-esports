@@ -253,40 +253,43 @@
       </form>
     {/if}
   </div>
-  <div class="col text-center fs-1 fw-bold">
-    {data.match.match_maps.filter(
-      (match_map) =>
-        match_map.scores
-          .filter(
-            (score) =>
-              score.match_participant_players.match_participant_id ==
-              data.match.match_participants[0].id
-          )
-          .reduce((sum, score) => sum + score.score, 0) >
-        match_map.scores
-          .filter(
-            (score) =>
-              score.match_participant_players.match_participant_id ==
-              data.match.match_participants[1].id
-          )
-          .reduce((sum, score) => sum + score.score, 0)
-    ).length} - {data.match.match_maps.filter(
-      (match_map) =>
-        match_map.scores
-          .filter(
-            (score) =>
-              score.match_participant_players.match_participant_id ==
-              data.match.match_participants[1].id
-          )
-          .reduce((sum, score) => sum + score.score, 0) >
-        match_map.scores
-          .filter(
-            (score) =>
-              score.match_participant_players.match_participant_id ==
-              data.match.match_participants[0].id
-          )
-          .reduce((sum, score) => sum + score.score, 0)
-    ).length}
+  <div class="col text-center">
+    <p class="fs-5">Best of: {data.match.rounds.best_of}</p>
+    <div class=" fs-1 fw-bold">
+      {data.match.match_maps.filter(
+        (match_map) =>
+          match_map.scores
+            .filter(
+              (score) =>
+                score.match_participant_players.match_participant_id ==
+                data.match.match_participants[0].id
+            )
+            .reduce((sum, score) => sum + score.score, 0) >
+          match_map.scores
+            .filter(
+              (score) =>
+                score.match_participant_players.match_participant_id ==
+                data.match.match_participants[1].id
+            )
+            .reduce((sum, score) => sum + score.score, 0)
+      ).length} - {data.match.match_maps.filter(
+        (match_map) =>
+          match_map.scores
+            .filter(
+              (score) =>
+                score.match_participant_players.match_participant_id ==
+                data.match.match_participants[1].id
+            )
+            .reduce((sum, score) => sum + score.score, 0) >
+          match_map.scores
+            .filter(
+              (score) =>
+                score.match_participant_players.match_participant_id ==
+                data.match.match_participants[0].id
+            )
+            .reduce((sum, score) => sum + score.score, 0)
+      ).length}
+    </div>
   </div>
   <div class="col text-end">
     <a href="/teams/{data.match.match_participants[1].participants.teams.id}">
