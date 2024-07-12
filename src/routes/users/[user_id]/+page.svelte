@@ -30,9 +30,14 @@
     match_maps: { match_id: number };
   };
 
+  type VashEsportsEvent = {
+    id: number;
+    name: string;
+  };
+
   const columnHelper = createColumnHelper<Score>();
 
-  const defaultColumns: ColumnDef<Score>[] = [
+  const scoreDefaultColumns: ColumnDef<Score>[] = [
     {
       accessorKey: "score",
       header: "Score",
@@ -50,8 +55,26 @@
     },
   ];
 
+  const eventDefaultColumns: ColumnDef<VashEsportsEvent>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: (info) => info.getValue(),
+    },
+  ];
+
   const options = writable({
-    columns: defaultColumns,
+    columns: scoreDefaultColumns,
     data: data.userScores,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -65,6 +88,40 @@
   });
 
   const table = createSvelteTable(options);
+
+  const pinnedScoresTableOptions = writable({
+    columns: scoreDefaultColumns,
+    data: data.user.pinned_scores,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: {
+        pageSize: 15,
+        pageIndex: 0,
+      },
+    },
+  });
+
+  const pinnedScoresTable = createSvelteTable(pinnedScoresTableOptions);
+
+  const eventsPlayedTableOptions = writable({
+    columns: eventDefaultColumns,
+    data: data.user.team_members.flatMap((teamMember) =>
+      teamMember.teams.participants.map((participant) => participant.events)
+    ),
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: {
+        pageSize: 15,
+        pageIndex: 0,
+      },
+    },
+  });
+
+  const eventsPlayedTable = createSvelteTable(eventsPlayedTableOptions);
 
   function setCurrentPage(page: number) {
     options.update((o) => ({
@@ -222,10 +279,125 @@
 <!-- Graph of ranking against time -->
 
 <h2>Events Played</h2>
+<table class="table-striped table table-hover">
+  <thead>
+    {#each $eventsPlayedTable.getHeaderGroups() as headerGroup}
+      <tr>
+        {#each headerGroup.headers as header}
+          <th scope="col" colSpan={header.colSpan}>
+            <button
+              class="btn btn-dark"
+              on:click={header.column.getToggleSortingHandler()}
+            >
+              <svelte:component
+                this={flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+              /></button
+            >
+          </th>
+        {/each}
+      </tr>
+    {/each}
+  </thead>
+  <tbody>
+    {#each $eventsPlayedTable.getRowModel().rows as row}
+      <tr>
+        {#each row.getVisibleCells() as cell}
+          <td>
+            <svelte:component
+              this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+            />
+          </td>
+        {/each}
+      </tr>
+    {/each}
+  </tbody>
+</table>
+<div class="d-flex align-items-center justify-content-center">
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage(0)}
+    disabled={!$eventsPlayedTable.getCanPreviousPage()}
+  >
+    {"<<"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() =>
+      setCurrentPage($eventsPlayedTable.getState().pagination.pageIndex - 1)}
+    disabled={!$eventsPlayedTable.getCanPreviousPage()}
+  >
+    {"<"}
+  </button>
+  <span> Page </span>
+  <input
+    class="form-control mx-2"
+    type="number"
+    value={$eventsPlayedTable.getState().pagination.pageIndex + 1}
+    min={1}
+    max={$eventsPlayedTable.getPageCount()}
+    on:change={(e) => setCurrentPage(parseInt(e.target.value) - 1)}
+    style="width: 50px;"
+  />
+  <span>{" of "}{$eventsPlayedTable.getPageCount()}</span>
+  <button
+    class="btn btn-dark"
+    on:click={() =>
+      setCurrentPage($eventsPlayedTable.getState().pagination.pageIndex + 1)}
+    disabled={!$eventsPlayedTable.getCanNextPage()}
+  >
+    {">"}
+  </button>
+  <button
+    class="btn btn-dark"
+    on:click={() => setCurrentPage($eventsPlayedTable.getPageCount() - 1)}
+    disabled={!$eventsPlayedTable.getCanNextPage()}
+  >
+    {">>"}
+  </button>
+</div>
 
-<h2>Pinned Plays</h2>
+<h2>Pinned Scores</h2>
+<table class="table-striped table table-hover">
+  <thead>
+    {#each $pinnedScoresTable.getHeaderGroups() as headerGroup}
+      <tr>
+        {#each headerGroup.headers as header}
+          <th scope="col" colSpan={header.colSpan}>
+            <button
+              class="btn btn-dark"
+              on:click={header.column.getToggleSortingHandler()}
+            >
+              <svelte:component
+                this={flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+              /></button
+            >
+          </th>
+        {/each}
+      </tr>
+    {/each}
+  </thead>
+  <tbody>
+    {#each $pinnedScoresTable.getRowModel().rows as row}
+      <tr>
+        {#each row.getVisibleCells() as cell}
+          <td>
+            <svelte:component
+              this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+            />
+          </td>
+        {/each}
+      </tr>
+    {/each}
+  </tbody>
+</table>
 
-<h2>Top Plays ({data.userScores.length})</h2>
+<h2>Top Scores</h2>
 <table class="table-striped table table-hover">
   <thead>
     {#each $table.getHeaderGroups() as headerGroup}
