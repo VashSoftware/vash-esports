@@ -45,7 +45,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const eventsPromise = supabase.from("events").select("*");
   const matchesPromise = supabase.from("matches").select("*");
-  const usersPromise = supabase.from("user_profiles").select("*");
+  const usersPromise = supabase.from("user_profiles").select("*").eq('finished_setup', true);
   const teamsPromise = supabase.from("teams").select("*");
   const organisationsPromise = supabase.from("organisations").select("*");
   const userProfilePromise = supabase
