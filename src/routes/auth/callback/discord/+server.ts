@@ -1,52 +1,42 @@
 import { redirect } from "@sveltejs/kit";
-import { PUBLIC_OSU_CLIENT_ID } from "$env/static/public";
-import { OSU_CLIENT_SECRET } from "$env/static/private";
+import { PUBLIC_DISCORD_CLIENT_ID } from "$env/static/public";
+import { DISCORD_CLIENT_SECRET } from "$env/static/private";
 
 export const GET = async ({ url, locals: { supabase, getSession } }) => {
   const code = url.searchParams.get("code") as string;
 
   if (code) {
-    const token = await fetch("https://osu.ppy.sh/oauth/token", {
+    const token = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        client_id: PUBLIC_OSU_CLIENT_ID,
-        client_secret: OSU_CLIENT_SECRET,
+        client_id: PUBLIC_DISCORD_CLIENT_ID,
+        client_secret: DISCORD_CLIENT_SECRET,
         code,
         grant_type: "authorization_code",
-        redirect_uri: `${url.origin}/auth/callback/osu`,
+        redirect_uri: `${url.origin}/auth/callback/discord`,
       }),
     });
 
     const { access_token } = await token.json();
 
-    const user = await fetch("https://osu.ppy.sh/api/v2/me/osu", {
+    const user = await fetch("https://discord.com/api/users/@me", {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
     });
 
-    const osuData = await user.json();
+    const data = await user.json();
 
     const session = await getSession();
 
     const userProfile = await supabase
       .from("user_profiles")
-      .select("id, name")
+      .select("id")
       .eq("user_id", session.user.id)
-      .single();
-
-    await supabase
-      .from("user_profiles")
-      .update({
-        name: userProfile.data.name ? userProfile.data.name : osuData.username,
-        country_code: osuData.country_code,
-      })
-      .eq("user_id", session.user.id)
-      .select("id, user_id")
       .single();
 
     const userPlatforms = await supabase
@@ -55,13 +45,8 @@ export const GET = async ({ url, locals: { supabase, getSession } }) => {
         [
           {
             user_id: userProfile.data.id,
-            platform_id: 1,
-            value: osuData.id,
-          },
-          {
-            user_id: userProfile.data.id,
-            platform_id: 10,
-            value: osuData.username,
+            platform_id: 9,
+            value: data.id,
           },
         ],
         {

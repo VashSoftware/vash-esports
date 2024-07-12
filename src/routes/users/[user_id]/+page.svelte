@@ -1,6 +1,5 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { writable } from "svelte/store";
   import {
@@ -13,6 +12,10 @@
     renderComponent,
     type ColumnDef,
   } from "@tanstack/svelte-table";
+  import {
+    PUBLIC_DISCORD_CLIENT_ID,
+    PUBLIC_OSU_CLIENT_ID,
+  } from "$env/static/public";
 
   export let data;
 
@@ -173,7 +176,7 @@
   <div class="col">
     <div class="d-flex justify-content-end gap-3 align-items-center">
       <a
-        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platform_id == 1)[0].value}`}
+        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platform_id == 1)[0]?.value}`}
         class="text-white"
       >
         <svg
@@ -204,14 +207,13 @@
         </svg>
       </div>
       {#if data.session.user.id == data.user?.user_id}
-        <a
-          href="/account"
+        <btn
           class="btn btn-secondary"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
         >
           Manage
-        </a>
+        </btn>
       {/if}
     </div>
   </div>
@@ -282,7 +284,7 @@
     value={$table.getState().pagination.pageIndex + 1}
     min={1}
     max={$table.getPageCount()}
-    on:change={(e) => setCurrentPage(parseInt(e.target?.value) - 1)}
+    on:change={(e) => setCurrentPage(parseInt(e.target.value) - 1)}
     style="width: 50px;"
   />
   <span>{" of "}{$table.getPageCount()}</span>
@@ -312,7 +314,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Manage account</h1>
+        <h5 class="modal-title" id="exampleModalLabel">Manage account</h5>
         <button
           type="button"
           class="btn-close"
@@ -323,6 +325,7 @@
       <div class="modal-body">
         <div class="mb-3">
           <label for="name" class="form-label">Username</label>
+
           <input
             type="text"
             class="form-control"
@@ -376,19 +379,65 @@
           />
         </div>
 
-        <div class="mb-3">
-          <label for="actions" class="form-label">Actions</label>
-          <div>
-            <form action="?/signOut" method="post" use:enhance>
-              <button
-                type="submit"
-                class="btn btn-danger"
-                data-bs-dismiss="modal"
-                on:click={signOut}
-                >Sign Out
-              </button>
-            </form>
+        <div class="mb-2">
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <label for="osuConnectButton">osu!</label>
+
+              {#if !data.user.user_platforms?.find((platform) => platform.platform_id == 1)}
+                <a
+                  href={`https://osu.ppy.sh/oauth/authorize?client_id=${PUBLIC_OSU_CLIENT_ID}&redirect_uri=${$page.url.origin}/auth/callback/osu&response_type=code&scope=public identify`}
+                  class="btn"
+                  style="background-color: #EA67A4; border-color: #EA67A4;"
+                >
+                  Connect osu! Account
+                </a>
+              {:else}
+                <button
+                  class="btn"
+                  style="background-color: #EA67A4; border-color: #EA67A4;"
+                  disabled
+                  >Connected
+                </button>
+              {/if}
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <label for="osuConnectButton">Discord</label>
+
+              {#if !data.user.user_platforms?.find((platform) => platform.platform_id == 9)}
+                <a
+                  href={`https://discord.com/oauth2/authorize?response_type=code&client_id=${PUBLIC_DISCORD_CLIENT_ID}&scope=identify&redirect_uri=${$page.url.origin}/auth/callback/discord&prompt=none&integration_type=0`}
+                  class="btn"
+                  style="background-color: #5765F2; border-color: #5765F2;"
+                >
+                  Connect
+                </a>
+              {:else}
+                <button
+                  class="btn"
+                  style="background-color: #5765F2; border-color: #5765F2;"
+                  disabled
+                  >Connected
+                </button>
+              {/if}
+            </div>
           </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="actions" class="form-label">Actions</label>
+        <div>
+          <form action="?/signOut" method="post" use:enhance>
+            <button
+              type="submit"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+              on:click={signOut}
+              >Sign Out
+            </button>
+          </form>
         </div>
       </div>
     </div>
