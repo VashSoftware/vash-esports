@@ -29,6 +29,17 @@
       data.mapPool.map_pool_mods[modI].map_pool_maps[mapI].found_maps = [map];
     }, 300);
   }
+
+  async function deletePool(event: Event) {
+    await data.supabase
+      .from("map_pools")
+      .update({
+        deleted_at: new Date(),
+      })
+      .eq("id", data.mapPool.id);
+
+    window.location.href = "/map-pools";
+  }
 </script>
 
 <a href="/map-pools" type="button" class="btn btn-secondary my-4"
@@ -296,6 +307,14 @@
                 </div>
               {/each}
             </div>
+          </div>
+
+          <div class="mb-3 d-flex justify-content-between align-items-center">
+            <b>Delete Pool?</b>
+
+            <button type="button" class="btn btn-danger" on:click={deletePool}>
+              Delete
+            </button>
           </div>
         </div>
         <div class="modal-footer">
