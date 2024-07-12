@@ -165,6 +165,7 @@
     {/if}
   </div>
   <div class="col text-center">
+    <p class="fs-5">Best of: {data.match.rounds.best_of}</p>
     {#if data.match.ongoing}
       <b class="text-danger">(LIVE)</b>
     {/if}
