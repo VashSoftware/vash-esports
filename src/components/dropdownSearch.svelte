@@ -16,6 +16,7 @@
         "name",
         `%${event ? (event.target as HTMLInputElement).value : ""}%`
       )
+      .is("deleted_at", null)
       .limit(10);
 
     foundItems = foundItems.data.filter((item) => {

@@ -38,7 +38,7 @@ export async function load({ locals, params }) {
     .eq("id", params.event_id)
     .single();
 
-  const mapPools = await locals.supabase.from("map_pools").select("*");
+  const mapPools = await locals.supabase.from("map_pools").select("*").is("deleted_at", null);
 
   return {
     event: event.data,
