@@ -6,47 +6,78 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
   const match = await locals.supabase
     .from("matches")
     .select(
-      `*, 
-      rounds (*, 
-        map_pools(*,
-          map_pool_mods(*,
-            map_pool_mod_mods(*,
-              mods(*
+      `
+      *,
+      rounds(
+        *,
+        map_pools(
+          *,          
+          map_pool_maps(
+            *,
+            maps(
+              *,
+              mapsets(
+                *
               )
             ),
-            map_pool_maps(*,
-              maps(*, 
-                mapsets(*
-                )
-              )
+            map_pool_map_mods(
+              *,
+              mods(*)
             )
           )
         ),
-        events(*, event_groups(*))
-      ),
-      match_participants(*,
-        match_participant_players(*,
-          match_participant_player_states(*
-          ),
-          team_members(*, 
-            user_profiles(*
-            )
-          )
-        ),
-        participants(*, 
-          teams(*
+        events(
+          *,
+          event_groups(
+            *
           )
         )
       ),
-      match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
-      match_bans(*, match_participants(*, participants(*, teams(name))))`
+      match_participants(
+        *,
+        match_participant_players(
+          *,
+          match_participant_player_states(
+            *
+          ),
+          team_members(
+            *,
+            user_profiles(
+              *
+            )
+          )
+        ),
+        participants(*,
+          teams(*, team_members(user_profiles(user_id)))
+        )
+      ),
+      match_maps(*,
+        map_pool_maps(*,
+          maps(*,
+            mapsets(*)
+          )
+        ),
+        scores(*,
+          match_participant_players(*)
+        )
+      ),
+      match_bans(*,
+        match_participants(*,
+          participants(*,
+            teams(name)
+          )
+        )
+      )
+      `
     )
     .eq("id", params.match_id)
-    .order("priority", {
-      referencedTable: "rounds.map_pools.map_pool_mods",
+    .order("order", {
+      referencedTable: "rounds.map_pools.map_pool_maps.map_pool_map_mods.mods",
       ascending: true,
     })
     .single();
+
+  console.dir(match.data, { depth: null });
 
   return {
     match: match.data,
@@ -96,7 +127,7 @@ export const actions = {
 
     const mapPoolMap = await locals.supabase
       .from("map_pool_maps")
-      .select("*, maps(*), map_pool_mods(code)")
+      .select("*, maps(*), map_pool_map_mods(mods(code))")
       .eq("id", mapId)
       .single();
 
@@ -124,7 +155,7 @@ export const actions = {
         channelId: match.data.lobby_id,
         messages: [
           `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
-          `!mp mods NF ${mapPoolMap.data.map_pool_mods.code}`,
+          `!mp mods NF ${mapPoolMap.data.map_pool_map_mods.mods.code}`,
         ],
       }),
     });
@@ -134,42 +165,7 @@ export const actions = {
   makeMatch: async ({ locals, params, request }) => {
     const match = await locals.supabase
       .from("matches")
-      .select(
-        `*, 
-      rounds (*, 
-        map_pools(*,
-          map_pool_mods(*,
-            map_pool_mod_mods(*,
-              mods(*
-              )
-            ),
-            map_pool_maps(*,
-              maps(*, 
-                mapsets(*
-                )
-              )
-            )
-          )
-        ),
-        events(*, event_groups(*))
-      ),
-      match_participants(*,
-        match_participant_players(*,
-          match_participant_player_states(*
-          ),
-          team_members(*, 
-            user_profiles(*
-            )
-          )
-        ),
-        participants(*, 
-          teams(*
-          )
-        )
-      ),
-      match_maps(*, map_pool_maps( maps(*, mapsets(*))), scores(*, match_participant_players(*))),
-      match_bans(*, match_participants(*, participants(*, teams(name))))`
-      )
+      .select(`id`)
       .eq("id", params.match_id)
       .single();
 
@@ -258,5 +254,13 @@ export const actions = {
       "Invited player: ",
       matchParticipantPlayer.data.team_members.user_profiles.name
     );
+  },
+  roll: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    const matchParticipantPlayer = await locals.supabase
+      .from("match_participants")
+      .update({ roll: Math.floor(Math.random() * 100) + 1 })
+      .eq("id", formData.get("match-participant-id"));
   },
 } satisfies Actions;

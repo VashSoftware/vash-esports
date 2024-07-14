@@ -140,7 +140,7 @@ export const actions = {
       event_id: event[0].id,
       map_pool_id: matchInvite.data.pool_id,
       best_of: matchInvite.data.best_of,
-      match_player_bans: 0,
+      bans_per_match_participant: 0,
       name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams.name}`,
     });
 
@@ -205,13 +205,17 @@ export const actions = {
       state: 1,
     });
 
-    fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/create-match", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: match[0].id }),
-    });
+    try {
+      fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/create-match", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: match[0].id }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     throw redirect(302, `/matches/${match[0].id}/play`);
   },
