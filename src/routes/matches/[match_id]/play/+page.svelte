@@ -367,7 +367,7 @@
   </div>
 </div>
 
-<div class="row shadow bg-body-tertiary rounded-5 py-4">
+<div class="row shadow bg-body-tertiary rounded-5 py-4 mb-5">
   <div class="col">
     <h1 class="text-center pb-3">
       Maps Played ({data.match.match_maps.length})

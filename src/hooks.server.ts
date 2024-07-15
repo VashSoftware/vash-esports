@@ -106,6 +106,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     .select("*")
     .eq("user_id", session?.user.id);
 
+  if (user.error) {
+    console.error(user.error);
+  }
+
   if (
     session &&
     user.data[0]?.finished_setup == false &&
