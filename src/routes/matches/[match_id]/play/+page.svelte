@@ -5,63 +5,56 @@
 
   export let data;
 
+  let activeModals = {
+    roll: null,
+    pickMap: null,
+    matchOver: null,
+  };
+
   async function processMatch() {
-    if (
-      data.match.match_participants.filter((mp) => mp.roll == null).length > 0
-    ) {
-      const bootstrap = await import("bootstrap");
-      const rollModal = new bootstrap.Modal("#rollModal");
-      if (rollModal._isShown) {
-        return;
-      }
-      console.dir(rollModal);
-
-      return rollModal.show();
-    }
+    const bootstrap = await import("bootstrap");
 
     if (
-      data.match.match_maps[data.match.match_maps.length - 1].status ==
-      "finished"
+      data.match.match_participants.filter((mp) => mp.roll === null).length >
+        0 &&
+      activeModals.roll === null
     ) {
-      const bootstrap = await import("bootstrap");
-      const pickMapModal = new bootstrap.Modal("#pickMapModal");
-      pickMapModal.show();
+      activeModals.roll = new bootstrap.Modal("#rollModal");
+      return await activeModals.roll.show();
     }
 
-    if (!data.match.ongoing) {
-      const bootstrap = await import("bootstrap");
-      const matchOverModal = new bootstrap.Modal("#matchOverModal");
-      matchOverModal.show();
+    await activeModals.roll?.hide();
+
+    if (
+      (data.match.match_maps[data.match.match_maps.length - 1]?.status ==
+        "finished" ||
+        data.match.match_maps.length == 0) &&
+      activeModals.pickMap === null
+    ) {
+      activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
+      return await activeModals.pickMap.show();
     }
+
+    await activeModals.pickMap?.hide();
+
+    if (data.match.ongoing === false && activeModals.matchOver === null) {
+      activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
+    }
+
+    return await activeModals.matchOver.show();
   }
 
   onMount(async () => {
-    await processMatch();
+    processMatch();
 
     const getMatch = async () => {
-      let updatedMatch = await data.supabase
+      const updatedMatch = await data.supabase
         .from("matches")
         .select(
           `
-      *,
+          *,
       rounds(
         *,
-        map_pools(
-          *,          
-          map_pool_maps(
-            *,
-            maps(
-              *,
-              mapsets(
-                *
-              )
-            ),
-            map_pool_map_mods(
-              *,
-              mods(*)
-            )
-          )
-        ),
         events(
           *,
           event_groups(
@@ -103,19 +96,36 @@
             teams(name)
           )
         )
+      ),
+      map_pools(
+        *,          
+        map_pool_maps(
+          *,
+          maps(
+            *,
+            mapsets(
+              *
+            )
+          ),
+          map_pool_map_mods(
+            *,
+            mods(
+              *
+            )
+          )
+        )
       )
-      `
+          `
         )
         .eq("id", data.match.id)
         .order("order", {
-          referencedTable:
-            "rounds.map_pools.map_pool_maps.map_pool_map_mods.mods",
+          referencedTable: "map_pools.map_pool_maps.map_pool_map_mods.mods",
           ascending: true,
         })
         .single();
 
       data.match = updatedMatch.data;
-      await processMatch();
+      processMatch();
     };
 
     data.supabase
@@ -126,7 +136,9 @@
           event: "*",
           schema: "public",
         },
-        (payload) => getMatch()
+        (payload) => {
+          getMatch();
+        }
       )
       .subscribe();
   });
@@ -168,7 +180,7 @@
   }
 </script>
 
-<div class="d-flex justify-content-center gap-3 my-4">
+<!-- <div class="d-flex justify-content-center gap-3 my-4">
   <form action="?/startMap" method="post" use:enhance>
     <button type="submit" class="btn btn-success"> Start map </button>
   </form>
@@ -176,7 +188,7 @@
   <form action="?/endMatch" method="post" use:enhance>
     <button type="submit" class="btn btn-danger"> End match </button>
   </form>
-</div>
+</div> -->
 
 <!-- This match is being broadcasted on the following official channels: -->
 
@@ -192,8 +204,17 @@
   </div>
 {/if}
 
-<div class="row my-5 align-items-center">
+<div class="row my-4 py-4 align-items-center shadow bg-body-tertiary rounded-5">
   <div class="col">
+    <div class="text-center mb-3">
+      <img
+        src={data.match.match_participants[0].participants.teams.picture_url}
+        height="192"
+        class="rounded-circle"
+        alt=""
+      />
+    </div>
+
     <a href="/teams/{data.match.match_participants[0].participants.teams.id}">
       <h2 class="text-center">
         {data.match.match_participants[0].participants.teams.name}
@@ -282,6 +303,15 @@
     </div>
   </div>
   <div class="col text-end">
+    <div class="text-center mb-3">
+      <img
+        src={data.match.match_participants[1].participants.teams.picture_url}
+        height="192"
+        class="rounded-circle"
+        alt=""
+      />
+    </div>
+
     <a href="/teams/{data.match.match_participants[1].participants.teams.id}">
       <h2 class="text-center">
         {data.match.match_participants[1].participants.teams.name}
@@ -333,9 +363,11 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row shadow bg-body-tertiary rounded-5 py-4">
   <div class="col">
-    <h1 class="text-center">Maps Played</h1>
+    <h1 class="text-center pb-3">
+      Maps Played ({data.match.match_maps.length})
+    </h1>
 
     {#each data.match.match_maps as map}
       <div class="row py-1 align-items-center">
@@ -422,173 +454,35 @@
   </div>
 </div>
 
-<div
-  class="modal fade"
-  id="matchOverModal"
-  tabindex="-1"
-  aria-labelledby="staticBackdropLabel"
-  aria-hidden="true"
-  data-bs-backdrop="static"
->
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Match Ended</h1>
-      </div>
-      <div class="modal-body text-center">
-        <div class="d-flex justify-content-around align-items-center">
-          <div>
-            <img
-              src={data.match.match_participants[0].participants.teams
-                .picture_url}
-              alt=""
-              height="192"
-            />
-            <h2>{data.match.match_participants[0].participants.teams.name}</h2>
-          </div>
-          <div>
-            <h2>
-              {data.match.match_maps.filter(
-                (match_map) =>
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[0].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0) >
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[1].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0)
-              ).length} - {data.match.match_maps.filter(
-                (match_map) =>
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[1].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0) >
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[0].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0)
-              ).length}
-            </h2>
-          </div>
-          <div>
-            <img
-              src={data.match.match_participants[1].participants.teams
-                .picture_url}
-              alt=""
-              height="192"
-            />
-            <h2>{data.match.match_participants[1].participants.teams.name}</h2>
-          </div>
+<form action="?/pickMap" method="post" use:enhance>
+  <div
+    class="modal fade"
+    id="pickMapModal"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
         </div>
-      </div>
-      <div class="modal-footer">
-        <a href="/">
-          <button class="btn btn-success" data-bs-dismiss="modal">
-            Back to Home
-          </button>
-        </a>
+        <div class="modal-body text-center">
+          {#each data.match.map_pools.map_pool_maps as map}
+            <div>
+              <input type="hidden" name="map-id" value={map.id} />
+              {map.maps.mapsets.artist} - {map.maps.mapsets.title}
+              <button class="btn btn-primary">PICK</button>
+            </div>
+          {/each}
+        </div>
       </div>
     </div>
   </div>
-</div>
+</form>
 
-<div
-  class="modal fade"
-  id="pickMapModal"
-  tabindex="-1"
-  aria-labelledby="staticBackdropLabel"
-  aria-hidden="true"
-  data-bs-backdrop="static"
->
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
-      </div>
-      <div class="modal-body text-center">
-        <div class="d-flex justify-content-around align-items-center">
-          <div>
-            <img
-              src={data.match.match_participants[0].participants.teams
-                .picture_url}
-              alt=""
-              height="192"
-            />
-            <h2>{data.match.match_participants[0].participants.teams.name}</h2>
-          </div>
-          <div>
-            <h2>
-              {data.match.match_maps.filter(
-                (match_map) =>
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[0].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0) >
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[1].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0)
-              ).length} - {data.match.match_maps.filter(
-                (match_map) =>
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[1].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0) >
-                  match_map.scores
-                    .filter(
-                      (score) =>
-                        score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[0].id
-                    )
-                    .reduce((sum, score) => sum + score.score, 0)
-              ).length}
-            </h2>
-          </div>
-          <div>
-            <img
-              src={data.match.match_participants[1].participants.teams
-                .picture_url}
-              alt=""
-              height="192"
-            />
-            <h2>{data.match.match_participants[1].participants.teams.name}</h2>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <a href="/">
-          <button class="btn btn-success" data-bs-dismiss="modal">
-            Back to Home
-          </button>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<form action="?/roll" method="post">
+<form action="?/roll" method="post" use:enhance>
   <div
     class="modal fade"
     id="rollModal"
@@ -635,6 +529,16 @@
                   </div>
                 </div>
 
+                <input
+                  type="hidden"
+                  name="match-participant-id"
+                  value={data.match.match_participants.filter(
+                    (mp) =>
+                      mp.participants.teams.team_members.filter(
+                        (tm) => tm.user_profiles.user_id == data.session.user.id
+                      )[0]
+                  )[0].id}
+                />
                 <button
                   class="btn btn-lg btn-success"
                   class:disabled={data.match.match_participants.filter(
@@ -673,6 +577,91 @@
     </div>
   </div>
 </form>
+
+<div
+  class="modal fade"
+  id="matchOverModal"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Match Ended</h1>
+      </div>
+      <div class="modal-body text-center">
+        <div class="d-flex justify-content-around align-items-center">
+          <div>
+            <img
+              src={data.match.match_participants[0].participants.teams
+                .picture_url}
+              alt=""
+              height="192"
+              class="rounded-circle"
+            />
+            <h2>{data.match.match_participants[0].participants.teams.name}</h2>
+          </div>
+          <div>
+            <h2>
+              {data.match.match_maps.filter(
+                (match_map) =>
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[0].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0) >
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[1].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0)
+              ).length} - {data.match.match_maps.filter(
+                (match_map) =>
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[1].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0) >
+                  match_map.scores
+                    .filter(
+                      (score) =>
+                        score.match_participant_players.match_participant_id ==
+                        data.match.match_participants[0].id
+                    )
+                    .reduce((sum, score) => sum + score.score, 0)
+              ).length}
+            </h2>
+          </div>
+          <div>
+            <img
+              src={data.match.match_participants[1].participants.teams
+                .picture_url}
+              alt=""
+              height="192"
+              class="rounded-circle"
+            />
+            <h2>{data.match.match_participants[1].participants.teams.name}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="/">
+          <button class="btn btn-success" data-bs-dismiss="modal">
+            Back to Home
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <style>
   .progress-bar-vertical {

@@ -10,22 +10,6 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       *,
       rounds(
         *,
-        map_pools(
-          *,          
-          map_pool_maps(
-            *,
-            maps(
-              *,
-              mapsets(
-                *
-              )
-            ),
-            map_pool_map_mods(
-              *,
-              mods(*)
-            )
-          )
-        ),
         events(
           *,
           event_groups(
@@ -67,17 +51,33 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
             teams(name)
           )
         )
+      ),
+      map_pools(
+        *,          
+        map_pool_maps(
+          *,
+          maps(
+            *,
+            mapsets(
+              *
+            )
+          ),
+          map_pool_map_mods(
+            *,
+            mods(
+              *
+            )
+          )
+        )
       )
       `
     )
     .eq("id", params.match_id)
     .order("order", {
-      referencedTable: "rounds.map_pools.map_pool_maps.map_pool_map_mods.mods",
+      referencedTable: "map_pools.map_pool_maps.map_pool_map_mods.mods",
       ascending: true,
     })
     .single();
-
-  console.dir(match.data, { depth: null });
 
   return {
     match: match.data,
@@ -119,11 +119,11 @@ export const actions = {
 
     const match = await locals.supabase
       .from("matches")
-      .select(
-        `*, match_participants(match_participant_players(id)), rounds(map_pool_id)`
-      )
+      .select(`*, match_participants(match_participant_players(id))`)
       .eq("id", params.match_id)
       .single();
+
+    console.log(match);
 
     const mapPoolMap = await locals.supabase
       .from("map_pool_maps")
@@ -131,34 +131,54 @@ export const actions = {
       .eq("id", mapId)
       .single();
 
+    console.log(mapPoolMap);
+
     const matchMap = await locals.supabase
       .from("match_maps")
-      .insert({ map_pool_map_id: mapId, match_id: params.match_id })
-      .select("id, map_pool_maps(maps(*))")
+      .insert({
+        map_pool_map_id: mapId,
+        match_id: params.match_id,
+        status: "waiting",
+      })
+      .select("id, map_pool_maps(maps(osu_id))")
       .single();
+
+    console.log(matchMap);
+
+    const scores = [];
 
     for (const participant of match.data.match_participants) {
       for (const player of participant.match_participant_players) {
-        await locals.supabase.from("scores").insert({
+        scores.push({
           match_map_id: matchMap.data.id,
           match_participant_player_id: player.id,
         });
       }
     }
 
-    await fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        channelId: match.data.lobby_id,
-        messages: [
-          `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
-          `!mp mods NF ${mapPoolMap.data.map_pool_map_mods.mods.code}`,
-        ],
-      }),
-    });
+    console.log(scores);
+
+    await locals.supabase.from("scores").insert(scores);
+
+    try {
+      fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          channelId: match.data.lobby_id,
+          messages: [
+            `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
+            `!mp mods NF ${mapPoolMap.data.map_pool_map_mods.map(
+              (mod) => mod.mods.code
+            )}`,
+          ],
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     console.log("Picked map with ID: ", mapId);
   },

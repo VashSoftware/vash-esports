@@ -108,7 +108,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   if (
     session &&
-    user?.data[0].finished_setup == false &&
+    user.data[0]?.finished_setup == false &&
     event.route.id !== `/users/[user_id]/welcome` &&
     event.route.id !== `/auth/callback/osu`
   ) {
