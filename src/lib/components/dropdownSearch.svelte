@@ -2,43 +2,52 @@
   export let text;
   export let searchKey;
   export let selectKey;
-  export let filters = {};
+  export let searchColumn;
+  export let itemDisplayFn = (item) => item[searchColumn];
+  export let filters = [];
   export let supabase;
+  export let selectRowFn = (item) => item;
+  export let searchFn = async (event) => {};
 
   let items = [];
   let selectedItem = null;
 
   async function search(event: Event) {
+    searchFn(event);
+
     let foundItems = await supabase
       .from(searchKey)
       .select(selectKey)
-      .ilike(
-        "name",
-        `%${event ? (event.target as HTMLInputElement).value : ""}%`
-      )
-      .is("deleted_at", null)
-      .limit(10);
+      .ilike(searchColumn, `%${(event.target as HTMLInputElement).value}%`)
+      .is("deleted_at", null);
 
     foundItems = foundItems.data.filter((item) => {
-      for (let key in filters) {
-        if (item[key] !== filters[key]) {
+      for (let filter of filters) {
+        if (!filter(item)) {
           return false;
         }
       }
-      return true;
+
+      let allValuesAreNull = true;
+      for (let key in item) {
+        if (key == "id") {
+          continue;
+        }
+
+        if (item[key] !== null) {
+          allValuesAreNull = false;
+          break;
+        }
+      }
+
+      return !allValuesAreNull;
     });
 
-    items = foundItems;
+    items = foundItems.slice(0, 10);
   }
 </script>
 
-<input
-  type="hidden"
-  name={searchKey}
-  value={searchKey == "teams"
-    ? selectedItem?.team_members[0]?.user_profiles.id
-    : selectedItem?.id}
-/>
+<input type="hidden" name={searchKey} />
 <div class="dropdown w-100">
   <button
     class="btn btn-secondary dropdown-toggle w-100"
@@ -47,7 +56,7 @@
     aria-expanded="false"
     on:click={search}
   >
-    {selectedItem ? selectedItem?.name : text}
+    {selectedItem ? itemDisplayFn(selectedItem) : text}
   </button>
   <ul class="dropdown-menu w-100">
     <li>
@@ -66,10 +75,11 @@
         <button
           type="button"
           class="dropdown-item"
-          on:click={() => {
+          on:click={async (event) => {
             selectedItem = item;
-            console.dir(selectedItem?.team_members);
-          }}>{item.name}</button
+
+            await selectRowFn(item);
+          }}>{itemDisplayFn(item)}</button
         >
       </li>
     {/each}

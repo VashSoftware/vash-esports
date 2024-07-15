@@ -1,12 +1,13 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import DropdownSearch from "$lib/components/dropdownSearch.svelte";
+  import MapPoolMapRemoveButton from "./MapPoolMapRemoveButton.svelte";
+  import MapPoolModAddButton from "./MapPoolModAddButton.svelte";
   import {
     createColumnHelper,
     createSvelteTable,
     flexRender,
     getCoreRowModel,
-    getGroupedRowModel,
-    getPaginationRowModel,
     getSortedRowModel,
     renderComponent,
     type ColumnDef,
@@ -20,7 +21,7 @@
     map_pool_id: number;
     map_id: number;
     mod_priority: number;
-    map_pool_map_mods: { code: string }[];
+    map_pool_map_mods: { mod_id: number; mods: { id: number; code: string } }[];
     maps: {
       mapsets: {
         artist: string;
@@ -29,46 +30,103 @@
     };
   };
 
+  const columnHelper = createColumnHelper<MapPoolMap>();
+
   const defaultColumns: ColumnDef<MapPoolMap>[] = [
+    columnHelper.display({
+      id: "actions",
+      header: "Add Map",
+      cell: (props) => {
+        return props.row.original.mod_priority == 1
+          ? renderComponent(MapPoolModAddButton, {
+              modId: props.row.original.map_pool_map_mods[0].mod_id,
+              modPriority:
+                data.mapPool.map_pool_maps.filter(
+                  (map) =>
+                    map.map_pool_map_mods[0].mod_id ==
+                    props.row.original.map_pool_map_mods[0].mod_id
+                ).length + 1,
+            })
+          : "";
+      },
+    }),
     {
       accessorFn: (row) =>
-        `${row.map_pool_map_mods.map((mod) => (mod.code != null ? mod.code : "NM"))}${row.mod_priority}`,
+        `${row.map_pool_map_mods.map((mod) => (mod.mods.code != null ? mod.mods.code : "NM"))}${row.mod_priority}`,
       header: "Mod ID",
       cell: (info) => info.getValue(),
     },
+    columnHelper.display({
+      id: "map",
+      header: "Map",
+      cell: (props) =>
+        renderComponent(DropdownSearch, {
+          text: props.row.original.maps
+            ? `${props.row.original.maps.mapsets.artist} - ${props.row.original.maps.mapsets.title}`
+            : "No map selected",
+          searchKey: "maps",
+          selectKey: "id, mapsets(artist, title)",
+          searchColumn: "mapsets.title",
+          itemDisplayFn: (item) =>
+            item.mapsets
+              ? `${item.mapsets?.artist} - ${item.mapsets?.title}`
+              : "",
+          supabase: data.supabase,
+          selectRowFn: async (item) => {
+            await data.supabase
+              .from("map_pool_maps")
+              .update({
+                map_id: item.id,
+              })
+              .eq("id", props.row.original.id)
+              .select("*");
+          },
+          searchFn: async (event) => {
+            fetch(`/api/maps`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ search: event.target.value }),
+            });
+
+            return;
+          },
+        }),
+    }),
     {
-      accessorFn: (row) =>
-        `${row.maps.mapsets.artist} - ${row.maps.mapsets.title}`,
-      header: "Artitst - Title [Difficulty]",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "cs",
+      accessorKey: "maps.star_rating",
       header: "Star Rating",
       cell: (info) => info.getValue(),
     },
     {
-      accessorFn: (row) => "cs",
+      accessorFn: (row) => {
+        const minutes = Math.floor(row.maps?.mapsets.time / 60);
+        const seconds = row.maps?.mapsets.time % 60;
+        return isNaN(minutes) || isNaN(seconds)
+          ? ""
+          : `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      },
       header: "Length",
       cell: (info) => info.getValue(),
     },
     {
-      accessorKey: "cs",
+      accessorKey: "maps.mapsets.bpm",
       header: "BPM",
       cell: (info) => info.getValue(),
     },
     {
-      accessorKey: "cs",
+      accessorKey: "maps.circle_size",
       header: "Circle Size",
       cell: (info) => info.getValue(),
     },
     {
-      accessorKey: "cs",
+      accessorKey: "maps.overall_difficulty",
       header: "Overall Difficulty",
       cell: (info) => info.getValue(),
     },
     {
-      accessorKey: "cs",
+      accessorKey: "maps.approach_rate",
       header: "Approach Rate",
       cell: (info) => info.getValue(),
     },
@@ -77,11 +135,15 @@
       header: "Notes",
       cell: (info) => info.getValue(),
     },
-    {
-      accessorKey: "notes",
+    columnHelper.display({
+      id: "actions",
       header: "Actions",
-      cell: (info) => info.getValue(),
-    },
+      cell: (props) => {
+        return renderComponent(MapPoolMapRemoveButton, {
+          mapPoolMapId: props.row.original.id,
+        });
+      },
+    }),
   ];
 
   const options = writable({
@@ -89,14 +151,6 @@
     data: data.mapPool.map_pool_maps,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-
-    state: {
-      pagination: {
-        pageSize: 15,
-        pageIndex: 0,
-      },
-    },
   });
 
   const table = createSvelteTable(options);
@@ -138,6 +192,8 @@
 
     window.location.href = "/map-pools";
   }
+
+  let addModForm;
 </script>
 
 <a href="/map-pools" type="button" class="btn btn-secondary my-4"
@@ -194,6 +250,38 @@
     {/each}
   </tbody>
 </table>
+
+<div class="d-flex justify-content-center mb-5">
+  <div>
+    <form
+      bind:this={addModForm}
+      action="?/addMapPoolMod"
+      method="post"
+      use:enhance
+    >
+      <DropdownSearch
+        text="Add Mod"
+        searchKey="mods"
+        selectKey="id, name"
+        supabase={data.supabase}
+        itemDisplayFn={(item) => item.name}
+        searchColumn="name"
+        selectRowFn={(item) => {
+          addModForm.querySelector("input[name=mods]").value = item.id;
+
+          addModForm.submit();
+        }}
+        filters={[
+          (item) => {
+            return !data.mapPool.map_pool_maps.some(
+              (map) => map.map_pool_map_mods[0].mod_id === item.id
+            );
+          },
+        ]}
+      />
+    </form>
+  </div>
+</div>
 
 <form action="?/editMapPool" method="post">
   <div

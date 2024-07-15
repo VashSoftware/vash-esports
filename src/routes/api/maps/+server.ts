@@ -4,26 +4,22 @@ import { OSU_CLIENT_SECRET } from "$env/static/private";
 import { PUBLIC_OSU_CLIENT_ID } from "$env/static/public";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  let { id } = await request.json();
+  let { search } = await request.json();
 
-  if (id == "") {
+  if (search == "") {
     return new Response("Invalid request");
   }
 
-  if (id.startsWith("https://osu.ppy.sh/beatmapsets/")) {
-    const urlParts = id.split("/");
-    id = urlParts[urlParts.length - 1];
+  if (search.startsWith("https://osu.ppy.sh/beatmapsets/")) {
+    const urlParts = search.split("/");
+    search = urlParts[urlParts.length - 1];
   }
 
-  let map = await locals.supabase
-    .from("maps")
-    .select("*, mapsets(*)")
-    .eq("osu_id", id)
-    .single();
-  if (map.data) {
-    return new Response(JSON.stringify(map.data));
+  if (isNaN(Number(search))) {
+    return new Response("Invalid request");
   }
-  const osuMap = await getOsuMap(id);
+
+  const osuMap = await getOsuMap(search);
 
   if (!osuMap.id) {
     return new Response("Map not found", { status: 404 });
@@ -41,7 +37,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     .select("*")
     .single();
 
-  map = await locals.supabase
+  console.dir(mapset);
+
+  const map = await locals.supabase
     .from("maps")
     .upsert({
       mapset_id: mapset.data.id,
