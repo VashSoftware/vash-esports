@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .from("map_pools")
     .select(
       `*,
-      map_pool_mods(*, map_pool_mod_mods(*, mods(*)), map_pool_maps(*, maps(*, mapsets(*))))`
+      map_pool_maps(*, maps(*, mapsets(*))), map_pool_map_mods(*, mods(*)))`
     )
     .eq("id", params.map_pool_id)
     .order("mod_priority", {

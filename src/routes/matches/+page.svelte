@@ -1,6 +1,6 @@
 <script lang="ts">
   import { writable } from "svelte/store";
-  import QuickPlayButton from "../../components/quickPlayButton.svelte";
+  import QuickPlayButton from "$lib/components/quickPlayButton.svelte";
   import {
     createSvelteTable,
     flexRender,
@@ -66,11 +66,11 @@
   }
 </script>
 
-<div class="py-5 d-flex justify-content-between align-items-center">
+<div class="my-5 d-flex justify-content-between align-items-center">
   <h1>Matches ({data.matches.length})</h1>
 
   <div>
-    <QuickPlayButton supabase={data.supabase} session={data.session} />
+    <QuickPlayButton supabase={data.supabase} />
   </div>
 </div>
 

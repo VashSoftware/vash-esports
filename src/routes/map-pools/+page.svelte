@@ -1,6 +1,6 @@
 <script lang="ts">
   import { writable } from "svelte/store";
-  import MakeMapPoolModal from "../../components/makeMapPoolModal.svelte";
+  import MakeMapPoolModal from "$lib/components/makeMapPoolModal.svelte";
   import {
     createColumnHelper,
     createSvelteTable,
@@ -86,11 +86,10 @@
   }
 </script>
 
-<div class="d-flex justify-content-between align-items-center">
-  <div></div>
-  <h1 class="my-5 text-center">Map Pools ({data.mapPools.length})</h1>
+<div class="my-5 d-flex justify-content-between align-items-center">
+  <h1 class="text-center">Map Pools ({data.mapPools.length})</h1>
   <button
-    class="btn btn-primary"
+    class="btn btn-lg btn-primary"
     data-bs-toggle="modal"
     data-bs-target="#createMapPoolModal">Create Map Pool</button
   >

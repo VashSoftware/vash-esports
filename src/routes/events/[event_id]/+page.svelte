@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RegisterButton from "../../../components/registerButton.svelte";
+  import RegisterButton from "$lib/components/registerButton.svelte";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
 

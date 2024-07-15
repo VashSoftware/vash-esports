@@ -103,8 +103,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const user = await event.locals.supabase
     .from("user_profiles")
-    .select("*")
-    .eq("user_id", session?.user.id);
+    .select("id, user_id, finished_setup")
+    .eq("user_id", session?.user.id)
+    .single();
 
   if (user.error) {
     console.error(user.error);
@@ -112,11 +113,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   if (
     session &&
-    user.data[0]?.finished_setup == false &&
+    user.data?.finished_setup == false &&
     event.route.id !== `/users/[user_id]/welcome` &&
     event.route.id !== `/auth/callback/osu`
   ) {
-    redirect(307, `/users/${user.data[0]?.id}/welcome`);
+    redirect(307, `/users/${user.data?.id}/welcome`);
   }
 
   return resolve(event, {

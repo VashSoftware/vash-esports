@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import MakeMapPoolModal from "../components/makeMapPoolModal.svelte";
-  import QuickPlayButton from "../components/quickPlayButton.svelte";
-  import RegisterButton from "../components/registerButton.svelte";
+  import MakeMapPoolModal from "$lib/components/makeMapPoolModal.svelte";
+  import QuickPlayButton from "$lib/components/quickPlayButton.svelte";
+  import RegisterButton from "$lib/components/registerButton.svelte";
 
   export let data;
 </script>

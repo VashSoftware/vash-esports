@@ -7,7 +7,7 @@
 
 <button
   type="button"
-  class="btn btn-success btn-lg my-4"
+  class="btn btn-success btn-lg"
   data-bs-toggle="modal"
   data-bs-target="#exampleModal"
 >
