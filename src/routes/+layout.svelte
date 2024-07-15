@@ -98,7 +98,7 @@
     <div
       class="container d-flex flex-column justify-content-between flex-md-row p-0"
     >
-      <div class="d-flex align-items-center">
+      <div class="d-flex flex-column flex-md-row align-items-center">
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
         <div class="btn btn-warning btn-sm" style="pointer-events: none;">
           PRIVATE ALPHA
@@ -109,7 +109,7 @@
           <div class="input-group">
             <input
               type="search"
-              class="form-control"
+              class="form-control my-3"
               placeholder="Search"
               bind:value={searchQuery}
               on:input={search}

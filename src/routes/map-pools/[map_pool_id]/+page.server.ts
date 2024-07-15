@@ -8,11 +8,28 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       map_pool_maps(*, maps(*, mapsets(*)), map_pool_map_mods(*, mods(*)))`
     )
     .eq("id", params.map_pool_id)
-    .order("order", {
-      referencedTable: "map_pool_maps.map_pool_map_mods.mods",
-      ascending: true,
-    })
     .single();
+
+  // Group maps by mod order
+  const groupedByModOrder = mapPool.data.map_pool_maps.reduce((acc, map) => {
+    const modOrder = map.map_pool_map_mods[0]?.mods.order;
+    if (!acc[modOrder]) {
+      acc[modOrder] = [];
+    }
+    acc[modOrder].push(map);
+    return acc;
+  }, {});
+
+  // Sort each group by mod priority and flatten the groups back into a single array
+  mapPool.data.map_pool_maps = Object.values(groupedByModOrder).reduce(
+    (sortedMaps, group) => {
+      const sortedGroup = group.sort((a, b) => a.mod_priority - b.mod_priority);
+      return sortedMaps.concat(sortedGroup);
+    },
+    []
+  );
+
+  console.dir(mapPool);
 
   return {
     mapPool: mapPool.data,
@@ -126,5 +143,62 @@ export const actions = {
       .from("map_pool_maps")
       .update({ notes: notes })
       .eq("id", mapPoolMapId);
+  },
+  addMapPoolMod: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    console.dir(formData);
+
+    const mapPoolMap = await locals.supabase
+      .from("map_pool_maps")
+      .insert({
+        map_pool_id: params.map_pool_id,
+        mod_priority: 1,
+      })
+      .select("id")
+      .single();
+
+    const mapPoolMapMod = await locals.supabase
+      .from("map_pool_map_mods")
+      .insert({
+        map_pool_map_id: mapPoolMap.data.id,
+        mod_id: formData.get("mods"),
+      });
+
+    console.dir(mapPoolMapMod);
+  },
+  addMapPoolMapMod: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    console.dir(formData);
+
+    const mapPoolMap = await locals.supabase
+      .from("map_pool_maps")
+      .insert({
+        map_pool_id: params.map_pool_id,
+        mod_priority: formData.get("mod-priority"),
+      })
+      .select("id")
+      .single();
+
+    const mapPoolMapMod = await locals.supabase
+      .from("map_pool_map_mods")
+      .insert({
+        map_pool_map_id: mapPoolMap.data.id,
+        mod_id: formData.get("mod-id"),
+      });
+  },
+  removeMapPoolMap: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    await locals.supabase
+      .from("map_pool_map_mods")
+      .delete()
+      .eq("map_pool_map_id", formData.get("map-pool-map-id"));
+
+    await locals.supabase
+      .from("map_pool_maps")
+      .delete()
+      .eq("id", formData.get("map-pool-map-id"));
   },
 } satisfies Actions;
