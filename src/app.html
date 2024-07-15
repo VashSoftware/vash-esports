@@ -13,13 +13,16 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <script
+      async
+      nonce="%sveltekit.nonce%"
+      src="https://js.stripe.com/v3/buy-button.js"
+    ></script>
+    <script src="https://accounts.google.com/gsi/client" async></script>
     %sveltekit.head%
     <meta name="google-adsense-account" content="ca-pub-7665462989911170" />
   </head>
   <body>
     <div style="display: contents">%sveltekit.body%</div>
-    
-    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async></script>
   </body>
 </html>

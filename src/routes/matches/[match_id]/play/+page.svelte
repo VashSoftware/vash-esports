@@ -1,64 +1,135 @@
 <script lang="ts">
+  import { dev } from "$app/environment";
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip.js";
   import { onMount } from "svelte";
 
   export let data;
 
-  onMount(() => {
+  let activeModals = {
+    roll: null,
+    pickMap: null,
+    matchOver: null,
+  };
+
+  async function processMatch() {
+    const bootstrap = await import("bootstrap");
+
+    if (
+      data.match.match_participants.filter((mp) => mp.roll === null).length > 0
+    ) {
+      if (activeModals.roll === null) {
+        activeModals.roll = new bootstrap.Modal("#rollModal");
+      }
+
+      return await activeModals.roll.show();
+    }
+
+    await activeModals.roll?.hide();
+
+    if (
+      data.match.match_maps[data.match.match_maps.length - 1]?.status ==
+        "finished" ||
+      data.match.match_maps.length == 0
+    ) {
+      if (activeModals.pickMap === null) {
+        activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
+      }
+
+      return await activeModals.pickMap.show();
+    }
+
+    await activeModals.pickMap?.hide();
+
+    if (data.match.ongoing === false && activeModals.matchOver === null) {
+      activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
+    }
+
+    return await activeModals.matchOver.show();
+  }
+
+  onMount(async () => {
+    processMatch();
+
     const getMatch = async () => {
-      let updatedMatch = await data.supabase
+      const updatedMatch = await data.supabase
         .from("matches")
         .select(
-          `*, 
-      rounds (*, 
-        map_pools(*,
-          map_pool_mods(*,
-            map_pool_mod_mods(*,
-              mods(*
-              )
-            ),
-            map_pool_maps(*,
-              maps(*, 
-                mapsets(*
-                )
-              )
-            )
+          `
+          *,
+      rounds(
+        *,
+        events(
+          *,
+          event_groups(
+            *
           )
-        ),
-        events(*, event_groups(*))
+        )
       ),
-      match_participants(*,
-        match_participant_players(*,
-          match_participant_player_states(*
+      match_participants(
+        *,
+        match_participant_players(
+          *,
+          match_participant_player_states(
+            *
           ),
-          team_members(*, 
-            user_profiles(*
+          team_members(
+            *,
+            user_profiles(
+              *
             )
           )
         ),
-        participants(*, 
-          teams(*
+        participants(*,
+          teams(*, team_members(user_profiles(user_id)))
+        )
+      ),
+      match_maps(*,
+        map_pool_maps(*,
+          maps(*,
+            mapsets(*)
+          )
+        ),
+        scores(*,
+          match_participant_players(*)
+        )
+      ),
+      match_bans(*,
+        match_participants(*,
+          participants(*,
+            teams(name)
           )
         )
       ),
-      match_maps(*, map_pool_maps(*, maps(*, mapsets(*))), scores(*, match_participant_players(*))),
-      match_bans(*, match_participants(*, participants(*, teams(name))))`
+      map_pools(
+        *,          
+        map_pool_maps(
+          *,
+          maps(
+            *,
+            mapsets(
+              *
+            )
+          ),
+          map_pool_map_mods(
+            *,
+            mods(
+              *
+            )
+          )
         )
-        .eq("id", data.match?.id)
-        .order("priority", {
-          referencedTable: "rounds.map_pools.map_pool_mods",
+      )
+          `
+        )
+        .eq("id", data.match.id)
+        .order("order", {
+          referencedTable: "map_pools.map_pool_maps.map_pool_map_mods.mods",
           ascending: true,
         })
         .single();
 
       data.match = updatedMatch.data;
-
-      if (!data.match.ongoing) {
-        const bootstrap = await import("bootstrap");
-        const matchOverModal = new bootstrap.Modal("#matchOverModal");
-        matchOverModal.show();
-      }
+      processMatch();
     };
 
     data.supabase
@@ -69,7 +140,9 @@
           event: "*",
           schema: "public",
         },
-        (payload) => getMatch()
+        (payload) => {
+          getMatch();
+        }
       )
       .subscribe();
   });
@@ -109,67 +182,9 @@
     }
     return formattedTime;
   }
-
-  function canBan(map) {
-    const bans = data.match.match_bans.filter(
-      (ban) => ban.map_pool_map_id == map.id
-    );
-
-    return bans.length == 0;
-  }
-
-  let currentMatchBan = data.match.match_bans
-    .filter((ban) => ban.map_pool_map_id == null)
-    .sort((a, b) => a.time_limit - b.time_limit)[0];
-
-  $: {
-    currentMatchBan = data.match.match_bans
-      .filter((ban) => ban.map_pool_map_id == null)
-      .sort((a, b) => a.time_limit - b.time_limit)[0];
-  }
-
-  let banTimeRemaining = "";
-
-  function startTimer() {
-    const currentTime = new Date().getTime();
-    const banTime = new Date(currentMatchBan?.time_limit).getTime();
-    const timeRemaining = banTime - currentTime;
-
-    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-    const minutes = Math.floor(
-      (timeRemaining % (1000 * 60 * 60)) / (1000 * 60)
-    );
-    const hours = Math.floor(
-      (timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-
-    banTimeRemaining = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-    if (timeRemaining > 0) {
-      setTimeout(startTimer, 1000);
-    }
-  }
-
-  startTimer();
-
-  let currentTab = "bans";
-  $: currentTab = currentMatchBan ? "bans" : "hello";
-
-  function canPickMap(map) {
-    if (
-      data.match.match_maps[data.match.match_maps.length - 1]?.scores.reduce(
-        (sum, score) => sum + score.score,
-        0
-      ) == 0
-    ) {
-      return false;
-    }
-
-    return true;
-  }
 </script>
 
-<div class="d-flex justify-content-center gap-3 my-4">
+<!-- <div class="d-flex justify-content-center gap-3 my-4">
   <form action="?/startMap" method="post" use:enhance>
     <button type="submit" class="btn btn-success"> Start map </button>
   </form>
@@ -177,16 +192,7 @@
   <form action="?/endMatch" method="post" use:enhance>
     <button type="submit" class="btn btn-danger"> End match </button>
   </form>
-
-  <button
-    type="submit"
-    class="btn btn-danger"
-    data-bs-toggle="modal"
-    data-bs-target="#matchOverModal"
-  >
-    End match
-  </button>
-</div>
+</div> -->
 
 <!-- This match is being broadcasted on the following official channels: -->
 
@@ -202,8 +208,17 @@
   </div>
 {/if}
 
-<div class="row my-5 align-items-center">
+<div class="row my-4 py-4 align-items-center shadow bg-body-tertiary rounded-5">
   <div class="col">
+    <div class="text-center mb-3">
+      <img
+        src={data.match.match_participants[0].participants.teams.picture_url}
+        height="192"
+        class="rounded-circle shadow"
+        alt=""
+      />
+    </div>
+
     <a href="/teams/{data.match.match_participants[0].participants.teams.id}">
       <h2 class="text-center">
         {data.match.match_participants[0].participants.teams.name}
@@ -255,7 +270,7 @@
   </div>
   <div class="col text-center">
     <p class="fs-5">Best of: {data.match.rounds.best_of}</p>
-    <div class=" fs-1 fw-bold">
+    <div class="fs-1 fw-bold">
       {data.match.match_maps.filter(
         (match_map) =>
           match_map.scores
@@ -292,6 +307,15 @@
     </div>
   </div>
   <div class="col text-end">
+    <div class="text-center mb-3">
+      <img
+        src={data.match.match_participants[1].participants.teams.picture_url}
+        height="192"
+        class="rounded-circle shadow"
+        alt=""
+      />
+    </div>
+
     <a href="/teams/{data.match.match_participants[1].participants.teams.id}">
       <h2 class="text-center">
         {data.match.match_participants[1].participants.teams.name}
@@ -343,273 +367,64 @@
   </div>
 </div>
 
-<div class="tab-content" id="pills-tabContent">
-  <div
-    class="tab-pane fade {currentTab === 'bans' ? 'show active' : ''}"
-    id="banTab"
-    role="tabpanel"
-    aria-labelledby="pills-profile-tab"
-    tabindex="0"
-  >
-    <div class="d-flex justifbfy-content-around align-items-center">
-      <div></div>
-      <h3 class="text-center my-4">
-        <b>{currentMatchBan?.match_participants.participants.teams.name}</b> has
-        to ban a map! (2/{data.match.rounds.match_player_bans} Left) ({banTimeRemaining}
-        seconds remaining)
-      </h3>
+<div class="row shadow bg-body-tertiary rounded-5 py-4 mb-5">
+  <div class="col">
+    <h1 class="text-center pb-3">
+      Maps Played ({data.match.match_maps.length})
+    </h1>
 
-      <button
-        class="btn btn-danger"
-        data-bs-toggle="modal"
-        data-bs-target="#surrenderBansModal"
-        disabled={data.match.match_participants[1].surrendered_bans}
-        >Surrender Bans</button
-      >
-    </div>
+    {#each data.match.match_maps as map}
+      <div class="row py-1 align-items-center">
+        <div class="col text-end">
+          {#if dev && map.scores.reduce((sum, score) => sum + score.score, 0) == 0}
+            <form action="?/addSampleScores" method="post" use:enhance>
+              <input type="hidden" name="match-map-id" value={map.id} />
 
-    {#each data.match.rounds.map_pools.map_pool_mods as mod}
-      {#if mod.map_pool_maps.filter((map) => map.maps).length > 0}
-        <div
-          class="d-flex align-items-center flex-wrap justify-content-center my-2"
-        >
-          {#each mod.map_pool_maps as map}
-            {#if map.maps}
-              <a
-                href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
-                  .osu_id}#osu/{map.maps.osu_id}"
+              <button type="submit" class="btn btn-primary"
+                >Add sample scores</button
               >
-                <div class="card text-bg-dark m-1 rounded-5">
-                  <img
-                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                      .osu_id}/covers/cover@2x.jpg"
-                    class="card-img rounded-5"
-                    style="filter: blur(1px) brightness(70%); width: 350px; height: 60px; object-fit: cover;"
-                    alt="..."
-                  />
-                  <div class="card-img-overlay">
-                    <div
-                      class="d-flex justify-content-between align-items-center h-100"
-                    >
-                      <div class="d-flex flex-column justify-content-center">
-                        <h5 class="mb-0">
-                          <b>{mod.code}{map.mod_priority}</b>
-                        </h5>
-                      </div>
-                      <div class="text-center">
-                        <p
-                          class="card-title lh-sm my-0"
-                          style="font-size: smaller;"
-                        >
-                          {getShortenedMapName(map)}
-                        </p>
-                        <div>
-                          <small>
-                            <b>{map.maps?.star_rating}★</b> -
-                            <b>{map.maps?.mapsets.bpm}BPM</b> -
-                            <b>{formatSeconds(map.maps?.mapsets.time)}</b>
-                          </small>
-                        </div>
-                      </div>
-                      <form action="?/banMap" method="post" use:enhance>
-                        <input
-                          type="hidden"
-                          name="map-pool-map-id"
-                          value={map.id}
-                        />
-                        <input
-                          type="hidden"
-                          name="ban-id"
-                          value={currentMatchBan?.id}
-                        />
+            </form>
+          {/if}
 
-                        {#if canBan(map)}
-                          <button
-                            type="submit"
-                            class="btn btn-danger"
-                            disabled={data.match.rounds.match_player_bans == 0}
-                            style=" height: 100%; object-fit: cover">BAN</button
-                          >
-                        {:else}
-                          <span
-                            use:tooltip
-                            data-bs-title={"Cannot ban this map."}
-                          >
-                            <button
-                              type="submit"
-                              class="btn btn-danger"
-                              disabled
-                              style=" height: 100%; object-fit: cover"
-                              >BAN</button
-                            ></span
-                          >
-                        {/if}
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            {/if}
-          {/each}
+          <h3>{map.scores[0]?.score.toLocaleString()}</h3>
         </div>
-      {/if}
+        <div class="col-6">
+          <div style="position: relative;">
+            <div class="text-center">
+              <img
+                class="img-thumbnail w-100 img-fluid"
+                src="https://assets.ppy.sh/beatmaps/{map.map_pool_maps.maps
+                  .mapsets.osu_id}/covers/cover@2x.jpg"
+                alt="Match map cover"
+                style="filter: blur(1px) brightness(50%); height: 80px; object-fit: cover"
+              />
+            </div>
+            <div
+              class="text-center row align-items-center"
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 16px #000000;"
+            >
+              <div class="col">
+                <div>
+                  <b
+                    >{map.map_pool_maps.maps.mapsets.artist} - {map
+                      .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
+                      .maps.difficulty_name}]</b
+                  >
+                </div>
+
+                <div>
+                  {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
+                    .maps.mapsets.bpm}BPM
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <h3>{map.scores[1]?.score.toLocaleString()}</h3>
+        </div>
+      </div>
     {/each}
-  </div>
-</div>
-<div
-  class="tab-pane fade {currentTab === 'hello' ? 'show active' : ''}"
-  id="playTab"
-  role="tabpanel"
-  aria-labelledby="pills-home-tab"
-  tabindex="0"
->
-  <div class="row">
-    <div class="col">
-      <h1 class="text-center">Maps Played</h1>
-
-      {#each data.match.match_maps as map}
-        <div class="row py-1 align-items-center">
-          <div class="col text-end">
-            <h3>{map.scores[0]?.score.toLocaleString()}</h3>
-          </div>
-          <div class="col-6">
-            <div style="position: relative;">
-              <div class="text-center">
-                <img
-                  class="img-thumbnail w-100 img-fluid"
-                  src="https://assets.ppy.sh/beatmaps/{map.map_pool_maps.maps
-                    .mapsets.osu_id}/covers/cover@2x.jpg"
-                  alt="Match map cover"
-                  style="filter: blur(1px) brightness(50%); height: 80px; object-fit: cover"
-                />
-              </div>
-              <div
-                class="text-center row align-items-center"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 16px #000000;"
-              >
-                <div class="col">
-                  <div>
-                    <b
-                      >{map.map_pool_maps.maps.mapsets.artist} - {map
-                        .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
-                        .maps.difficulty_name}]</b
-                    >
-                  </div>
-
-                  <div>
-                    {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
-                      .maps.mapsets.bpm}BPM
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col">
-            <h3>{map.scores[1]?.score.toLocaleString()}</h3>
-          </div>
-        </div>
-      {/each}
-    </div>
-    <div class="col">
-      <h1 class="text-center">Pick Maps</h1>
-
-      {#each data.match.rounds.map_pools.map_pool_mods.filter((mod) => mod.type != "tiebreaker") as mod}
-        <div
-          class="d-flex align-items-center flex-wrap justify-content-center my-2"
-        >
-          {#each mod.map_pool_maps.filter((map) => !data.match.match_maps.some((match_map) => match_map.map_pool_maps.map_id == map.map_id)) as map}
-            {#if map.maps}
-              <a
-                href="https://osu.ppy.sh/beatmapsets/{map.maps.mapsets
-                  .osu_id}#osu/{map.maps.osu_id}"
-              >
-                <div class="card text-bg-dark m-1 rounded-5">
-                  <img
-                    src="https://assets.ppy.sh/beatmaps/{map.maps?.mapsets
-                      .osu_id}/covers/cover@2x.jpg"
-                    class="card-img rounded-5"
-                    style="filter: blur(1px) brightness({data.match.match_maps.filter(
-                      (match_map) => match_map.map_pool_maps.id == map.id
-                    ).length > 0
-                      ? '30%'
-                      : '70%'}); width: 300px; height: 80px; object-fit: cover;"
-                    alt="..."
-                  />
-                  <div class="card-img-overlay">
-                    <div
-                      class="d-flex justify-content-between align-items-center h-100"
-                    >
-                      <div class="d-flex flex-column justify-content-center">
-                        <h5 class="mb-0">
-                          <b>{mod.code}{map.mod_priority}</b>
-                        </h5>
-                      </div>
-                      <div class="text-center">
-                        <p
-                          class="card-title lh-sm my-0"
-                          style="font-size: smaller;"
-                        >
-                          {getShortenedMapName(map)}
-                        </p>
-                        <div>
-                          <small>
-                            <b>{map.maps?.star_rating}★</b> -
-                            <b>{map.maps?.mapsets.bpm}BPM</b> -
-                            <b>{formatSeconds(map.maps?.mapsets.time)}</b>
-                          </small>
-                        </div>
-                      </div>
-                      <form action="?/pickMap" method="post" use:enhance>
-                        <input type="hidden" name="map-id" value={map.id} />
-
-                        <button
-                          type="submit"
-                          class="btn btn-success"
-                          disabled={!canPickMap(map)}
-                          style=" height: 100%; object-fit: cover">PICK</button
-                        >
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            {/if}
-          {/each}
-        </div>
-      {/each}
-    </div>
-  </div>
-  <div
-    class="tab-pane fade"
-    id="tab-pane-organisations"
-    role="tabpanel"
-    aria-labelledby="pills-profile-tab"
-    tabindex="0"
-  >
-    <h2 class="my-5">Phase 1: Playing</h2>
-    <h2>Map pool</h2>
-    {#each data.match.rounds.map_pools.map_pool_mods as mod}
-      {#each mod.map_pool_maps as map}
-        <div class="card mb-3">
-          <div class="row g-0">
-            <div class="col-md-4">
-              <img src="" class="img-fluid rounded-start" alt="..." />
-            </div>
-            <div class="col-md-8">
-              <div class="card-body">
-                <h5 class="card-title">
-                  {map.maps?.mapsets.artist} - {map.maps?.mapsets.title}
-                </h5>
-                <button class="btn btn-primary">Pick</button>
-                <button class="btn btn-danger">Ban</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      {/each}
-    {/each}
-
-    <h2 class="my-5">Phase 3: Finishing</h2>
   </div>
 </div>
 
@@ -653,6 +468,130 @@
   </div>
 </div>
 
+<form action="?/pickMap" method="post" use:enhance>
+  <div
+    class="modal fade"
+    id="pickMapModal"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
+        </div>
+        <div class="modal-body text-center">
+          {#each data.match.map_pools.map_pool_maps as map}
+            <div>
+              <input type="hidden" name="map-id" value={map.id} />
+              {map.maps.mapsets.artist} - {map.maps.mapsets.title}
+              <button class="btn btn-primary">PICK</button>
+            </div>
+          {/each}
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="?/roll" method="post" use:enhance>
+  <div
+    class="modal fade"
+    id="rollModal"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">
+            Waiting for all players to roll...
+          </h1>
+        </div>
+        <div class="modal-body text-center">
+          <div>
+            <div class="d-flex align-items-center justify-content-around">
+              <div class="d-flex flex-column align-items-center">
+                <div
+                  class="progress progress-bar-vertical mb-3 vertical-progress-bar"
+                >
+                  <div
+                    class="progress-bar bg-primary"
+                    role="progressbar"
+                    style="height: {data.match.match_participants.filter(
+                      (mp) =>
+                        mp.participants.teams.team_members.filter(
+                          (tm) =>
+                            tm.user_profiles.user_id == data.session.user.id
+                        )[0]
+                    )[0].roll || 0}%;"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    {data.match.match_participants.filter(
+                      (mp) =>
+                        mp.participants.teams.team_members.filter(
+                          (tm) =>
+                            tm.user_profiles.user_id == data.session.user.id
+                        )[0]
+                    )[0].roll}
+                  </div>
+                </div>
+
+                <input
+                  type="hidden"
+                  name="match-participant-id"
+                  value={data.match.match_participants.filter(
+                    (mp) =>
+                      mp.participants.teams.team_members.filter(
+                        (tm) => tm.user_profiles.user_id == data.session.user.id
+                      )[0]
+                  )[0].id}
+                />
+                <button
+                  class="btn btn-lg btn-success"
+                  class:disabled={data.match.match_participants.filter(
+                    (mp) =>
+                      mp.participants.teams.team_members.filter(
+                        (tm) => tm.user_profiles.user_id == data.session.user.id
+                      )[0]
+                  )[0].roll}>Roll</button
+                >
+              </div>
+
+              {#each data.match.match_participants.filter((mp) => mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id != data.session.user.id)[0]) as participant}
+                <div class="d-flex flex-column align-items-center">
+                  <div
+                    class="progress progress-bar-vertical mb-3 vertical-progress-bar"
+                  >
+                    <div
+                      class="progress-bar bg-danger"
+                      role="progressbar"
+                      style="height: {participant.roll}%;"
+                      aria-valuenow="25"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    >
+                      {participant.roll}
+                    </div>
+                  </div>
+
+                  <h4>{participant.participants.teams.name}</h4>
+                </div>
+              {/each}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
 <div
   class="modal fade"
   id="matchOverModal"
@@ -674,6 +613,7 @@
                 .picture_url}
               alt=""
               height="192"
+              class="rounded-circle"
             />
             <h2>{data.match.match_participants[0].participants.teams.name}</h2>
           </div>
@@ -720,6 +660,7 @@
                 .picture_url}
               alt=""
               height="192"
+              class="rounded-circle"
             />
             <h2>{data.match.match_participants[1].participants.teams.name}</h2>
           </div>
@@ -735,3 +676,26 @@
     </div>
   </div>
 </div>
+
+<style>
+  .progress-bar-vertical {
+    width: 50px;
+    min-height: 200px;
+    margin-right: 20px;
+    float: left;
+    display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+    display: -ms-flexbox; /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+    display: flex; /* NEW, Spec - Firefox, Chrome, Opera */
+    align-items: flex-end;
+    -webkit-align-items: flex-end; /* Safari 7.0+ */
+  }
+
+  .progress-bar-vertical .progress-bar {
+    width: 100%;
+    height: 0;
+    -webkit-transition: height 0.6s ease;
+    -o-transition: height 0.6s ease;
+    transition: height 0.6s ease;
+  }
+</style>

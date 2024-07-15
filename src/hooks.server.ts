@@ -23,7 +23,7 @@ export const handle: Handle = async ({ event, resolve }) => {
           event.cookies.delete(key, { ...options, path: "/" });
         },
       },
-    },
+    }
   );
 
   event.locals.getSession = async (): Promise<Session | null> => {
@@ -43,10 +43,7 @@ export const handle: Handle = async ({ event, resolve }) => {
      * is to create a validated session; which we do below.
      */
     try {
-      const decoded = jwt.verify(
-        session.access_token,
-        JWT_SECRET,
-      );
+      const decoded = jwt.verify(session.access_token, JWT_SECRET);
 
       /**
        * Create a validated session.
@@ -98,20 +95,27 @@ export const handle: Handle = async ({ event, resolve }) => {
    */
   const auth_protected_paths = new Set(["(authenticated)"]);
   if (
-    !session && auth_protected_paths.has(event.route.id?.split("/")[1] || "")
+    !session &&
+    auth_protected_paths.has(event.route.id?.split("/")[1] || "")
   ) {
     redirect(307, "/auth");
   }
 
   const user = await event.locals.supabase
-    .from('user_profiles')
-    .select('*')
-    .eq('user_id', session?.user.id)
+    .from("user_profiles")
+    .select("*")
+    .eq("user_id", session?.user.id);
 
-  if (session
-    && user?.data[0].finished_setup == false
-    && event.route.id !== `/users/[user_id]/welcome`
-    && event.route.id !== `/auth/callback/osu`) {
+  if (user.error) {
+    console.error(user.error);
+  }
+
+  if (
+    session &&
+    user.data[0]?.finished_setup == false &&
+    event.route.id !== `/users/[user_id]/welcome` &&
+    event.route.id !== `/auth/callback/osu`
+  ) {
     redirect(307, `/users/${user.data[0]?.id}/welcome`);
   }
 

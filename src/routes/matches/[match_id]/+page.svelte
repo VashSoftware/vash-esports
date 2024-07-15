@@ -297,8 +297,8 @@
   </div>
 </div>
 
-<div class="text-center py-3">
-  <h2 class="mb-2">Maps</h2>
+<div class="text-center mb-5">
+  <h2 class="mb-4">Maps Played ({data.match.match_maps.length})</h2>
   {#each data.match.match_maps as map}
     <div class="row my-1 align-items-center">
       <div class="col text-end">
@@ -336,7 +336,9 @@
           </div>
         </div>
       </div>
-      <div class="col"><h3>{map.scores[1]?.score.toLocaleString()}</h3></div>
+      <div class="col text-start">
+        <h3>{map.scores[1]?.score.toLocaleString()}</h3>
+      </div>
     </div>
   {/each}
 </div>
