@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dev } from "$app/environment";
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip.js";
   import { onMount } from "svelte";
@@ -15,23 +16,26 @@
     const bootstrap = await import("bootstrap");
 
     if (
-      data.match.match_participants.filter((mp) => mp.roll === null).length >
-        0 &&
-      activeModals.roll === null
+      data.match.match_participants.filter((mp) => mp.roll === null).length > 0
     ) {
-      activeModals.roll = new bootstrap.Modal("#rollModal");
+      if (activeModals.roll === null) {
+        activeModals.roll = new bootstrap.Modal("#rollModal");
+      }
+
       return await activeModals.roll.show();
     }
 
     await activeModals.roll?.hide();
 
     if (
-      (data.match.match_maps[data.match.match_maps.length - 1]?.status ==
+      data.match.match_maps[data.match.match_maps.length - 1]?.status ==
         "finished" ||
-        data.match.match_maps.length == 0) &&
-      activeModals.pickMap === null
+      data.match.match_maps.length == 0
     ) {
-      activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
+      if (activeModals.pickMap === null) {
+        activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
+      }
+
       return await activeModals.pickMap.show();
     }
 
@@ -210,7 +214,7 @@
       <img
         src={data.match.match_participants[0].participants.teams.picture_url}
         height="192"
-        class="rounded-circle"
+        class="rounded-circle shadow"
         alt=""
       />
     </div>
@@ -266,7 +270,7 @@
   </div>
   <div class="col text-center">
     <p class="fs-5">Best of: {data.match.rounds.best_of}</p>
-    <div class=" fs-1 fw-bold">
+    <div class="fs-1 fw-bold">
       {data.match.match_maps.filter(
         (match_map) =>
           match_map.scores
@@ -307,7 +311,7 @@
       <img
         src={data.match.match_participants[1].participants.teams.picture_url}
         height="192"
-        class="rounded-circle"
+        class="rounded-circle shadow"
         alt=""
       />
     </div>
@@ -372,6 +376,16 @@
     {#each data.match.match_maps as map}
       <div class="row py-1 align-items-center">
         <div class="col text-end">
+          {#if dev && map.scores.reduce((sum, score) => sum + score.score, 0) == 0}
+            <form action="?/addSampleScores" method="post" use:enhance>
+              <input type="hidden" name="match-map-id" value={map.id} />
+
+              <button type="submit" class="btn btn-primary"
+                >Add sample scores</button
+              >
+            </form>
+          {/if}
+
           <h3>{map.scores[0]?.score.toLocaleString()}</h3>
         </div>
         <div class="col-6">

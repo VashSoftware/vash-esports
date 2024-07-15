@@ -161,23 +161,35 @@ export const actions = {
     await locals.supabase.from("scores").insert(scores);
 
     try {
-      fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          channelId: match.data.lobby_id,
-          messages: [
-            `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
-            `!mp mods NF ${mapPoolMap.data.map_pool_map_mods.map(
-              (mod) => mod.mods.code
-            )}`,
-          ],
-        }),
-      });
+      const response = await fetch(
+        PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            channelId: match.data.lobby_id,
+            messages: [
+              `!mp map ${matchMap.data.map_pool_maps.maps.osu_id}`,
+              `!mp mods NF ${mapPoolMap.data.map_pool_map_mods.map(
+                (mod) => mod.mods.code
+              )}`,
+            ],
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        // Handle server response errors (e.g., 4xx and 5xx status codes)
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Error sending messages to the server:", error);
+      // Here, you can add more specific error handling, for example:
+      // - Retry the request if it makes sense
+      // - Notify the user/admin
+      // - Log the error for further investigation
     }
 
     console.log("Picked map with ID: ", mapId);
@@ -282,5 +294,25 @@ export const actions = {
       .from("match_participants")
       .update({ roll: Math.floor(Math.random() * 100) + 1 })
       .eq("id", formData.get("match-participant-id"));
+  },
+  addSampleScores: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    const matchMapScores = await locals.supabase
+      .from("scores")
+      .select("id")
+      .eq("match_map_id", formData.get("match-map-id"));
+
+    for (const score of matchMapScores.data) {
+      await locals.supabase
+        .from("scores")
+        .update({ score: Math.floor(Math.random() * 1_000_000) })
+        .eq("id", score.id);
+    }
+
+    await locals.supabase
+      .from("match_maps")
+      .update({ status: "finished" })
+      .eq("id", formData.get("match-map-id"));
   },
 } satisfies Actions;
