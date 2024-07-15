@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { tooltip } from "$lib/bootstrapTooltip";
   import { writable } from "svelte/store";
-  import RegisterButton from "../../components/registerButton.svelte";
+  import RegisterButton from "$lib/components/registerButton.svelte";
   import {
     createColumnHelper,
     createSvelteTable,
@@ -89,7 +89,7 @@
   }
 </script>
 
-<div class="row py-5">
+<div class="row my-5">
   <div class="col">
     <h1>Events ({data.eventsCount})</h1>
   </div>
