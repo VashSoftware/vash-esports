@@ -32,10 +32,6 @@
   let searchResults = [];
 
   async function search(event: Event) {
-    // const foundMatches = data.matches.filter((match) =>
-    //   match.id.includes((event.target as HTMLInputElement).value)
-    // );
-
     const foundEvents = data.events.filter((vashEvent) =>
       vashEvent.name
         .toLowerCase()
@@ -62,7 +58,6 @@
         .includes((event.target as HTMLInputElement).value.toLowerCase())
     );
     searchResults = [
-      // ...foundMatches,
       ...foundEvents,
       ...foundUsers,
       ...foundTeams,
@@ -93,6 +88,14 @@
   <title>{getNotificationsCount()}Vash Esports</title>
 </svelte:head>
 
+{#if data.ongoingMatch}
+  <a href="/matches/{data.ongoingMatch.id}/play" class="banner-link">
+    <div class="banner">
+      <div class="banner-content text-center">Active Match: Stan vs Stan 3</div>
+    </div>
+  </a>
+{/if}
+
 <main class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg bg-dark-subtle justify-content-center">
     <div
@@ -114,20 +117,6 @@
               bind:value={searchQuery}
               on:input={search}
             />
-            <!-- <button type="submit" class="btn btn-secondary"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="1.5em"
-                height="1.5em"
-                viewBox="0 0 24 24"
-                {...$$props}
-              >
-                <path
-                  fill="currentColor"
-                  d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5q0-2.725 1.888-4.612T9.5 3q2.725 0 4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5q0-1.875-1.312-3.187T9.5 5Q7.625 5 6.313 6.313T5 9.5q0 1.875 1.313 3.188T9.5 14"
-                />
-              </svg></button
-            > -->
           </div>
           <ul class="list-group position-absolute w-100">
             {#if searchQuery.length > 0}
@@ -135,7 +124,8 @@
                 <li class="list-group-item">
                   <a href="/matches/{searchResult.id}">{searchResult.name}</a>
                 </li>
-              {/each}{/if}
+              {/each}
+            {/if}
           </ul>
         </div>
       </div>
@@ -354,28 +344,7 @@
                         </svg>
                       </button>
                     </form>
-
-                    <!-- <form action="?/logInOauth" method="post" use:enhance>
-                      <button
-                        name="provider"
-                        value="apple"
-                        class="btn btn-primary"
-                      >
-                        Apple
-                      </button>
-                    </form> -->
-
-                    <!-- <form action="?/logInOauth" method="post" use:enhance>
-                      <button
-                        name="provider"
-                        value="osu"
-                        class="btn btn-primary"
-                      >
-                        osu!
-                      </button>
-                    </form> -->
-
-                    <form action="?/logInOauth" method="post" use:enhance>
+                    <form action="/?/logInOauth" method="post" use:enhance>
                       <button
                         name="provider"
                         value="discord"
@@ -556,3 +525,30 @@
     </div>
   </footer>
 </main>
+
+<style>
+  .banner {
+    background: linear-gradient(
+      to right,
+      #ff7e5f,
+      #feb47b
+    ); /* Gradient background */
+    color: white;
+    font-weight: bold;
+    padding: 10px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    font-size: 1.2em;
+  }
+  .banner a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a.banner-link {
+    color: inherit; /* Inherits the color from the parent element */
+    text-decoration: none; /* Removes underline from links */
+  }
+</style>
