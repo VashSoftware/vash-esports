@@ -45,7 +45,10 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const eventsPromise = supabase.from("events").select("*");
   const matchesPromise = supabase.from("matches").select("*");
-  const usersPromise = supabase.from("user_profiles").select("*").eq('finished_setup', true);
+  const usersPromise = supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("finished_setup", true);
   const teamsPromise = supabase.from("teams").select("*");
   const organisationsPromise = supabase.from("organisations").select("*");
   const userProfilePromise = supabase
@@ -60,6 +63,18 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     .is("dismissed_at", null)
     .order("created_at", { ascending: false });
 
+  const ongoingMatchPromise = supabase
+    .from("matches")
+    .select(
+      "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id))))"
+    )
+    .eq("ongoing", true)
+    .eq(
+      "match_participants.match_participant_players.team_members.user_profiles.user_id",
+      session?.user.id
+    )
+    .maybeSingle();
+
   const [
     events,
     matches,
@@ -68,6 +83,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     organisations,
     notifications,
     userProfile,
+    ongoingMatch,
   ] = await Promise.all([
     eventsPromise,
     matchesPromise,
@@ -76,6 +92,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     organisationsPromise,
     notificationsPromise,
     userProfilePromise,
+    ongoingMatchPromise,
   ]);
 
   return {
@@ -88,5 +105,6 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     teams: teams.data,
     organisations: organisations.data,
     notifications: notifications.data ?? [],
+    ongoingMatch: ongoingMatch?.data,
   };
 };
