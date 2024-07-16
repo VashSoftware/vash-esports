@@ -77,11 +77,6 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .order("created_at", { referencedTable: "match_maps" })
     .single();
 
-  // match.data.map_pools.map_pool_maps = _.groupBy(
-  //   match.data.map_pools.map_pool_maps,
-  //   (map) => map.map_pool_map_mods[0].mod_id
-  // );
-
   return {
     match: match.data,
   };

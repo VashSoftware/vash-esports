@@ -152,26 +152,18 @@
   });
 
   function getShortenedMapName(map) {
-    let artist = map.maps?.mapsets.artist;
-    let title = map.maps?.mapsets.title;
-    let difficulty_name = map.maps?.difficulty_name;
+    let artist = map.maps?.mapsets.artist || "";
+    let title = map.maps?.mapsets.title || "";
+    let difficulty_name = map.maps?.difficulty_name || "";
 
-    const max_length = 18;
+    const max_length = 100;
+    let fullName = `${artist} - ${title} [${difficulty_name}]`;
 
-    artist =
-      artist.length > max_length
-        ? artist.substring(0, max_length) + "..."
-        : artist;
-    title =
-      title.length > max_length
-        ? title.substring(0, max_length) + "..."
-        : title;
-    difficulty_name =
-      difficulty_name.length > max_length
-        ? difficulty_name.substring(0, max_length) + "..."
-        : difficulty_name;
+    if (fullName.length > max_length) {
+      fullName = fullName.substring(0, max_length) + "...";
+    }
 
-    return `${artist} - ${title} [${difficulty_name}]`;
+    return fullName;
   }
 
   function formatSeconds(seconds) {
@@ -492,28 +484,74 @@
   aria-hidden="true"
   data-bs-backdrop="static"
 >
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
       </div>
       <div class="modal-body text-center">
-        {#each data.match.map_pools.map_pool_maps.filter((map) => !data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id)) as map}
-          <form action="?/pickMap" method="post" use:enhance>
-            <!-- {#each mod as map} -->
-            <div>
-              <input type="hidden" name="map-id" value={map.id} />
-              {map.map_pool_map_mods[0].mods.code || "NM"}{map.mod_priority}
-              {map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
-                .difficulty_name}]
-              <button
-                class="btn btn-primary"
-                on:click={async () => await activeModals.pickMap.hide()}
-                >PICK</button
-              >
+        {#each Object.entries(_.groupBy( data.match.map_pools.map_pool_maps.filter( (map) => {
+                if (!data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id)) {
+                  if (data.match.tiebreaker) {
+                    return true;
+                  }
+                  return map.map_pool_map_mods[0].mods.id !== 12;
+                }
+                return false;
+              } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order - b[1][0].map_pool_map_mods[0].mods.order) as [modId, maps]}
+          <div class="bg-body-tertiary shadow rounded my-4 p-3">
+            <div class="row d-flex align-items-stretch">
+              {#each maps as map}
+                <div class="col-12 col-md-2 d-flex">
+                  <form
+                    id={`map-${map.id}`}
+                    action="?/pickMap"
+                    method="post"
+                    use:enhance
+                    class="w-100"
+                  >
+                    <button
+                      type="button"
+                      class="position-relative rounded overflow-hidden w-100 h-100 border-0 p-0"
+                      style="height: 160px; cursor: pointer;"
+                      on:click={() =>
+                        document.getElementById(`map-${map.id}`).submit()}
+                    >
+                      <img
+                        class="img-fluid position-absolute top-0 start-0 w-100 h-100"
+                        src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
+                          .osu_id}/covers/cover@2x.jpg"
+                        alt="Match map cover"
+                        style="filter: blur(1px) brightness(50%); object-fit: cover; z-index: 0;"
+                      />
+                      <div
+                        class="position-relative text-light p-2 d-flex flex-column justify-content-between"
+                        style="z-index: 1; background: rgba(0, 0, 0, 0.5); height: 160px;"
+                      >
+                        <div>
+                          <input type="hidden" name="map-id" value={map.id} />
+                          <span class="fw-bold fs-4"
+                            >{map.map_pool_map_mods[0].mods.code ||
+                              "NM"}{map.mod_priority}</span
+                          >
+                        </div>
+                        <div
+                          class="d-flex flex-column justify-content-center align-items-center flex-grow-1"
+                        >
+                          <div
+                            class="text-center"
+                            style="font-size: 0.9rem; white-space: normal;"
+                          >
+                            {getShortenedMapName(map)}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  </form>
+                </div>
+              {/each}
             </div>
-          </form>
-          <!-- {/each} -->
+          </div>
         {/each}
       </div>
     </div>
