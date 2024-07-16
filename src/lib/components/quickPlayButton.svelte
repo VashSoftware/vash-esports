@@ -7,7 +7,10 @@
   export let ongoingMatch;
 </script>
 
-<span data-bs-title={"You already have an ongoing match."} use:tooltip>
+<span
+  data-bs-title={ongoingMatch ? "You already have an ongoing match." : ""}
+  use:tooltip
+>
   <button
     type="button"
     class="btn btn-success btn-lg"
