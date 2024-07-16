@@ -29,7 +29,7 @@
 </div>
 
 <div class="text-center my-5">
-  <QuickPlayButton supabase={data.supabase} />
+  <QuickPlayButton supabase={data.supabase} ongoingMatch={data.ongoingMatch} />
 </div>
 
 <div class="my-3">

@@ -70,7 +70,10 @@
   <h1>Matches ({data.matches.length})</h1>
 
   <div>
-    <QuickPlayButton supabase={data.supabase} />
+    <QuickPlayButton
+      supabase={data.supabase}
+      ongoingMatch={data.ongoingMatch}
+    />
   </div>
 </div>
 
