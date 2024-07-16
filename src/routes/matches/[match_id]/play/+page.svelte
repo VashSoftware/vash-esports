@@ -16,38 +16,45 @@
   async function processMatch() {
     const bootstrap = await import("bootstrap");
 
-    if (
-      data.match.match_participants.filter((mp) => mp.roll === null).length > 0
-    ) {
+    // Check if any participants need to roll
+    if (data.match.match_participants.some((mp) => mp.roll === null)) {
       if (activeModals.roll === null) {
         activeModals.roll = new bootstrap.Modal("#rollModal");
       }
-
       return await activeModals.roll.show();
     }
 
     await activeModals.roll?.hide();
 
-    if (
-      (data.match.match_maps[data.match.match_maps.length - 1]?.status ==
-        "finished" ||
-        data.match.match_maps.length == 0) &&
-      data.match.ongoing === true
-    ) {
+    // Check if the current user needs to pick a map
+    const lastMap = data.match.match_maps[data.match.match_maps.length - 1];
+    const userShouldPickMap =
+      data.match.ongoing &&
+      (data.match.match_maps.length === 0 || lastMap.status === "finished") &&
+      data.match.match_participants.some((mp) =>
+        mp.match_participant_players.some(
+          (mpp) =>
+            mpp.team_members.user_profiles.user_id === data.session.user.id &&
+            (!lastMap || lastMap.picked_by !== mp.id)
+        )
+      );
+
+    if (userShouldPickMap) {
       if (activeModals.pickMap === null) {
         activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
       }
-
       return await activeModals.pickMap.show();
     }
 
     await activeModals.pickMap?.hide();
 
-    if (data.match.ongoing === false && activeModals.matchOver === null) {
-      activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
+    // Check if the match is over
+    if (!data.match.ongoing) {
+      if (activeModals.matchOver === null) {
+        activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
+      }
+      return await activeModals.matchOver.show();
     }
-
-    return await activeModals.matchOver.show();
   }
 
   onMount(async () => {
@@ -500,7 +507,7 @@
                 return false;
               } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order - b[1][0].map_pool_map_mods[0].mods.order) as [modId, maps]}
           <div class="bg-body-tertiary shadow rounded my-4 p-3">
-            <div class="row d-flex align-items-stretch">
+            <div class="row d-flex justify-content-center align-items-stretch">
               {#each maps as map}
                 <div class="col-12 col-md-2 d-flex">
                   <form
@@ -530,6 +537,19 @@
                       >
                         <div>
                           <input type="hidden" name="map-id" value={map.id} />
+
+                          <input
+                            type="hidden"
+                            name="match-participant-id"
+                            value={data.match.match_participants.filter(
+                              (mp) =>
+                                mp.participants.teams.team_members.filter(
+                                  (tm) =>
+                                    tm.user_profiles.user_id ==
+                                    data.session.user.id
+                                )[0]
+                            )[0].id}
+                          />
                           <span class="fw-bold fs-4"
                             >{map.map_pool_map_mods[0].mods.code ||
                               "NM"}{map.mod_priority}</span
