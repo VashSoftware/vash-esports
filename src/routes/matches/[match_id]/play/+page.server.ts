@@ -114,6 +114,7 @@ export const actions = {
     const formData = await request.formData();
 
     const mapId = formData.get("map-id");
+    const matchParticipant = formData.get("match-participant-id");
 
     const match = await locals.supabase
       .from("matches")
@@ -133,6 +134,7 @@ export const actions = {
         map_pool_map_id: mapId,
         match_id: params.match_id,
         status: "waiting",
+        picked_by: matchParticipant,
       })
       .select("id, map_pool_maps(maps(osu_id))")
       .single();
