@@ -490,11 +490,19 @@
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
       </div>
       <div class="modal-body text-center">
-        {#each Object.entries(_.groupBy( data.match.map_pools.map_pool_maps.filter((map) => !data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id)), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order - b[1][0].map_pool_map_mods[0].mods.order) as [modId, maps]}
+        {#each Object.entries(_.groupBy( data.match.map_pools.map_pool_maps.filter( (map) => {
+                if (!data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id)) {
+                  if (data.match.tiebreaker) {
+                    return true;
+                  }
+                  return map.map_pool_map_mods[0].mods.id !== 12;
+                }
+                return false;
+              } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order - b[1][0].map_pool_map_mods[0].mods.order) as [modId, maps]}
           <div class="bg-body-tertiary shadow rounded my-4 p-3">
             <div class="row d-flex align-items-stretch">
               {#each maps as map}
-                <div class="col-12 col-md-2 mb-3 d-flex">
+                <div class="col-12 col-md-2 d-flex">
                   <form
                     id={`map-${map.id}`}
                     action="?/pickMap"
