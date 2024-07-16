@@ -3,6 +3,7 @@
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip.js";
   import { onMount } from "svelte";
+  import _ from "lodash";
 
   export let data;
 
@@ -28,9 +29,10 @@
     await activeModals.roll?.hide();
 
     if (
-      data.match.match_maps[data.match.match_maps.length - 1]?.status ==
+      (data.match.match_maps[data.match.match_maps.length - 1]?.status ==
         "finished" ||
-      data.match.match_maps.length == 0
+        data.match.match_maps.length == 0) &&
+      data.match.ongoing === true
     ) {
       if (activeModals.pickMap === null) {
         activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
@@ -56,7 +58,7 @@
         .from("matches")
         .select(
           `
-          *,
+      *,
       rounds(
         *,
         events(
@@ -119,14 +121,16 @@
           )
         )
       )
-          `
+      `
         )
         .eq("id", data.match.id)
-        .order("order", {
-          referencedTable: "map_pools.map_pool_maps.map_pool_map_mods.mods",
-          ascending: true,
-        })
+        .order("created_at", { referencedTable: "match_maps" })
         .single();
+
+      // updatedMatch.data.map_pools.map_pool_maps = _.groupBy(
+      //   updatedMatch.data.map_pools.map_pool_maps,
+      //   (map) => map.map_pool_map_mods[0].mod_id
+      // );
 
       data.match = updatedMatch.data;
       processMatch();
@@ -376,14 +380,26 @@
     {#each data.match.match_maps as map}
       <div class="row py-1 align-items-center">
         <div class="col text-end">
-          {#if dev && map.scores.reduce((sum, score) => sum + score.score, 0) == 0}
-            <form action="?/addSampleScores" method="post" use:enhance>
-              <input type="hidden" name="match-map-id" value={map.id} />
+          {#if dev}
+            <div class="d-flex gap-3">
+              {#if map.scores?.reduce((sum, score) => sum + score.score, 0) == 0}
+                <form action="?/addSampleScores" method="post" use:enhance>
+                  <input type="hidden" name="match-map-id" value={map.id} />
 
-              <button type="submit" class="btn btn-primary"
-                >Add sample scores</button
-              >
-            </form>
+                  <button type="submit" class="btn btn-primary"
+                    >Add sample scores</button
+                  >
+                </form>
+              {/if}
+
+              <form action="?/deleteScores" method="post" use:enhance>
+                <input type="hidden" name="match-map-id" value={map.id} />
+
+                <button type="submit" class="btn btn-danger"
+                  >Delete scores</button
+                >
+              </form>
+            </div>
           {/if}
 
           <h3>{map.scores[0]?.score.toLocaleString()}</h3>
@@ -468,33 +484,41 @@
   </div>
 </div>
 
-<form action="?/pickMap" method="post" use:enhance>
-  <div
-    class="modal fade"
-    id="pickMapModal"
-    tabindex="-1"
-    aria-labelledby="staticBackdropLabel"
-    aria-hidden="true"
-    data-bs-backdrop="static"
-  >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
-        </div>
-        <div class="modal-body text-center">
-          {#each data.match.map_pools.map_pool_maps as map}
+<div
+  class="modal fade"
+  id="pickMapModal"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
+      </div>
+      <div class="modal-body text-center">
+        {#each data.match.map_pools.map_pool_maps.filter((map) => !data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id)) as map}
+          <form action="?/pickMap" method="post" use:enhance>
+            <!-- {#each mod as map} -->
             <div>
               <input type="hidden" name="map-id" value={map.id} />
-              {map.maps.mapsets.artist} - {map.maps.mapsets.title}
-              <button class="btn btn-primary">PICK</button>
+              {map.map_pool_map_mods[0].mods.code || "NM"}{map.mod_priority}
+              {map.maps.mapsets.artist} - {map.maps.mapsets.title} [{map.maps
+                .difficulty_name}]
+              <button
+                class="btn btn-primary"
+                on:click={async () => await activeModals.pickMap.hide()}
+                >PICK</button
+              >
             </div>
-          {/each}
-        </div>
+          </form>
+          <!-- {/each} -->
+        {/each}
       </div>
     </div>
   </div>
-</form>
+</div>
 
 <form action="?/roll" method="post" use:enhance>
   <div
@@ -667,7 +691,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <a href="/">
+        <a href="/" on:click={async () => await activeModals.matchOver.hide()}>
           <button class="btn btn-success" data-bs-dismiss="modal">
             Back to Home
           </button>
