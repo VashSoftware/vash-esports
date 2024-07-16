@@ -1,18 +1,23 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { tooltip } from "$lib/bootstrapTooltip";
   import DropdownSearch from "./dropdownSearch.svelte";
 
   export let supabase;
+  export let ongoingMatch;
 </script>
 
-<button
-  type="button"
-  class="btn btn-success btn-lg"
-  data-bs-toggle="modal"
-  data-bs-target="#exampleModal"
->
-  Quick Match
-</button>
+<span data-bs-title={"You already have an ongoing match."} use:tooltip>
+  <button
+    type="button"
+    class="btn btn-success btn-lg"
+    data-bs-toggle="modal"
+    data-bs-target="#exampleModal"
+    class:disabled={ongoingMatch}
+  >
+    Quick Match
+  </button>
+</span>
 
 <form action="/?/makeQuickMatch" method="post" use:enhance>
   <div
@@ -41,7 +46,8 @@
             <DropdownSearch
               searchKey="teams"
               selectKey="*, team_members(user_profiles(id))"
-              filters={{ is_personal_team: true }}
+              filters={[(item) => item.is_personal_team]}
+              searchColumn="name"
               {supabase}
               text="Choose an Opponent"
             />
@@ -53,6 +59,7 @@
               <DropdownSearch
                 searchKey="map_pools"
                 selectKey="*"
+                searchColumn="name"
                 {supabase}
                 text="Choose a Map Pool"
               />
