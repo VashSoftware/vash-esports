@@ -29,8 +29,6 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     []
   );
 
-  console.dir(mapPool);
-
   return {
     mapPool: mapPool.data,
   };

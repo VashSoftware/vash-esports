@@ -1,6 +1,7 @@
 import { PUBLIC_OSU_SERVER_ENDPOINT } from "$env/static/public";
 import type { Actions, PageServerLoad } from "./$types";
 import { redirect } from "@sveltejs/kit";
+import _ from "lodash";
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
   const match = await locals.supabase
@@ -73,11 +74,13 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
       `
     )
     .eq("id", params.match_id)
-    .order("order", {
-      referencedTable: "map_pools.map_pool_maps.map_pool_map_mods.mods",
-      ascending: true,
-    })
+    .order("created_at", { referencedTable: "match_maps" })
     .single();
+
+  // match.data.map_pools.map_pool_maps = _.groupBy(
+  //   match.data.map_pools.map_pool_maps,
+  //   (map) => map.map_pool_map_mods[0].mod_id
+  // );
 
   return {
     match: match.data,
@@ -123,15 +126,11 @@ export const actions = {
       .eq("id", params.match_id)
       .single();
 
-    console.log(match);
-
     const mapPoolMap = await locals.supabase
       .from("map_pool_maps")
       .select("*, maps(*), map_pool_map_mods(mods(code))")
       .eq("id", mapId)
       .single();
-
-    console.log(mapPoolMap);
 
     const matchMap = await locals.supabase
       .from("match_maps")
@@ -143,8 +142,6 @@ export const actions = {
       .select("id, map_pool_maps(maps(osu_id))")
       .single();
 
-    console.log(matchMap);
-
     const scores = [];
 
     for (const participant of match.data.match_participants) {
@@ -155,8 +152,6 @@ export const actions = {
         });
       }
     }
-
-    console.log(scores);
 
     await locals.supabase.from("scores").insert(scores);
 
@@ -313,6 +308,77 @@ export const actions = {
     await locals.supabase
       .from("match_maps")
       .update({ status: "finished" })
+      .eq("id", formData.get("match-map-id"));
+
+    const match = await locals.supabase
+      .from("matches")
+      .select(
+        "*, match_maps(*, scores(*, match_participant_players(*))), match_participants(id, match_participant_players(match_participant_id)), rounds(best_of)"
+      )
+      .eq("id", params.match_id)
+      .single();
+
+    // Calculate wins for each participant
+    const winsForParticipant1 = match.data.match_maps.filter(
+      (match_map) =>
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              match.data.match_participants[0].id
+          )
+          .reduce((sum, score) => sum + score.score, 0) >
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              match.data.match_participants[1].id
+          )
+          .reduce((sum, score) => sum + score.score, 0)
+    ).length;
+
+    const winsForParticipant2 = match.data.match_maps.filter(
+      (match_map) =>
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              match.data.match_participants[1].id
+          )
+          .reduce((sum, score) => sum + score.score, 0) >
+        match_map.scores
+          .filter(
+            (score) =>
+              score.match_participant_players.match_participant_id ==
+              match.data.match_participants[0].id
+          )
+          .reduce((sum, score) => sum + score.score, 0)
+    ).length;
+
+    // Determine if a participant has won more than half of the total rounds
+    const halfOfBestOf = match.data.rounds.best_of / 2;
+    if (
+      winsForParticipant1 > halfOfBestOf ||
+      winsForParticipant2 > halfOfBestOf
+    ) {
+      // Update the match to no longer ongoing
+      const updatedMatch = await locals.supabase
+        .from("matches")
+        .update({ ongoing: false })
+        .eq("id", params.match_id);
+    }
+  },
+  deleteScores: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+
+    await locals.supabase
+      .from("scores")
+      .delete()
+      .eq("match_map_id", formData.get("match-map-id"));
+
+    await locals.supabase
+      .from("match_maps")
+      .delete()
       .eq("id", formData.get("match-map-id"));
   },
 } satisfies Actions;
