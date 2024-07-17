@@ -215,22 +215,39 @@
   <div class="col">
     <div class="text-center mb-3">
       <img
-        src={data.match.match_participants[0].participants.teams.picture_url}
+        src={data.match.match_participants.filter(
+          (mp) =>
+            mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].participants.teams.picture_url}
         height="192"
         class="rounded-circle shadow"
         alt=""
       />
     </div>
 
-    <a href="/teams/{data.match.match_participants[0].participants.teams.id}">
+    <a
+      href="/teams/{data.match.match_participants.filter(
+        (mp) =>
+          mp.participants.teams.team_members.filter(
+            (tm) => tm.user_profiles.user_id == data.session.user.id
+          )[0]
+      )[0].participants.teams.id}"
+    >
       <h2 class="text-center">
-        {data.match.match_participants[0].participants.teams.name}
+        {data.match.match_participants.filter(
+          (mp) =>
+            mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].participants.teams.name}
       </h2>
     </a>
 
     {#if data.match.type == "event"}
       <div class="row row-cols-2 justify-content-center">
-        {#each data.match.match_participants[0].match_participant_players as player}
+        {#each data.match.match_participants.filter((mp) => mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id == data.session.user.id)[0])[0].match_participant_players as player}
           <div class="p-2">
             <div class="card col p-2">
               <div class="row">
@@ -246,14 +263,22 @@
       </div>
     {:else}
       <div class=" p-2 text-center">
-        {data.match.match_participants[0].match_participant_players[0]
-          .match_participant_player_states.name}
-        {data.match.match_participants[0].match_participant_players[0]
-          .match_participant_player_states.emoji}
+        {data.match.match_participants.filter(
+          (mp) =>
+            mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].match_participant_players[0].match_participant_player_states.name}
+        {data.match.match_participants.filter(
+          (mp) =>
+            mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].match_participant_players[0].match_participant_player_states.emoji}
       </div>
     {/if}
 
-    {#if data.match.match_participants[0].match_participant_players[0].match_participant_player_states.id == 2}
+    {#if data.match.match_participants.filter((mp) => mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id == data.session.user.id)[0])[0].match_participant_players[0].match_participant_player_states.id == 2}
       <form
         action="?/invitePlayer"
         method="post"
@@ -263,8 +288,12 @@
         <input
           type="hidden"
           name="match-participant-player-id"
-          value={data.match.match_participants[0].match_participant_players[0]
-            .id}
+          value={data.match.match_participants.filter(
+            (mp) =>
+              mp.participants.teams.team_members.filter(
+                (tm) => tm.user_profiles.user_id == data.session.user.id
+              )[0]
+          )[0].match_participant_players[0].id}
         />
 
         <button type="submit" class="btn btn-primary"> Invite to Lobby </button>
@@ -280,14 +309,24 @@
             .filter(
               (score) =>
                 score.match_participant_players.match_participant_id ==
-                data.match.match_participants[0].id
+                data.match.match_participants.filter(
+                  (mp) =>
+                    mp.participants.teams.team_members.filter(
+                      (tm) => tm.user_profiles.user_id == data.session.user.id
+                    )[0]
+                )[0].id
             )
             .reduce((sum, score) => sum + score.score, 0) >
           match_map.scores
             .filter(
               (score) =>
                 score.match_participant_players.match_participant_id ==
-                data.match.match_participants[1].id
+                data.match.match_participants.filter(
+                  (mp) =>
+                    !mp.participants.teams.team_members.filter(
+                      (tm) => tm.user_profiles.user_id == data.session.user.id
+                    )[0]
+                )[0].id
             )
             .reduce((sum, score) => sum + score.score, 0)
       ).length} - {data.match.match_maps.filter(
@@ -296,14 +335,24 @@
             .filter(
               (score) =>
                 score.match_participant_players.match_participant_id ==
-                data.match.match_participants[1].id
+                data.match.match_participants.filter(
+                  (mp) =>
+                    !mp.participants.teams.team_members.filter(
+                      (tm) => tm.user_profiles.user_id == data.session.user.id
+                    )[0]
+                )[0].id
             )
             .reduce((sum, score) => sum + score.score, 0) >
           match_map.scores
             .filter(
               (score) =>
                 score.match_participant_players.match_participant_id ==
-                data.match.match_participants[0].id
+                data.match.match_participants.filter(
+                  (mp) =>
+                    mp.participants.teams.team_members.filter(
+                      (tm) => tm.user_profiles.user_id == data.session.user.id
+                    )[0]
+                )[0].id
             )
             .reduce((sum, score) => sum + score.score, 0)
       ).length}
@@ -312,22 +361,39 @@
   <div class="col text-end">
     <div class="text-center mb-3">
       <img
-        src={data.match.match_participants[1].participants.teams.picture_url}
+        src={data.match.match_participants.filter(
+          (mp) =>
+            !mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].participants.teams.picture_url}
         height="192"
         class="rounded-circle shadow"
         alt=""
       />
     </div>
 
-    <a href="/teams/{data.match.match_participants[1].participants.teams.id}">
+    <a
+      href="/teams/{data.match.match_participants.filter(
+        (mp) =>
+          !mp.participants.teams.team_members.filter(
+            (tm) => tm.user_profiles.user_id == data.session.user.id
+          )[0]
+      )[0].participants.teams.id}"
+    >
       <h2 class="text-center">
-        {data.match.match_participants[1].participants.teams.name}
+        {data.match.match_participants.filter(
+          (mp) =>
+            !mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].participants.teams.name}
       </h2>
     </a>
 
     {#if data.match.type == "event"}
       <div class="row row-cols-2 justify-content-center">
-        {#each data.match.match_participants[1].match_participant_players as player}
+        {#each data.match.match_participants.filter((mp) => !mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id == data.session.user.id)[0])[0].match_participant_players as player}
           <div class="p-2">
             <div class="card col p-2">
               <div class="row">
@@ -343,14 +409,22 @@
       </div>
     {:else}
       <div class=" p-2 text-center">
-        {data.match.match_participants[1].match_participant_players[0]
-          .match_participant_player_states.name}
-        {data.match.match_participants[1].match_participant_players[0]
-          .match_participant_player_states.emoji}
+        {data.match.match_participants.filter(
+          (mp) =>
+            !mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].match_participant_players[0].match_participant_player_states.name}
+        {data.match.match_participants.filter(
+          (mp) =>
+            !mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].match_participant_players[0].match_participant_player_states.emoji}
       </div>
     {/if}
 
-    {#if data.match.match_participants[1].match_participant_players[0].match_participant_player_states.id == 2}
+    {#if data.match.match_participants.filter((mp) => !mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id == data.session.user.id)[0])[0].match_participant_players[0].match_participant_player_states.id == 2}
       <form
         action="?/invitePlayer"
         method="post"
@@ -360,8 +434,12 @@
         <input
           type="hidden"
           name="match-participant-player-id"
-          value={data.match.match_participants[1].match_participant_players[0]
-            .id}
+          value={data.match.match_participants.filter(
+            (mp) =>
+              !mp.participants.teams.team_members.filter(
+                (tm) => tm.user_profiles.user_id == data.session.user.id
+              )[0]
+          )[0].match_participant_players[0].id}
         />
 
         <button type="submit" class="btn btn-primary"> Invite to Lobby </button>
@@ -381,7 +459,7 @@
         <div class="col text-end">
           {#if dev}
             <div class="d-flex gap-3">
-              {#if map.scores?.reduce((sum, score) => sum + score.score, 0) == 0}
+              {#if map.scores.reduce((sum, score) => sum + score.score, 0) == 0}
                 <form action="?/addSampleScores" method="post" use:enhance>
                   <input type="hidden" name="match-map-id" value={map.id} />
 
@@ -401,7 +479,21 @@
             </div>
           {/if}
 
-          <h3>{map.scores[0]?.score.toLocaleString()}</h3>
+          <h3>
+            {map.scores
+              .filter(
+                (score) =>
+                  score.match_participant_players.match_participant_id ==
+                  data.match.match_participants.filter(
+                    (mp) =>
+                      mp.participants.teams.team_members.filter(
+                        (tm) => tm.user_profiles.user_id == data.session.user.id
+                      )[0]
+                  )[0].id
+              )
+              .reduce((sum, score) => sum + score.score, 0)
+              .toLocaleString()}
+          </h3>
         </div>
         <div class="col-6">
           <div style="position: relative;">
@@ -436,7 +528,21 @@
           </div>
         </div>
         <div class="col">
-          <h3>{map.scores[1]?.score.toLocaleString()}</h3>
+          <h3>
+            {map.scores
+              .filter(
+                (score) =>
+                  score.match_participant_players.match_participant_id ==
+                  data.match.match_participants.filter(
+                    (mp) =>
+                      !mp.participants.teams.team_members.filter(
+                        (tm) => tm.user_profiles.user_id == data.session.user.id
+                      )[0]
+                  )[0].id
+              )
+              .reduce((sum, score) => sum + score.score, 0)
+              .toLocaleString()}
+          </h3>
         </div>
       </div>
     {/each}
@@ -472,7 +578,12 @@
           <input
             type="hidden"
             name="match-participant-id"
-            value={data.match.match_participants[0].id}
+            value={data.match.match_participants.filter(
+              (mp) =>
+                mp.participants.teams.team_members.filter(
+                  (tm) => tm.user_profiles.user_id == data.session.user.id
+                )[0]
+            )[0].id}
           />
           <button type="submit" class="btn btn-danger" data-bs-dismiss="modal"
             >Confirm</button
@@ -691,13 +802,24 @@
         <div class="d-flex justify-content-around align-items-center">
           <div>
             <img
-              src={data.match.match_participants[0].participants.teams
-                .picture_url}
+              src={data.match.match_participants.filter(
+                (mp) =>
+                  mp.participants.teams.team_members.filter(
+                    (tm) => tm.user_profiles.user_id == data.session.user.id
+                  )[0]
+              )[0].participants.teams.picture_url}
               alt=""
               height="192"
               class="rounded-circle"
             />
-            <h2>{data.match.match_participants[0].participants.teams.name}</h2>
+            <h2>
+              {data.match.match_participants.filter(
+                (mp) =>
+                  mp.participants.teams.team_members.filter(
+                    (tm) => tm.user_profiles.user_id == data.session.user.id
+                  )[0]
+              )[0].participants.teams.name}
+            </h2>
           </div>
           <div>
             <h2>
@@ -707,14 +829,26 @@
                     .filter(
                       (score) =>
                         score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[0].id
+                        data.match.match_participants.filter(
+                          (mp) =>
+                            mp.participants.teams.team_members.filter(
+                              (tm) =>
+                                tm.user_profiles.user_id == data.session.user.id
+                            )[0]
+                        )[0].id
                     )
                     .reduce((sum, score) => sum + score.score, 0) >
                   match_map.scores
                     .filter(
                       (score) =>
                         score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[1].id
+                        data.match.match_participants.filter(
+                          (mp) =>
+                            !mp.participants.teams.team_members.filter(
+                              (tm) =>
+                                tm.user_profiles.user_id == data.session.user.id
+                            )[0]
+                        )[0].id
                     )
                     .reduce((sum, score) => sum + score.score, 0)
               ).length} - {data.match.match_maps.filter(
@@ -723,14 +857,26 @@
                     .filter(
                       (score) =>
                         score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[1].id
+                        data.match.match_participants.filter(
+                          (mp) =>
+                            !mp.participants.teams.team_members.filter(
+                              (tm) =>
+                                tm.user_profiles.user_id == data.session.user.id
+                            )[0]
+                        )[0].id
                     )
                     .reduce((sum, score) => sum + score.score, 0) >
                   match_map.scores
                     .filter(
                       (score) =>
                         score.match_participant_players.match_participant_id ==
-                        data.match.match_participants[0].id
+                        data.match.match_participants.filter(
+                          (mp) =>
+                            mp.participants.teams.team_members.filter(
+                              (tm) =>
+                                tm.user_profiles.user_id == data.session.user.id
+                            )[0]
+                        )[0].id
                     )
                     .reduce((sum, score) => sum + score.score, 0)
               ).length}
@@ -738,13 +884,24 @@
           </div>
           <div>
             <img
-              src={data.match.match_participants[1].participants.teams
-                .picture_url}
+              src={data.match.match_participants.filter(
+                (mp) =>
+                  !mp.participants.teams.team_members.filter(
+                    (tm) => tm.user_profiles.user_id == data.session.user.id
+                  )[0]
+              )[0].participants.teams.picture_url}
               alt=""
               height="192"
               class="rounded-circle"
             />
-            <h2>{data.match.match_participants[1].participants.teams.name}</h2>
+            <h2>
+              {data.match.match_participants.filter(
+                (mp) =>
+                  !mp.participants.teams.team_members.filter(
+                    (tm) => tm.user_profiles.user_id == data.session.user.id
+                  )[0]
+              )[0].participants.teams.name}
+            </h2>
           </div>
         </div>
       </div>
