@@ -1,9 +1,8 @@
 <script lang="ts">
   import { dev } from "$app/environment";
   import { enhance } from "$app/forms";
-  import { tooltip } from "$lib/bootstrapTooltip.js";
-  import { onMount } from "svelte";
   import _ from "lodash";
+  import { onMount } from "svelte";
 
   export let data;
 
@@ -103,7 +102,7 @@
           )
         ),
         participants(*,
-          teams(*, team_members(user_profiles(user_id)))
+          teams(*, team_members(user_profiles(id, user_id)))
         )
       ),
       match_maps(*,
@@ -147,11 +146,6 @@
         .order("created_at", { referencedTable: "match_maps" })
         .single();
 
-      // updatedMatch.data.map_pools.map_pool_maps = _.groupBy(
-      //   updatedMatch.data.map_pools.map_pool_maps,
-      //   (map) => map.map_pool_map_mods[0].mod_id
-      // );
-
       data.match = updatedMatch.data;
       processMatch();
     };
@@ -169,6 +163,31 @@
         }
       )
       .subscribe();
+
+    await data.supabase
+      .from("notifications")
+      .update({
+        dismissed_at: new Date(),
+      })
+      .eq("title", "Match Accepted")
+      .eq(
+        "user_id",
+        data.match.match_participants.filter(
+          (mp) =>
+            mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].participants.teams.team_members[0].user_profiles.id
+      );
+
+    console.log(
+      data.match.match_participants.filter(
+        (mp) =>
+          mp.participants.teams.team_members.filter(
+            (tm) => tm.user_profiles.user_id == data.session.user.id
+          )[0]
+      )[0].participants.teams.team_members[0].user_profiles.id
+    );
   });
 
   function getShortenedMapName(map) {

@@ -172,7 +172,6 @@ export const actions = {
         user_id: matchInvite.data.teams.team_members[0].user_profiles.id,
         title: "Match Accepted",
         body: "Your match invite has been accepted!",
-        href: `/matches/${match[0].id}/play`,
         type: "message",
       })
       .select("id")

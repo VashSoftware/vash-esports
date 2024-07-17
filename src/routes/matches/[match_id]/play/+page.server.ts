@@ -33,7 +33,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
           )
         ),
         participants(*,
-          teams(*, team_members(user_profiles(user_id)))
+          teams(*, team_members(user_profiles(id, user_id)))
         )
       ),
       match_maps(*,
