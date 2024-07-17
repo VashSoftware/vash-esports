@@ -186,21 +186,6 @@ export const actions = {
 
     console.log("Picked map with ID: ", mapId);
   },
-  makeMatch: async ({ locals, params, request }) => {
-    const match = await locals.supabase
-      .from("matches")
-      .select(`id`)
-      .eq("id", params.match_id)
-      .single();
-
-    fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/create-match", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: match.data.id }),
-    });
-  },
   startMap: async ({ locals, params, request }) => {
     const match = await locals.supabase
       .from("matches")
