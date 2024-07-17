@@ -30,7 +30,20 @@
     const lastMap = data.match.match_maps[data.match.match_maps.length - 1];
     const userShouldPickMap =
       data.match.ongoing &&
-      (data.match.match_maps.length === 0 || lastMap.status === "finished") &&
+      ((data.match.match_maps.length === 0 &&
+        data.match.match_participants.filter(
+          (mp) =>
+            mp.participants.teams.team_members.filter(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            )[0]
+        )[0].roll >
+          data.match.match_participants.filter(
+            (mp) =>
+              !mp.participants.teams.team_members.filter(
+                (tm) => tm.user_profiles.user_id == data.session.user.id
+              )[0]
+          )[0].roll) ||
+        lastMap.status === "finished") &&
       data.match.match_participants.some((mp) =>
         mp.match_participant_players.some(
           (mpp) =>
