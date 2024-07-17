@@ -123,7 +123,7 @@
   <title>{getNotificationsCount()}Vash Esports</title>
 </svelte:head>
 
-{#if data.ongoingMatch}
+{#if data.ongoingMatch && $page.url.pathname !== `/matches/${data.ongoingMatch.id}/play`}
   {#if !data.ongoingMatch.match_queue[0].position}
     <a href="/matches/{data.ongoingMatch.id}/play" class="banner-link">
       <div class="banner">
