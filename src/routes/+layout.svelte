@@ -24,7 +24,42 @@
       }
     });
 
-    return () => subscription.unsubscribe();
+    subscription.unsubscribe();
+
+    data.supabase
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+        },
+        async (payload) => {
+          const notifications = await data.supabase
+            .from("notifications")
+            .select("*, user_profiles!inner(user_id), match_invites(id)")
+            .eq("user_profiles.user_id", session?.user.id)
+            .is("dismissed_at", null)
+            .order("created_at", { ascending: false });
+
+          data.notifications = notifications.data;
+
+          const ongoingMatch = await data.supabase
+            .from("matches")
+            .select(
+              "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id)))), match_queue(*)"
+            )
+            .eq("ongoing", true)
+            .eq(
+              "match_participants.match_participant_players.team_members.user_profiles.user_id",
+              (await supabase.auth.getUser()).data.user.id
+            )
+            .maybeSingle();
+
+          data.ongoingMatch = ongoingMatch.data;
+        }
+      )
+      .subscribe();
   });
 
   let searchQuery = "";
@@ -89,11 +124,45 @@
 </svelte:head>
 
 {#if data.ongoingMatch}
-  <a href="/matches/{data.ongoingMatch.id}/play" class="banner-link">
-    <div class="banner">
-      <div class="banner-content text-center">Active Match: Stan vs Stan 3</div>
-    </div>
-  </a>
+  {#if !data.ongoingMatch.match_queue[0].position}
+    <a href="/matches/{data.ongoingMatch.id}/play" class="banner-link">
+      <div class="banner">
+        <div class="banner-content text-center">
+          Active Match: Stan vs Stan 3
+        </div>
+      </div>
+    </a>
+  {:else}
+    <div class="banner-link">
+      <div class="banner">
+        <div class="d-flex justify-content-center gap-2">
+          <div class="banner-content text-center">
+            Queueing for: Stan vs Stan 3
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-sm"
+            style="background-color: #212529;"
+            data-bs-toggle="modal"
+            data-bs-target="#queuePositionModal"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="2em"
+              height="2em"
+              viewBox="0 0 24 24"
+              {...$$props}
+            >
+              <path
+                fill="currentColor"
+                d="M11 17h2v-6h-2zm1-8q.425 0 .713-.288T13 8t-.288-.712T12 7t-.712.288T11 8t.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>{/if}
 {/if}
 
 <main class="d-flex flex-column min-vh-100">
@@ -526,29 +595,71 @@
   </footer>
 </main>
 
+<div
+  class="modal fade"
+  id="queuePositionModal"
+  tabindex="-1"
+  aria-labelledby="queuePositionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="text-center my-5">
+          <h3>No. {data.ongoingMatch?.match_queue[0].position} in the Queue</h3>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+          >Close</button
+        >
+        {#if !data.ongoingMatch?.match_queue[0].position}
+          <a href="/matches/{data.ongoingMatch?.id}/play"
+            ><button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal">Close</button
+            >
+          </a>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
   .banner {
-    background: linear-gradient(
-      to right,
-      #ff7e5f,
-      #feb47b
-    ); /* Gradient background */
+    background: linear-gradient(to right, #ff7e5f, #feb47b, #ff7e5f, #feb47b);
+    background-size: 200% 100%;
     color: white;
     font-weight: bold;
     padding: 10px 0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     font-size: 1.2em;
-  }
-  .banner a {
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-    color: inherit;
+    animation: gradientAnimation 3s linear infinite; /* Adjust speed as necessary */
   }
 
   a.banner-link {
     color: inherit; /* Inherits the color from the parent element */
     text-decoration: none; /* Removes underline from links */
+    display: block; /* Ensure the anchor tag takes full height and width */
+  }
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>

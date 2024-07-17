@@ -66,7 +66,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   const ongoingMatchPromise = supabase
     .from("matches")
     .select(
-      "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id))))"
+      "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id)))), match_queue(*)"
     )
     .eq("ongoing", true)
     .eq(
