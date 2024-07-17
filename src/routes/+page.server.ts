@@ -218,8 +218,6 @@ export const actions = {
         match_participant_2.data[0].participants.teams.team_members[0].id,
       state: 1,
     });
-
-    throw redirect(302, `/matches/${match[0].id}/play`);
   },
   register: async ({ locals, request }) => {
     const formData = await request.formData();
