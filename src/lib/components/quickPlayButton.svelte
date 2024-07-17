@@ -1,10 +1,25 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { tooltip } from "$lib/bootstrapTooltip";
+  import type { SupabaseClient } from "@supabase/supabase-js";
   import DropdownSearch from "./dropdownSearch.svelte";
 
-  export let supabase;
+  export let supabase: SupabaseClient;
   export let ongoingMatch;
+
+  let opponentId;
+  let mapPoolId;
+
+  async function getUserId() {
+    const user = await supabase.auth.getUser();
+    return user.data.user.id;
+  }
+
+  let userId;
+
+  getUserId().then((id) => {
+    userId = id;
+  });
 </script>
 
 <span
@@ -46,25 +61,35 @@
             <label for="exampleInputPassword1" class="form-label"
               >Opponent</label
             >
+            <input type="hidden" name="sender-id" value={userId} />
+            <input type="hidden" name="opponent-id" value={opponentId} />
+
             <DropdownSearch
               searchKey="teams"
+              searchColumn="name"
               selectKey="*, team_members(user_profiles(id))"
               filters={[(item) => item.is_personal_team]}
-              searchColumn="name"
               {supabase}
               text="Choose an Opponent"
+              selectRowFn={(item) => {
+                opponentId = item.team_members[0].user_profiles.id;
+              }}
             />
           </div>
 
           <div class="mb-3">
             <label class="form-label">Map Pool</label>
             <div class="d-flex gap-2">
+              <input type="hidden" name="map-pool-id" value={mapPoolId} />
               <DropdownSearch
                 searchKey="map_pools"
                 selectKey="*"
                 searchColumn="name"
                 {supabase}
                 text="Choose a Map Pool"
+                selectRowFn={(item) => {
+                  mapPoolId = item.id;
+                }}
               />
               <button
                 class="btn btn-primary"

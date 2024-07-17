@@ -73,6 +73,7 @@
     <QuickPlayButton
       supabase={data.supabase}
       ongoingMatch={data.ongoingMatch}
+    
     />
   </div>
 </div>

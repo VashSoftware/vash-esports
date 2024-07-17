@@ -66,16 +66,19 @@ export const actions = {
   makeQuickMatch: async ({ locals, request }) => {
     const formData = await request.formData();
 
-    const userId = formData.get("teams");
-    const mapPoolId = formData.get("map_pools");
+    const senderId = formData.get("sender-id");
+    const userId = formData.get("opponent-id");
+    const mapPoolId = formData.get("map-pool-id");
     const bestOf = formData.get("best-of");
 
     const user = await locals.supabase
       .from("user_profiles")
       .select("id, name, team_members(teams!inner(id))")
-      .eq("user_id", (await locals.supabase.auth.getUser()).data.user.id)
+      .eq("user_id", senderId)
       .eq("team_members.teams.is_personal_team", true)
       .single();
+
+    console.log(user);
 
     const notification = await locals.supabase
       .from("notifications")
@@ -87,6 +90,8 @@ export const actions = {
       })
       .select("id")
       .single();
+
+    console.log(notification);
 
     const invite = await locals.supabase.from("match_invites").insert({
       //@ts-ignore
@@ -110,7 +115,9 @@ export const actions = {
 
     const matchInvite = await locals.supabase
       .from("match_invites")
-      .select("*, teams!inner(name, team_members(user_profiles(id)))")
+      .select(
+        "*, teams!inner(name, team_members(user_profiles(id))), notifications(user_id)"
+      )
       .eq("id", matchInviteId)
       .eq("teams.is_personal_team", true)
       .single();
@@ -122,13 +129,11 @@ export const actions = {
 
     const userPersonalTeam = await locals.supabase
       .from("teams")
-      .select("*, team_members(*, user_profiles(*))")
+      .select("*, team_members!inner(*, user_profiles!inner(*))")
       .eq("is_personal_team", true)
       .eq(
-        "team_members.user_profiles.user_id",
-        (
-          await locals.supabase.auth.getUser()
-        ).data.user.id
+        "team_members.user_profiles.id",
+        matchInvite.data.notifications.user_id
       );
 
     const event = await insertData("events", {
@@ -138,7 +143,6 @@ export const actions = {
 
     const round = await insertData("rounds", {
       event_id: event[0].id,
-      map_pool_id: matchInvite.data.pool_id,
       best_of: matchInvite.data.best_of,
       bans_per_match_participant: 0,
       name: `Quick Match: ${userPersonalTeam.data[0].name} vs ${matchInvite.data.teams.name}`,
@@ -149,6 +153,7 @@ export const actions = {
       start_time: new Date(),
       round_id: round[0].id,
       type: "quick",
+      map_pool_id: matchInvite.data.pool_id,
     });
 
     await locals.supabase
@@ -205,17 +210,15 @@ export const actions = {
       state: 1,
     });
 
-    try {
-      fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/create-match", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: match[0].id }),
-      });
-    } catch (error) {
+    fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/create-match", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: match[0].id }),
+    }).catch((error) => {
       console.error(error);
-    }
+    });
 
     throw redirect(302, `/matches/${match[0].id}/play`);
   },

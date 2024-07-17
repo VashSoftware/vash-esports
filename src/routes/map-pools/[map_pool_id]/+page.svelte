@@ -168,20 +168,6 @@
     return data;
   }
 
-  let timer;
-  function debounce(event) {
-    clearTimeout(timer);
-    timer = setTimeout(async () => {
-      const formData = new FormData(event.target);
-      const osuId = formData.get("osu-id");
-      const mapI = formData.get("map-pool-map-i");
-      const modI = formData.get("map-pool-mod-i");
-
-      let map = await getMap(osuId);
-      data.mapPool.map_pool_mods[modI].map_pool_maps[mapI].found_maps = [map];
-    }, 300);
-  }
-
   async function deletePool(event: Event) {
     await data.supabase
       .from("map_pools")
