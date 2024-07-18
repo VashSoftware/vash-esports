@@ -26,6 +26,31 @@
 
     subscription.unsubscribe();
 
+    async function fetchNotifications() {
+      const notifications = await data.supabase
+        .from("notifications")
+        .select("*, user_profiles!inner(user_id), match_invites(id)")
+        .eq("user_profiles.user_id", session?.user.id)
+        .is("dismissed_at", null)
+        .order("created_at", { ascending: false });
+
+      data.notifications = notifications.data;
+
+      const ongoingMatch = await data.supabase
+        .from("matches")
+        .select(
+          "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id)))), match_queue(*)"
+        )
+        .eq("ongoing", true)
+        .eq(
+          "match_participants.match_participant_players.team_members.user_profiles.user_id",
+          data.session.user.id
+        )
+        .maybeSingle();
+
+      data.ongoingMatch = ongoingMatch.data;
+    }
+
     data.supabase
       .channel("schema-db-changes")
       .on(
@@ -35,31 +60,12 @@
           schema: "public",
         },
         async (payload) => {
-          const notifications = await data.supabase
-            .from("notifications")
-            .select("*, user_profiles!inner(user_id), match_invites(id)")
-            .eq("user_profiles.user_id", session?.user.id)
-            .is("dismissed_at", null)
-            .order("created_at", { ascending: false });
-
-          data.notifications = notifications.data;
-
-          const ongoingMatch = await data.supabase
-            .from("matches")
-            .select(
-              "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id)))), match_queue(*)"
-            )
-            .eq("ongoing", true)
-            .eq(
-              "match_participants.match_participant_players.team_members.user_profiles.user_id",
-              (await supabase.auth.getUser()).data.user.id
-            )
-            .maybeSingle();
-
-          data.ongoingMatch = ongoingMatch.data;
+          fetchNotifications();
         }
       )
       .subscribe();
+
+    setTimeout(fetchNotifications, 5000);
   });
 
   let searchQuery = "";

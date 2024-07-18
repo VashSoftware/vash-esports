@@ -19,3 +19,12 @@ values
   ('Double Time', 4, 'DT'),
   ('Free Mod', 5, 'FM'),
   ('Tiebreaker', 6, 'TB');
+
+insert into match_participant_player_states
+  (name, emoji)
+values
+  ('Offline', '🔴'),
+  ('Online', '🟡'),
+  ('Joined', '🟢'),
+  ('Ready', '✅'),
+  ('Playing', '🎮');
