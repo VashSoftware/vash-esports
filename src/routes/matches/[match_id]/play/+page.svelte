@@ -2,7 +2,7 @@
   import { dev } from "$app/environment";
   import { enhance } from "$app/forms";
   import _ from "lodash";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
 
   export let data;
 
@@ -20,7 +20,7 @@
       if (activeModals.roll === null) {
         activeModals.roll = new bootstrap.Modal("#rollModal");
       }
-      return await activeModals.roll.show();
+      return activeModals.roll.show();
     }
 
     await activeModals.roll?.hide();
@@ -55,7 +55,7 @@
       if (activeModals.pickMap === null) {
         activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
       }
-      return await activeModals.pickMap.show();
+      return activeModals.pickMap.show();
     }
 
     await activeModals.pickMap?.hide();
@@ -65,90 +65,92 @@
       if (activeModals.matchOver === null) {
         activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
       }
-      return await activeModals.matchOver.show();
+      return activeModals.matchOver.show();
     }
   }
 
-  onMount(async () => {
-    processMatch();
-
-    const getMatch = async () => {
-      const updatedMatch = await data.supabase
-        .from("matches")
-        .select(
-          `
+  async function getMatch() {
+    const updatedMatch = await data.supabase
+      .from("matches")
+      .select(
+        `
+    *,
+    rounds(
       *,
-      rounds(
+      events(
         *,
-        events(
+        event_groups(
+          *
+        )
+      )
+    ),
+    match_participants(
+      *,
+      match_participant_players(
+        *,
+        match_participant_player_states(
+          *
+        ),
+        team_members(
           *,
-          event_groups(
+          user_profiles(
             *
           )
         )
       ),
-      match_participants(
-        *,
-        match_participant_players(
-          *,
-          match_participant_player_states(
-            *
-          ),
-          team_members(
-            *,
-            user_profiles(
-              *
-            )
-          )
-        ),
+      participants(*,
+        teams(*, team_members(user_profiles(id, user_id)))
+      )
+    ),
+    match_maps(*,
+      map_pool_maps(*,
+        maps(*,
+          mapsets(*)
+        )
+      ),
+      scores(*,
+        match_participant_players(*)
+      )
+    ),
+    match_bans(*,
+      match_participants(*,
         participants(*,
-          teams(*, team_members(user_profiles(id, user_id)))
+          teams(name)
         )
-      ),
-      match_maps(*,
-        map_pool_maps(*,
-          maps(*,
-            mapsets(*)
+      )
+    ),
+    map_pools(
+      *,          
+      map_pool_maps(
+        *,
+        maps(
+          *,
+          mapsets(
+            *
           )
         ),
-        scores(*,
-          match_participant_players(*)
-        )
-      ),
-      match_bans(*,
-        match_participants(*,
-          participants(*,
-            teams(name)
-          )
-        )
-      ),
-      map_pools(
-        *,          
-        map_pool_maps(
+        map_pool_map_mods(
           *,
-          maps(
-            *,
-            mapsets(
-              *
-            )
-          ),
-          map_pool_map_mods(
-            *,
-            mods(
-              *
-            )
+          mods(
+            *
           )
         )
       )
-      `
-        )
-        .eq("id", data.match.id)
-        .order("created_at", { referencedTable: "match_maps" })
-        .single();
+    )
+    `
+      )
+      .eq("id", data.match.id)
+      .order("created_at", { referencedTable: "match_maps" })
+      .single();
 
-      data.match = updatedMatch.data;
-      processMatch();
-    };
+    data.match = updatedMatch.data;
+    processMatch();
+  }
+
+  onMount(async () => {
+    console.log("checking match");
+
+    processMatch();
 
     data.supabase
       .channel("schema-db-changes")
@@ -163,6 +165,9 @@
         }
       )
       .subscribe();
+
+    // Set interval to call getMatch every 60 seconds (60000 ms)
+    const intervalId = setInterval(getMatch, 60000);
 
     await data.supabase
       .from("notifications")
@@ -188,6 +193,14 @@
           )[0]
       )[0].participants.teams.team_members[0].user_profiles.id
     );
+
+    onDestroy(() => {
+      clearInterval(intervalId);
+      // Hide all active modals
+      activeModals.roll?.hide();
+      activeModals.pickMap?.hide();
+      activeModals.matchOver?.hide();
+    });
   });
 
   function getShortenedMapName(map) {
