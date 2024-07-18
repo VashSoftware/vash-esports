@@ -12,7 +12,7 @@
 
   async function getUserId() {
     const user = await supabase.auth.getUser();
-    return user.data.user.id;
+    return user.data.user?.id;
   }
 
   let userId;

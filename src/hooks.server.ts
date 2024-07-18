@@ -105,7 +105,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     .from("user_profiles")
     .select("id, user_id, finished_setup")
     .eq("user_id", session?.user.id)
-    .single();
+    .maybeSingle();
 
   if (user.error) {
     console.error(user.error);

@@ -648,7 +648,7 @@
                   return map.map_pool_map_mods[0].mods.id !== 12;
                 }
                 return false;
-              } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order - b[1][0].map_pool_map_mods[0].mods.order) as [modId, maps]}
+              } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order_no - b[1][0].map_pool_map_mods[0].mods.order_no) as [modId, maps]}
           <div class="bg-body-tertiary shadow rounded my-4 p-3">
             <div class="row d-flex justify-content-center align-items-stretch">
               {#each maps as map}

@@ -11,8 +11,6 @@ export const GET = async ({ url, locals: { supabase } }) => {
       .upsert(
         {
           user_id: session.data.user.id,
-          picture_url:
-            "https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/user_pictures/default",
         },
         {
           onConflict: "user_id",

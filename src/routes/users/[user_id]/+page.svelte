@@ -233,7 +233,7 @@
   <div class="col">
     <div class="d-flex justify-content-end gap-3 align-items-center">
       <a
-        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platform_id == 1)[0]?.value}`}
+        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platforms.name == 'osu!')[0]?.value}`}
         class="text-white"
       >
         <svg
@@ -556,7 +556,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <label for="osuConnectButton">osu!</label>
 
-              {#if !data.user.user_platforms?.find((platform) => platform.platform_id == 1)}
+              {#if !data.user.user_platforms?.find((platform) => platform.platforms.name == 'osu!')}
                 <a
                   href={`https://osu.ppy.sh/oauth/authorize?client_id=${PUBLIC_OSU_CLIENT_ID}&redirect_uri=${$page.url.origin}/auth/callback/osu&response_type=code&scope=public identify`}
                   class="btn"
@@ -577,7 +577,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <label for="osuConnectButton">Discord</label>
 
-              {#if !data.user.user_platforms?.find((platform) => platform.platform_id == 9)}
+              {#if !data.user.user_platforms?.find((platform) => platform.platforms.name == 'Discord')}
                 <a
                   href={`https://discord.com/oauth2/authorize?response_type=code&client_id=${PUBLIC_DISCORD_CLIENT_ID}&scope=identify&redirect_uri=${$page.url.origin}/auth/callback/discord&prompt=none&integration_type=0`}
                   class="btn"

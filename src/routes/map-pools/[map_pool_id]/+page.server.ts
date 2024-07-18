@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 
   // Group maps by mod order
   const groupedByModOrder = mapPool.data.map_pool_maps.reduce((acc, map) => {
-    const modOrder = map.map_pool_map_mods[0]?.mods.order;
+    const modOrder = map.map_pool_map_mods[0]?.mods.order_no;
     if (!acc[modOrder]) {
       acc[modOrder] = [];
     }

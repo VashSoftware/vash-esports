@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const { data, error } = await locals.supabase
     .from("user_profiles")
     .select(
-      "*, pinned_scores(*), organisation_members(*, organisations(*)), team_members(*, teams!inner(*, participants(events(*, event_groups(name))))), user_badges(*, badges(*)), user_platforms(platform_id, value)"
+      "*, pinned_scores(*), organisation_members(*, organisations(*)), team_members(*, teams!inner(*, participants(events(*, event_groups(name))))), user_badges(*, badges(*)), user_platforms(platforms(name), value)"
     )
     .eq("id", params.user_id)
     .eq("team_members.teams.is_personal_team", false)

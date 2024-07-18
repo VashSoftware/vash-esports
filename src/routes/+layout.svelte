@@ -436,59 +436,72 @@
                     </form>
                   </div>
 
-                  <form action="/?/logInEmail" method="post" use:enhance>
-                    <div class="col">
-                      {#if form?.error}
-                        <div class="alert alert-danger" role="alert">
-                          {form.error.message}
-                        </div>
-                      {/if}
-                      <div class="mb-3">
-                        <div class="my-3">
-                          <label class="form-label"
-                            >E-mail
-                            <input
-                              type="text"
-                              name="email"
-                              class="form-control"
-                              placeholder=""
-                              aria-describedby="helpId"
-                              bind:value={email}
-                            />
-                          </label>
-                        </div>
+                  <div class="col">
+                    {#if form?.error}
+                      <div class="alert alert-danger" role="alert">
+                        {form.error.message}
+                      </div>
+                    {/if}
+                    <div class="mb-3">
+                      <div class="my-3">
+                        <label class="form-label"
+                          >E-mail
+                          <input
+                            type="text"
+                            name="email"
+                            class="form-control"
+                            placeholder=""
+                            aria-describedby="helpId"
+                            bind:value={email}
+                          />
+                        </label>
+                      </div>
 
-                        <div class="my-3">
-                          <label for="" class="form-label"
-                            >Password
-                            <input
-                              type="password"
-                              name="password"
-                              class="form-control"
-                              placeholder=""
-                              aria-describedby="helpId"
-                              style="width: 100%;"
-                              bind:value={password}
-                            /></label
-                          >
-                        </div>
+                      <div class="my-3">
+                        <label for="" class="form-label"
+                          >Password
+                          <input
+                            type="password"
+                            name="password"
+                            class="form-control"
+                            placeholder=""
+                            aria-describedby="helpId"
+                            style="width: 100%;"
+                            bind:value={password}
+                          /></label
+                        >
+                      </div>
 
-                        <div class="text-center my-3">
+                      <div
+                        class="text-center my-3 d-flex justify-content-center gap-3"
+                      >
+                        <form action="/?/logInEmail" method="post" use:enhance>
                           <button
                             type="submit"
                             class="btn btn-primary"
                             on:click={signIn}>Log in</button
                           >
+                        </form>
 
-                          <button
-                            type="submit"
-                            class="btn btn-secondary"
-                            on:click={signIn}>Register</button
+                        <form
+                          action="/?/registerUser"
+                          method="post"
+                          use:enhance
+                        >
+                          <input type="hidden" name="email" value={email} />
+                          <input
+                            type="hidden"
+                            name="password"
+                            value={password}
+                          />
+
+                          <button type="submit" class="btn btn-secondary"
+                            >Register</button
                           >
-                        </div>
+                        </form>
                       </div>
                     </div>
-                  </form>
+                  </div>
                 </div>
               </ul>
             </div>
