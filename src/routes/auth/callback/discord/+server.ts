@@ -39,13 +39,19 @@ export const GET = async ({ url, locals: { supabase, getSession } }) => {
       .eq("user_id", session.user.id)
       .single();
 
+    const discordPlatform = await supabase
+      .from("platforms")
+      .select("id")
+      .eq("name", "discord")
+      .single();
+
     const userPlatforms = await supabase
       .from("user_platforms")
       .upsert(
         [
           {
             user_id: userProfile.data.id,
-            platform_id: 9,
+            platform_id: discordPlatform.data.id,
             value: data.id,
           },
         ],

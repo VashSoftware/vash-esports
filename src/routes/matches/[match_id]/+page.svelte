@@ -109,7 +109,7 @@
   <div class="col-8">
     <iframe
       src="https://player.twitch.tv/?channel={data.match.rounds.events.event_links.filter(
-        (event_link) => event_link.platforms.id == 4
+        (event_link) => event_link.platforms.name == 'Twitch'
       )[0]?.link_param}&parent={data.hostname}"
       class="w-100 rounded"
       height="525"
@@ -123,7 +123,7 @@
   <div class="col">
     <iframe
       src="https://www.twitch.tv/embed/{data.match.rounds.events.event_links.filter(
-        (event_link) => event_link.platforms.id == 4
+        (event_link) => event_link.platforms.name == 'Twitch'
       )[0]?.link_param}/chat?parent={data.hostname}"
       height="525"
       width="350"

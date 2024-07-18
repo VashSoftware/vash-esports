@@ -26,7 +26,7 @@
       <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">osu! Account</label>
         <div class="text-center row mx-0">
-          {#if !data.user.user_platforms?.find((platform) => platform.platform_id == 1)}
+          {#if !data.user.user_platforms?.find((platform) => platform.platforms.name == "osu!")}
             <a
               href={`https://osu.ppy.sh/oauth/authorize?client_id=${PUBLIC_OSU_CLIENT_ID}&redirect_uri=${$page.url.origin}/auth/callback/osu&response_type=code&scope=public identify`}
               class="btn"
@@ -75,7 +75,7 @@
     <button
       class="btn btn-success"
       disabled={!data.user.user_platforms.find(
-        (platform) => platform.platform_id == 1
+        (platform) => platform.platforms.name == "osu!"
       )}>Submit</button
     >
   </div>

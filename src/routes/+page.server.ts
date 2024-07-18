@@ -233,6 +233,36 @@ export const actions = {
 
     console.log(participant);
   },
+  registerUser: async ({ request, locals: { supabase } }) => {
+    const reqData = await request.formData();
+
+    const { data, error } = await supabase.auth.signUp({
+      email: reqData.get("email") as string,
+      password: reqData.get("password") as string,
+    });
+
+    console.log(error);
+
+    const userProfile = await supabase
+      .from("user_profiles")
+      .upsert(
+        {
+          user_id: data.user.id,
+        },
+        {
+          onConflict: "user_id",
+        }
+      )
+      .select("id");
+
+    if (error) {
+      return fail(error.status, {
+        error: {
+          message: error.message,
+        },
+      });
+    }
+  },
   logInEmail: async ({ request, locals: { supabase } }) => {
     const reqData = await request.formData();
 

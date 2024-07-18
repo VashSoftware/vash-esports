@@ -237,7 +237,7 @@ export const actions = {
     const matchParticipantPlayer = await locals.supabase
       .from("match_participant_players")
       .select(
-        "*, match_participants(matches(lobby_id)), team_members(user_profiles(name, user_platforms(*)))"
+        "*, match_participants(matches(lobby_id)), team_members(user_profiles(name, user_platforms(*, platforms(name))))"
       )
       .eq("id", matchParticipantPlayerId)
       .single();
@@ -251,7 +251,7 @@ export const actions = {
         messages: [
           "!mp invite " +
             matchParticipantPlayer.data.team_members.user_profiles.user_platforms.filter(
-              (pf: any) => pf.platform_id == 1
+              (pf: any) => pf.platforms.name == "osu!"
             )[0].value,
         ],
         channelId:

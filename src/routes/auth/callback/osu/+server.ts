@@ -49,18 +49,30 @@ export const GET = async ({ url, locals: { supabase, getSession } }) => {
       .select("id, user_id")
       .single();
 
+    const osuPlatform = await supabase
+      .from("platforms")
+      .select("id")
+      .eq("name", "osu!")
+      .single();
+
+    const osuUsernamePlatform = await supabase
+      .from("platforms")
+      .select("id")
+      .eq("name", "osu! (username)")
+      .single();
+
     const userPlatforms = await supabase
       .from("user_platforms")
       .upsert(
         [
           {
             user_id: userProfile.data.id,
-            platform_id: 1,
+            platform_id: osuPlatform.data.id,
             value: osuData.id,
           },
           {
             user_id: userProfile.data.id,
-            platform_id: 10,
+            platform_id: osuUsernamePlatform.data.id,
             value: osuData.username,
           },
         ],
