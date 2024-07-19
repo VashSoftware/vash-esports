@@ -40,7 +40,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
         map_pool_maps(*,
           maps(*,
             mapsets(*)
-          )
+          ),
+          map_pool_map_mods(*, mods(*))
         ),
         scores(*,
           match_participant_players(*)

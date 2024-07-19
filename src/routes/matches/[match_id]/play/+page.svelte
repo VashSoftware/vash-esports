@@ -81,70 +81,71 @@
       .from("matches")
       .select(
         `
-    *,
-    rounds(
       *,
-      events(
+      rounds(
         *,
-        event_groups(
-          *
-        )
-      )
-    ),
-    match_participants(
-      *,
-      match_participant_players(
-        *,
-        match_participant_player_states(
-          *
-        ),
-        team_members(
+        events(
           *,
-          user_profiles(
+          event_groups(
             *
           )
         )
       ),
-      participants(*,
-        teams(*, team_members(user_profiles(id, user_id)))
-      )
-    ),
-    match_maps(*,
-      map_pool_maps(*,
-        maps(*,
-          mapsets(*)
-        )
-      ),
-      scores(*,
-        match_participant_players(*)
-      )
-    ),
-    match_bans(*,
-      match_participants(*,
+      match_participants(
+        *,
+        match_participant_players(
+          *,
+          match_participant_player_states(
+            *
+          ),
+          team_members(
+            *,
+            user_profiles(
+              *
+            )
+          )
+        ),
         participants(*,
-          teams(name)
+          teams(*, team_members(user_profiles(id, user_id)))
         )
-      )
-    ),
-    map_pools(
-      *,          
-      map_pool_maps(
-        *,
-        maps(
-          *,
-          mapsets(
-            *
-          )
+      ),
+      match_maps(*,
+        map_pool_maps(*,
+          maps(*,
+            mapsets(*)
+          ),
+          map_pool_map_mods(*, mods(*))
         ),
-        map_pool_map_mods(
+        scores(*,
+          match_participant_players(*)
+        )
+      ),
+      match_bans(*,
+        match_participants(*,
+          participants(*,
+            teams(name)
+          )
+        )
+      ),
+      map_pools(
+        *,          
+        map_pool_maps(
           *,
-          mods(
-            *
+          maps(
+            *,
+            mapsets(
+              *
+            )
+          ),
+          map_pool_map_mods(
+            *,
+            mods(
+              *
+            )
           )
         )
       )
-    )
-    `
+      `
       )
       .eq("id", data.match.id)
       .order("created_at", { referencedTable: "match_maps" })
@@ -177,7 +178,7 @@
       .subscribe();
 
     // Set interval to call getMatch every second (1000 ms)
-    interval = setInterval(getMatch, 1000);
+    interval = setInterval(getMatch, 5000);
 
     await data.supabase
       .from("notifications")
@@ -557,19 +558,30 @@
               class="text-center row align-items-center"
               style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 16px #000000;"
             >
-              <div class="col">
-                <div>
-                  <b
-                    >{map.map_pool_maps.maps.mapsets.artist} - {map
-                      .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
-                      .maps.difficulty_name}]</b
+              <div
+                class="col d-flex justify-content-between align-items-center"
+              >
+                <div class="ms-5">
+                  <span class="fs-5 badge rounded-pill text-bg-light"
+                    >{map.map_pool_maps.map_pool_map_mods[0].mods.code || "NM"}
+                    {map.map_pool_maps.mod_priority}</span
                   >
                 </div>
-
                 <div>
-                  {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
-                    .maps.mapsets.bpm}BPM
+                  <div>
+                    <b
+                      >{map.map_pool_maps.maps.mapsets.artist} - {map
+                        .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
+                        .maps.difficulty_name}]</b
+                    >
+                  </div>
+
+                  <div>
+                    {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
+                      .maps.mapsets.bpm}BPM
+                  </div>
                 </div>
+                <div></div>
               </div>
             </div>
           </div>

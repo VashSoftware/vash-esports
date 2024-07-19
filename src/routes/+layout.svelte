@@ -73,7 +73,7 @@
       .subscribe();
 
     // Set interval to call fetchNotifications every second (1000 ms)
-    const intervalId = setInterval(fetchNotifications, 1000);
+    const intervalId = setInterval(fetchNotifications, 5000);
   });
 
   let searchQuery = "";
@@ -138,7 +138,7 @@
 </svelte:head>
 
 {#if $ongoingMatch && $page.url.pathname !== `/matches/${$ongoingMatch.id}/play`}
-  {#if $ongoingMatch?.match_queue[0]?.position}
+  {#if !$ongoingMatch?.match_queue[0]?.position}
     <a href="/matches/{$ongoingMatch.id}/play" class="banner-link">
       <div class="banner">
         <div class="banner-content text-center">
