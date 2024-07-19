@@ -3,6 +3,7 @@
   import { enhance } from "$app/forms";
   import _ from "lodash";
   import { onMount, onDestroy } from "svelte";
+  import { browser } from "$app/environment";
 
   export let data;
 
@@ -14,6 +15,19 @@
 
   async function processMatch() {
     const bootstrap = await import("bootstrap");
+
+    // Check if the match is over
+    if (!data.match.ongoing) {
+      if (activeModals.matchOver === null) {
+        activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
+      }
+      await activeModals.roll?.hide();
+      await activeModals.pickMap?.hide();
+      return activeModals.matchOver.show();
+    }
+
+    // Hide match over modal if the match is ongoing
+    await activeModals.matchOver?.hide();
 
     // Check if any participants need to roll
     if (data.match.match_participants.some((mp) => mp.roll === null)) {
@@ -59,17 +73,10 @@
     }
 
     await activeModals.pickMap?.hide();
-
-    // Check if the match is over
-    if (!data.match.ongoing) {
-      if (activeModals.matchOver === null) {
-        activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
-      }
-      return activeModals.matchOver.show();
-    }
   }
 
   async function getMatch() {
+    if (!browser) return; // Ensure we're in a browser environment
     const updatedMatch = await data.supabase
       .from("matches")
       .select(
@@ -147,12 +154,15 @@
     processMatch();
   }
 
+  let interval;
+
   onMount(async () => {
+    if (!browser) return; // Ensure we're in a browser environment
     console.log("checking match");
 
     processMatch();
 
-    data.supabase
+    const subscription = data.supabase
       .channel("schema-db-changes")
       .on(
         "postgres_changes",
@@ -167,7 +177,7 @@
       .subscribe();
 
     // Set interval to call getMatch every second (1000 ms)
-    const intervalId = setInterval(getMatch, 1000);
+    interval = setInterval(getMatch, 1000);
 
     await data.supabase
       .from("notifications")
@@ -193,14 +203,6 @@
           )[0]
       )[0].participants.teams.team_members[0].user_profiles.id
     );
-
-    onDestroy(() => {
-      clearInterval(intervalId);
-      // Hide all active modals
-      activeModals.roll?.hide();
-      activeModals.pickMap?.hide();
-      activeModals.matchOver?.hide();
-    });
   });
 
   function getShortenedMapName(map) {
@@ -951,7 +953,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <a href="/" on:click={async () => await activeModals.matchOver.hide()}>
+        <a href="/" on:click={() => clearInterval(interval)}>
           <button class="btn btn-success" data-bs-dismiss="modal">
             Back to Home
           </button>
