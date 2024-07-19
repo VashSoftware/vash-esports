@@ -138,7 +138,7 @@
 </svelte:head>
 
 {#if $ongoingMatch && $page.url.pathname !== `/matches/${$ongoingMatch.id}/play`}
-  {#if $ongoingMatch?.match_queue[0].position}
+  {#if $ongoingMatch?.match_queue[0]?.position}
     <a href="/matches/{$ongoingMatch.id}/play" class="banner-link">
       <div class="banner">
         <div class="banner-content text-center">
@@ -633,14 +633,14 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="text-center my-5">
-          <h3>No. {$ongoingMatch?.match_queue[0].position} in the Queue</h3>
+          <h3>No. {$ongoingMatch?.match_queue[0]?.position} in the Queue</h3>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
           >Close</button
         >
-        {#if !$ongoingMatch?.match_queue[0].position}
+        {#if !$ongoingMatch?.match_queue[0]?.position}
           <a href="/matches/{$ongoingMatch?.id}/play"
             ><button
               type="button"
