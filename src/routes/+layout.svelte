@@ -17,6 +17,8 @@
   setContext("ongoingMatch", ongoingMatch);
 
   async function fetchNotifications() {
+    console.log("Checking for notifications & ongoing matches.");
+
     const notifications = await data.supabase
       .from("notifications")
       .select("*, user_profiles!inner(user_id), match_invites(id)")
