@@ -3,8 +3,11 @@
   import MakeMapPoolModal from "$lib/components/makeMapPoolModal.svelte";
   import QuickPlayButton from "$lib/components/quickPlayButton.svelte";
   import RegisterButton from "$lib/components/registerButton.svelte";
+  import { getContext } from "svelte";
 
   export let data;
+
+  const ongoingMatch = getContext("ongoingMatch");
 </script>
 
 <div class="text-center mt-5">
@@ -29,7 +32,7 @@
 </div>
 
 <div class="text-center my-5">
-  <QuickPlayButton supabase={data.supabase} ongoingMatch={data.ongoingMatch} />
+  <QuickPlayButton supabase={data.supabase} ongoingMatch={$ongoingMatch} />
 </div>
 
 <div class="my-3">
