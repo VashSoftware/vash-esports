@@ -251,7 +251,7 @@ export const actions = {
         messages: [
           "!mp invite " +
             matchParticipantPlayer.data.team_members.user_profiles.user_platforms.filter(
-              (pf: any) => pf.platforms.name == "osu!"
+              (pf: any) => pf.platforms.name == "osu! (username)"
             )[0].value,
         ],
         channelId:
