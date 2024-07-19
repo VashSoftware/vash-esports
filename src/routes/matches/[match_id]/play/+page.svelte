@@ -166,8 +166,8 @@
       )
       .subscribe();
 
-    // Set interval to call getMatch every 60 seconds (60000 ms)
-    const intervalId = setInterval(getMatch, 60000);
+    // Set interval to call getMatch every second (1000 ms)
+    const intervalId = setInterval(getMatch, 1000);
 
     await data.supabase
       .from("notifications")
