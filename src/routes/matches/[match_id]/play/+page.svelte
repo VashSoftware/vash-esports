@@ -177,7 +177,7 @@
       .subscribe();
 
     // Set interval to call getMatch every second (1000 ms)
-    interval = setInterval(getMatch, 1000);
+    interval = setInterval(getMatch, 5000);
 
     await data.supabase
       .from("notifications")
