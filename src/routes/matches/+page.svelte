@@ -10,8 +10,10 @@
     type ColumnDef,
   } from "@tanstack/svelte-table";
   import { goto } from "$app/navigation";
+  import { getContext } from "svelte";
 
   export let data;
+  const ongoingMatch = getContext("ongoingMatch");
 
   const defaultColumns: ColumnDef<Event>[] = [
     {
@@ -70,11 +72,7 @@
   <h1>Matches ({data.matches.length})</h1>
 
   <div>
-    <QuickPlayButton
-      supabase={data.supabase}
-      ongoingMatch={data.ongoingMatch}
-    
-    />
+    <QuickPlayButton supabase={data.supabase} {$ongoingMatch} />
   </div>
 </div>
 

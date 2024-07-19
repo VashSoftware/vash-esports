@@ -1,15 +1,20 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import type { LayoutData } from "./$types";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, setContext } from "svelte";
   import { page } from "$app/stores";
   import { invalidate } from "$app/navigation";
   import { browser } from "$app/environment";
+  import { writable } from "svelte/store";
 
   export let data: LayoutData;
 
   let { supabase, session } = data;
   $: ({ supabase, session } = data);
+
+  const ongoingMatch = writable(null);
+  $: ongoingMatch.set(data.ongoingMatch);
+  setContext("ongoingMatch", ongoingMatch);
 
   async function fetchNotifications() {
     const notifications = await data.supabase
@@ -21,7 +26,7 @@
 
     data.notifications = notifications.data;
 
-    const ongoingMatch = await data.supabase
+    const ongoingMatchData = await data.supabase
       .from("matches")
       .select(
         "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id)))), match_queue(*)"
@@ -33,7 +38,7 @@
       )
       .maybeSingle();
 
-    data.ongoingMatch = ongoingMatch.data;
+    data.ongoingMatch = ongoingMatchData.data;
   }
 
   onMount(async () => {
@@ -67,10 +72,6 @@
 
     // Set interval to call fetchNotifications every second (1000 ms)
     const intervalId = setInterval(fetchNotifications, 1000);
-
-    onDestroy(() => {
-      clearInterval(intervalId);
-    });
   });
 
   let searchQuery = "";
@@ -134,9 +135,9 @@
   <title>{getNotificationsCount()}Vash Esports</title>
 </svelte:head>
 
-{#if data.ongoingMatch && $page.url.pathname !== `/matches/${data.ongoingMatch.id}/play`}
-  {#if !data.ongoingMatch.match_queue[0].position}
-    <a href="/matches/{data.ongoingMatch.id}/play" class="banner-link">
+{#if $ongoingMatch && $page.url.pathname !== `/matches/${$ongoingMatch.id}/play`}
+  {#if !$ongoingMatch.match_queue[0].position}
+    <a href="/matches/{$ongoingMatch.id}/play" class="banner-link">
       <div class="banner">
         <div class="banner-content text-center">
           Active Match: Stan vs Stan 3
@@ -630,15 +631,15 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="text-center my-5">
-          <h3>No. {data.ongoingMatch?.match_queue[0].position} in the Queue</h3>
+          <h3>No. {$ongoingMatch?.match_queue[0].position} in the Queue</h3>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
           >Close</button
         >
-        {#if !data.ongoingMatch?.match_queue[0].position}
-          <a href="/matches/{data.ongoingMatch?.id}/play"
+        {#if !$ongoingMatch?.match_queue[0].position}
+          <a href="/matches/{$ongoingMatch?.id}/play"
             ><button
               type="button"
               class="btn btn-secondary"
