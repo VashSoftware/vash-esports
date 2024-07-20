@@ -13,6 +13,10 @@
     matchOver: null,
   };
 
+  let rollModalOver = false;
+  let allRollsCompleted = false;
+  let userDismissedRollModal = false;
+
   async function processMatch() {
     const bootstrap = await import("bootstrap");
 
@@ -30,14 +34,23 @@
     await activeModals.matchOver?.hide();
 
     // Check if any participants need to roll
-    if (data.match.match_participants.some((mp) => mp.roll === null)) {
+    if (
+      !userDismissedRollModal &&
+      data.match.match_participants.some((mp) => mp.roll === null)
+    ) {
       if (activeModals.roll === null) {
         activeModals.roll = new bootstrap.Modal("#rollModal");
       }
+      allRollsCompleted = false;
       return activeModals.roll.show();
+    } else {
+      allRollsCompleted = true;
     }
 
-    await activeModals.roll?.hide();
+    // Only hide the roll modal if the user has dismissed it
+    if (userDismissedRollModal) {
+      await activeModals.roll?.hide();
+    }
 
     // Check if the current user needs to pick a map
     const lastMap = data.match.match_maps[data.match.match_maps.length - 1];
@@ -69,6 +82,8 @@
       if (activeModals.pickMap === null) {
         activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
       }
+      // Ensure the roll modal is hidden before showing the pick map modal
+      await activeModals.roll?.hide();
       return activeModals.pickMap.show();
     }
 
@@ -812,8 +827,10 @@
                       mp.participants.teams.team_members.filter(
                         (tm) => tm.user_profiles.user_id == data.session.user.id
                       )[0]
-                  )[0].roll}>Roll</button
+                  )[0].roll}
                 >
+                  Roll
+                </button>
               </div>
 
               {#each data.match.match_participants.filter((mp) => mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id != data.session.user.id)[0]) as participant}
@@ -839,6 +856,21 @@
             </div>
           </div>
         </div>
+        {#if allRollsCompleted}
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-success"
+              on:click={() => {
+                rollModalOver = true;
+                userDismissedRollModal = true;
+                document.querySelector("#rollModal .btn-close")?.click();
+              }}
+            >
+              Close
+            </button>
+          </div>
+        {/if}
       </div>
     </div>
   </div>
