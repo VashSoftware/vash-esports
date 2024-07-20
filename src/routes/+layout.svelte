@@ -13,7 +13,23 @@
   $: ({ supabase, session } = data);
 
   const ongoingMatch = writable(null);
-  $: ongoingMatch.set(data.ongoingMatch);
+  const userOngoingMatches = data.ongoingMatch.filter((match) =>
+    match.match_participants.some((mp) =>
+      mp.match_participant_players.some(
+        (mpp) => mpp.team_members.user_profiles.user_id === session?.user.id
+      )
+    )
+  );
+
+  if (
+    userOngoingMatches.length > 0 &&
+    userOngoingMatches[0].id !== $ongoingMatch?.id
+  ) {
+    ongoingMatch.set(userOngoingMatches[0]);
+  } else if (userOngoingMatches.length === 0 && $ongoingMatch) {
+    ongoingMatch.set(null);
+  }
+
   setContext("ongoingMatch", ongoingMatch);
 
   async function fetchNotifications() {
@@ -31,16 +47,37 @@
     const ongoingMatchData = await data.supabase
       .from("matches")
       .select(
-        "id, ongoing, match_participants(match_participant_players(team_members(user_profiles(user_id)))), match_queue(*)"
+        `
+        id, ongoing, match_participants(
+          match_participant_players(
+            team_members(
+              user_profiles(user_id)
+            )
+          ), 
+          participants(teams(name))
+        ), 
+        match_queue(*)
+        `
       )
-      .eq("ongoing", true)
-      .eq(
-        "match_participants.match_participant_players.team_members.user_profiles.user_id",
-        data.session.user.id
-      )
-      .maybeSingle();
+      .eq("ongoing", true);
 
-    data.ongoingMatch = ongoingMatchData.data;
+    // Filter matches where the current user is a participant
+    const userOngoingMatches = ongoingMatchData.data.filter((match) =>
+      match.match_participants.some((mp) =>
+        mp.match_participant_players.some(
+          (mpp) => mpp.team_members.user_profiles.user_id === session?.user.id
+        )
+      )
+    );
+
+    if (
+      userOngoingMatches.length > 0 &&
+      userOngoingMatches[0].id !== $ongoingMatch?.id
+    ) {
+      ongoingMatch.set(userOngoingMatches[0]);
+    } else if (userOngoingMatches.length === 0 && $ongoingMatch) {
+      ongoingMatch.set(null);
+    }
   }
 
   onMount(async () => {
@@ -74,6 +111,7 @@
 
     // Set interval to call fetchNotifications every second (1000 ms)
     const intervalId = setInterval(fetchNotifications, 5000);
+    return () => clearInterval(intervalId);
   });
 
   let searchQuery = "";
@@ -138,11 +176,13 @@
 </svelte:head>
 
 {#if $ongoingMatch && $page.url.pathname !== `/matches/${$ongoingMatch.id}/play`}
-  {#if !$ongoingMatch?.match_queue[0]?.position}
+  {#if !$ongoingMatch?.match_queue?.[0]?.position}
     <a href="/matches/{$ongoingMatch.id}/play" class="banner-link">
       <div class="banner">
         <div class="banner-content text-center">
-          Active Match: Stan vs Stan 3
+          Active Match: {$ongoingMatch?.match_participants?.[0]?.participants
+            ?.teams.name} vs {$ongoingMatch?.match_participants?.[1]
+            ?.participants?.teams.name}
         </div>
       </div>
     </a>
@@ -151,7 +191,9 @@
       <div class="banner">
         <div class="d-flex justify-content-center gap-2">
           <div class="banner-content text-center">
-            Queueing for: Stan vs Stan 3
+            Queueing for: {$ongoingMatch?.match_participants?.[0]?.participants
+              ?.teams.name} vs {$ongoingMatch?.match_participants?.[1]
+              ?.participants?.teams.name}
           </div>
 
           <button
@@ -633,14 +675,16 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="text-center my-5">
-          <h3>No. {$ongoingMatch?.match_queue[0]?.position} in the Queue</h3>
+          <h3>
+            No. {$ongoingMatch?.match_queue?.[0]?.position} in the Queue
+          </h3>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
           >Close</button
         >
-        {#if !$ongoingMatch?.match_queue[0]?.position}
+        {#if !$ongoingMatch?.match_queue?.[0]?.position}
           <a href="/matches/{$ongoingMatch?.id}/play"
             ><button
               type="button"
