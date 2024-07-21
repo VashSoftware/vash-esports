@@ -156,16 +156,6 @@ export const actions = {
       map_pool_id: matchInvite.data.pool_id,
     });
 
-    const matchQueue = await locals.supabase
-      .from("match_queue")
-      .select("*")
-      .gt("position", 0);
-
-    await insertData("match_queue", {
-      match_id: match[0].id,
-      position: matchQueue.data.length + 1,
-    });
-
     await locals.supabase
       .from("notifications")
       .insert({
@@ -217,6 +207,16 @@ export const actions = {
       team_member:
         match_participant_2.data[0].participants.teams.team_members[0].id,
       state: 1,
+    });
+
+    const matchQueue = await locals.supabase
+      .from("match_queue")
+      .select("*")
+      .gt("position", 0);
+
+    await insertData("match_queue", {
+      match_id: match[0].id,
+      position: matchQueue.data.length + 1,
     });
   },
   register: async ({ locals, request }) => {
