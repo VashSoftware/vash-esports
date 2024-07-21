@@ -39,6 +39,16 @@ export const GET = async ({ url, locals: { supabase, getSession } }) => {
       .eq("user_id", session.user.id)
       .single();
 
+    const osuId = await supabase
+      .from("user_platforms")
+      .select("value, platforms!inner(name)")
+      .eq("platforms.name", "osu!")
+      .eq("value", osuData.id);
+
+    if (osuId.data.length > 0) {
+      redirect(303, `/users/${userProfile.data.id}`);
+    }
+
     await supabase
       .from("user_profiles")
       .update({
