@@ -152,8 +152,14 @@
       .update({
         picture_url: `https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/${upload.data.fullPath}`,
       })
-      .eq("id", $page.params.user_id)
-      .select();
+      .eq("id", $page.params.user_id);
+
+    await data.supabase
+      .from("teams")
+      .update({
+        picture_url: `https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/${upload.data.fullPath}`,
+      })
+      .eq("id", $page.params.user_id);
 
     location.reload();
   }
