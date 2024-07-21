@@ -19,7 +19,7 @@
     name="og:description"
     content="The best way to play osu! competitively."
   />
-  <meta name="og:image" content="/static/1000x1000.jpg" />
+  <meta name="og:image" content="1000x1000.jpg" />
 
   <meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
