@@ -155,8 +155,7 @@
       .eq("id", $page.params.user_id)
       .select();
 
-      location.reload();
-    }
+    location.reload();
   }
 </script>
 
