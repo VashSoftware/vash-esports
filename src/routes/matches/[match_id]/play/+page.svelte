@@ -699,20 +699,20 @@
                     id={`map-${map.id}`}
                     action="?/pickMap"
                     method="post"
-                    use:enhance
                     class="w-100"
+                    use:enhance
                   >
                     <button
-                      type="button"
+                      type="submit"
                       class="position-relative rounded overflow-hidden w-100 h-100 border-0 p-0"
                       style="height: 160px; cursor: pointer;"
-                      on:click={() =>
-                        document.getElementById(`map-${map.id}`).submit()}
+                      on:click={() => {
+                        activeModals.pickMap.hide();
+                      }}
                     >
                       <img
                         class="img-fluid position-absolute top-0 start-0 w-100 h-100"
-                        src="https://assets.ppy.sh/beatmaps/{map.maps.mapsets
-                          .osu_id}/covers/cover@2x.jpg"
+                        src={`https://assets.ppy.sh/beatmaps/${map.maps.mapsets.osu_id}/covers/cover@2x.jpg`}
                         alt="Match map cover"
                         style="filter: blur(1px) brightness(50%); object-fit: cover; z-index: 0;"
                       />
