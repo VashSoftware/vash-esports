@@ -3,6 +3,7 @@
   import DropdownSearch from "$lib/components/dropdownSearch.svelte";
   import MapPoolMapRemoveButton from "./MapPoolMapRemoveButton.svelte";
   import MapPoolModAddButton from "./MapPoolModAddButton.svelte";
+  import ModIdSelectors from "./ModIdSelectors.svelte";
   import {
     createColumnHelper,
     createSvelteTable,
@@ -50,12 +51,16 @@
           : "";
       },
     }),
-    {
-      accessorFn: (row) =>
-        `${row.map_pool_map_mods.map((mod) => (mod.mods.code != null ? mod.mods.code : "NM"))}${row.mod_priority}`,
+    columnHelper.display({
+      id: "modId",
       header: "Mod ID",
-      cell: (info) => info.getValue(),
-    },
+      cell: (props) => {
+        return renderComponent(ModIdSelectors, {
+          mapPoolMap: props.row.original,
+          mods: data.mods,
+        });
+      },
+    }),
     columnHelper.display({
       id: "map",
       header: "Map",

@@ -31,6 +31,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 
   return {
     mapPool: mapPool.data,
+    mods: (await locals.supabase.from("mods").select("*")).data,
   };
 };
 
@@ -131,6 +132,32 @@ export const actions = {
       .from("map_pool_maps")
       .update({ map_id: null })
       .eq("id", mapPoolMapId);
+  },
+  editMod: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+    const mapPoolMapId = formData.get("map-pool-map-id");
+    const modId = formData.get("mod-id");
+
+    await locals.supabase
+      .from("map_pool_map_mods")
+      .delete()
+      .eq("map_pool_map_id", mapPoolMapId);
+
+    await locals.supabase
+      .from("map_pool_map_mods")
+      .upsert({ map_pool_map_id: mapPoolMapId, mod_id: modId });
+  },
+  editModPriority: async ({ locals, params, request }) => {
+    const formData = await request.formData();
+    const mapPoolMapId = formData.get("map-pool-map-id");
+    const modPriority = formData.get("mod-priority");
+
+    console.log(
+      await locals.supabase
+        .from("map_pool_maps")
+        .update({ mod_priority: modPriority })
+        .eq("id", mapPoolMapId)
+    );
   },
   updateMapPoolMapNotes: async ({ locals, params, request }) => {
     const formData = await request.formData();
