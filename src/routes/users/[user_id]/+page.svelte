@@ -154,6 +154,9 @@
       })
       .eq("id", $page.params.user_id)
       .select();
+
+      location.reload();
+    }
   }
 </script>
 
@@ -233,7 +236,7 @@
   <div class="col">
     <div class="d-flex justify-content-end gap-3 align-items-center">
       <a
-        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platforms.name == 'osu!')[0]?.value}`}
+        href={`https://osu.ppy.sh/users/${data.user.user_platforms.filter((pf) => pf.platforms.name == "osu!")[0]?.value}`}
         class="text-white"
       >
         <svg
@@ -538,6 +541,7 @@
             id="email"
             value={data.session.user.email}
             name="email"
+            disabled
           />
         </div>
         <div class="mb-3">
@@ -548,69 +552,66 @@
             id="password"
             placeholder="Enter new password"
             name="password"
+            disabled
           />
         </div>
 
-        <div class="mb-2">
-          <div class="d-flex flex-column gap-2">
-            <div class="d-flex justify-content-between align-items-center">
-              <label for="osuConnectButton">osu!</label>
+        <h4 class="mt-4">Connections</h4>
+        <div class="d-flex flex-column gap-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <label for="osuConnectButton">osu!</label>
 
-              {#if !data.user.user_platforms?.find((platform) => platform.platforms.name == 'osu!')}
-                <a
-                  href={`https://osu.ppy.sh/oauth/authorize?client_id=${PUBLIC_OSU_CLIENT_ID}&redirect_uri=${$page.url.origin}/auth/callback/osu&response_type=code&scope=public identify`}
-                  class="btn"
-                  style="background-color: #EA67A4; border-color: #EA67A4;"
-                >
-                  Connect osu! Account
-                </a>
-              {:else}
-                <button
-                  class="btn"
-                  style="background-color: #EA67A4; border-color: #EA67A4;"
-                  disabled
-                  >Connected
-                </button>
-              {/if}
-            </div>
+            {#if !data.user.user_platforms?.find((platform) => platform.platforms.name == "osu!")}
+              <a
+                href={`https://osu.ppy.sh/oauth/authorize?client_id=${PUBLIC_OSU_CLIENT_ID}&redirect_uri=${$page.url.origin}/auth/callback/osu&response_type=code&scope=public identify`}
+                class="btn"
+                style="background-color: #EA67A4; border-color: #EA67A4;"
+              >
+                Connect osu! Account
+              </a>
+            {:else}
+              <button
+                class="btn"
+                style="background-color: #EA67A4; border-color: #EA67A4;"
+                disabled
+                >Connected
+              </button>
+            {/if}
+          </div>
 
-            <div class="d-flex justify-content-between align-items-center">
-              <label for="osuConnectButton">Discord</label>
+          <div class="d-flex justify-content-between align-items-center">
+            <label for="osuConnectButton">Discord</label>
 
-              {#if !data.user.user_platforms?.find((platform) => platform.platforms.name == 'Discord')}
-                <a
-                  href={`https://discord.com/oauth2/authorize?response_type=code&client_id=${PUBLIC_DISCORD_CLIENT_ID}&scope=identify&redirect_uri=${$page.url.origin}/auth/callback/discord&prompt=none&integration_type=0`}
-                  class="btn"
-                  style="background-color: #5765F2; border-color: #5765F2;"
-                >
-                  Connect
-                </a>
-              {:else}
-                <button
-                  class="btn"
-                  style="background-color: #5765F2; border-color: #5765F2;"
-                  disabled
-                  >Connected
-                </button>
-              {/if}
-            </div>
+            {#if !data.user.user_platforms?.find((platform) => platform.platforms.name == "Discord")}
+              <a
+                href={`https://discord.com/oauth2/authorize?response_type=code&client_id=${PUBLIC_DISCORD_CLIENT_ID}&scope=identify&redirect_uri=${$page.url.origin}/auth/callback/discord&prompt=none&integration_type=0`}
+                class="btn"
+                style="background-color: #5765F2; border-color: #5765F2;"
+              >
+                Connect
+              </a>
+            {:else}
+              <button
+                class="btn"
+                style="background-color: #5765F2; border-color: #5765F2;"
+                disabled
+                >Connected
+              </button>
+            {/if}
           </div>
         </div>
       </div>
 
-      <div class="mb-3">
-        <label for="actions" class="form-label">Actions</label>
-        <div>
-          <form action="?/signOut" method="post" use:enhance>
-            <button
-              type="submit"
-              class="btn btn-danger"
-              data-bs-dismiss="modal"
-              on:click={signOut}
-              >Sign Out
-            </button>
-          </form>
-        </div>
+      <div class="modal-footer">
+        <form action="?/signOut" method="post" use:enhance>
+          <button
+            type="submit"
+            class="btn btn-danger"
+            data-bs-dismiss="modal"
+            on:click={signOut}
+            >Sign Out
+          </button>
+        </form>
       </div>
     </div>
   </div>
