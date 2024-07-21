@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
   import MakeMapPoolModal from "$lib/components/makeMapPoolModal.svelte";
   import QuickPlayButton from "$lib/components/quickPlayButton.svelte";
   import RegisterButton from "$lib/components/registerButton.svelte";
@@ -9,6 +10,19 @@
 
   const ongoingMatch = getContext("ongoingMatch");
 </script>
+
+<svelte:head>
+  <meta name="description" content="The best way to play osu! competitively." />
+  <meta name="og:url" content={$page.url.href} />
+  <meta name="og:title" content="Vash Esports" />
+  <meta
+    name="og:description"
+    content="The best way to play osu! competitively."
+  />
+  <meta name="og:image" content="/static/1000x1000.jpg" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+</svelte:head>
 
 <div class="text-center mt-5">
   <h1><b>Vash Esports</b></h1>
