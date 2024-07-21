@@ -67,8 +67,11 @@
             <DropdownSearch
               searchKey="teams"
               searchColumn="name"
-              selectKey="*, team_members(user_profiles(id))"
-              filters={[(item) => item.is_personal_team]}
+              selectKey="*, team_members(user_profiles(id, user_id))"
+              filters={[
+                (item) => item.is_personal_team,
+                (item) => item.team_members[0].user_profiles.user_id !== userId,
+              ]}
               {supabase}
               text="Choose an Opponent"
               selectRowFn={(item) => {
