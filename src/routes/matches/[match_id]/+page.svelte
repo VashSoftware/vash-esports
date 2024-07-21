@@ -10,7 +10,7 @@
         `*,
       rounds ( best_of, events (id, name, event_links(*, platforms(*)), event_groups(*))),
       match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
-      match_maps(map_pool_maps(maps(*, mapsets(*))), scores(*)),
+      match_maps(map_pool_maps(*, map_pool_map_mods(*, mods(*)), maps(*, mapsets(*))), scores(*)),
       match_predictions(*, user_profiles(*))`
       )
       .eq("id", data.match.id)
@@ -319,19 +319,28 @@
             class="text-center row align-items-center"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-shadow: 0 0 16px #000000;"
           >
-            <div class="col">
-              <div>
-                <b
-                  >{map.map_pool_maps.maps.mapsets.artist} - {map.map_pool_maps
-                    .maps.mapsets.title} [{map.map_pool_maps.maps
-                    .difficulty_name}]</b
+            <div class="col d-flex justify-content-between align-items-center">
+              <div class="ms-5">
+                <span class="fs-5 badge rounded-pill text-bg-light"
+                  >{map.map_pool_maps.map_pool_map_mods[0].mods.code || "NM"}
+                  {map.map_pool_maps.mod_priority}</span
                 >
               </div>
-
               <div>
-                {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps.maps
-                  .mapsets.bpm}BPM
+                <div>
+                  <b
+                    >{map.map_pool_maps.maps.mapsets.artist} - {map
+                      .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
+                      .maps.difficulty_name}]</b
+                  >
+                </div>
+
+                <div>
+                  {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
+                    .maps.mapsets.bpm}BPM
+                </div>
               </div>
+              <div></div>
             </div>
           </div>
         </div>
