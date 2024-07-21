@@ -208,94 +208,97 @@
   </div>
 </div>
 
-<div class="my-5 text-center">
-  <h2 class="mb-3">Predictions</h2>
+{#if !data.match.winner_participant_id}
+  <div class="my-5 text-center">
+    <h2 class="mb-3">Predictions</h2>
 
-  <div class="row">
-    <div class="col text-center">
-      {#if data.session}
-        <form action="?/addPrediction" method="post" use:enhance>
-          <input
-            type="hidden"
-            name="participantId"
-            value={data.match.match_participants[0].participants.id}
-          />
-          <button
-            type="submit"
-            class="btn btn-primary btn-lg"
-            disabled={data.match.match_predictions.filter(
-              (prediction) =>
-                prediction.user_profiles.user_id === data.session.user.id
-            ).length > 0}
-            >Vote for {data.match.match_participants[0].participants.teams
-              .name}</button
-          >
-        </form>
-      {/if}
-    </div>
-    <div class="col">
-      <div class="progress-stacked" style="height: 48px">
-        <div
-          class="progress"
-          role="progressbar"
-          aria-label="Segment one"
-          aria-valuenow="90"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          style="width: {participant1PredictionPercentage || 0}%; height: 50px"
-        >
-          <div class="progress-bar fs-5">
-            <b
-              >{participant1Predictions} ({participant1PredictionPercentage.toFixed(
-                1
-              )}%)</b
-            >
-          </div>
-        </div>
-        <div
-          class="progress"
-          role="progressbar"
-          aria-label="Segment two"
-          aria-valuenow="10"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          style="width:{participant2PredictionPercentage || 0}%; height: 50px"
-        >
-          <div class="progress-bar bg-danger fs-5">
-            <b
-              >{participant2Predictions} ({participant2PredictionPercentage.toFixed(
-                1
-              )}%)</b
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="col">
+    <div class="row">
+      <div class="col text-center">
         {#if data.session}
           <form action="?/addPrediction" method="post" use:enhance>
             <input
               type="hidden"
               name="participantId"
-              value={data.match.match_participants[1].participants.id}
+              value={data.match.match_participants[0].participants.id}
             />
             <button
               type="submit"
-              class="btn btn-danger btn-lg"
+              class="btn btn-primary btn-lg"
               disabled={data.match.match_predictions.filter(
                 (prediction) =>
                   prediction.user_profiles.user_id === data.session.user.id
               ).length > 0}
-              >Vote for {data.match.match_participants[1].participants.teams
+              >Vote for {data.match.match_participants[0].participants.teams
                 .name}</button
             >
           </form>
         {/if}
       </div>
+      <div class="col">
+        <div class="progress-stacked" style="height: 48px">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Segment one"
+            aria-valuenow="90"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="width: {participant1PredictionPercentage ||
+              0}%; height: 50px"
+          >
+            <div class="progress-bar fs-5">
+              <b
+                >{participant1Predictions} ({participant1PredictionPercentage.toFixed(
+                  1
+                )}%)</b
+              >
+            </div>
+          </div>
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Segment two"
+            aria-valuenow="10"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="width:{participant2PredictionPercentage || 0}%; height: 50px"
+          >
+            <div class="progress-bar bg-danger fs-5">
+              <b
+                >{participant2Predictions} ({participant2PredictionPercentage.toFixed(
+                  1
+                )}%)</b
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="col">
+          {#if data.session}
+            <form action="?/addPrediction" method="post" use:enhance>
+              <input
+                type="hidden"
+                name="participantId"
+                value={data.match.match_participants[1].participants.id}
+              />
+              <button
+                type="submit"
+                class="btn btn-danger btn-lg"
+                disabled={data.match.match_predictions.filter(
+                  (prediction) =>
+                    prediction.user_profiles.user_id === data.session.user.id
+                ).length > 0}
+                >Vote for {data.match.match_participants[1].participants.teams
+                  .name}</button
+              >
+            </form>
+          {/if}
+        </div>
+      </div>
     </div>
   </div>
-</div>
+{/if}
 
 <div class="text-center mb-5">
   <h2 class="mb-4">Maps Played ({data.match.match_maps.length})</h2>
