@@ -5,7 +5,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     .from("map_pools")
     .select(
       `id,
-      rounds(name, events(name, event_groups(name)))`
+      rounds(name, events(name, event_groups(name))),
+      name`
     )
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
