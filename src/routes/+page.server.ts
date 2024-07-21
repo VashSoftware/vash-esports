@@ -116,7 +116,7 @@ export const actions = {
     const matchInvite = await locals.supabase
       .from("match_invites")
       .select(
-        "*, teams!inner(name, team_members(user_profiles(id))), notifications(user_id)"
+        "*, teams!inner(name, team_members(user_profiles(id)), is_personal_team), notifications(user_id)"
       )
       .eq("id", matchInviteId)
       .eq("teams.is_personal_team", true)
@@ -195,14 +195,14 @@ export const actions = {
       })
       .select("*, participants(teams(team_members(*)))");
 
-    insertData("match_participant_players", {
+    await insertData("match_participant_players", {
       match_participant_id: match_participant_1.data[0].id,
       team_member:
         match_participant_1.data[0].participants.teams.team_members[0].id,
       state: 1,
     });
 
-    insertData("match_participant_players", {
+    await insertData("match_participant_players", {
       match_participant_id: match_participant_2.data[0].id,
       team_member:
         match_participant_2.data[0].participants.teams.team_members[0].id,
