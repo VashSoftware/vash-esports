@@ -693,7 +693,7 @@
               } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order_no - b[1][0].map_pool_map_mods[0].mods.order_no) as [modId, maps]}
           <div class="bg-body-tertiary shadow rounded my-4 p-3">
             <div class="row d-flex justify-content-center align-items-stretch">
-              {#each maps as map}
+              {#each maps.sort((a, b) => a.mod_priority - b.mod_priority) as map}
                 <div class="col-12 col-md-2 d-flex">
                   <form
                     id={`map-${map.id}`}
