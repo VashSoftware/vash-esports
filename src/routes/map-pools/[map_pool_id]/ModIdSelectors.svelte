@@ -36,7 +36,7 @@
     <input
       type="number"
       name="mod-priority"
-      class="form-control"
+      class="form-control me-5"
       value={mapPoolMap.mod_priority}
     />
   </form>
