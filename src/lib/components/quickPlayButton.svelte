@@ -37,33 +37,36 @@
   </button>
 </span>
 
-<form action="/?/makeQuickMatch" method="post" use:enhance>
-  <div
-    class="modal modal-lg fade"
-    id="exampleModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Quick Match</h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <div class="d-flex justify-content-around align-items-center">
+<div
+  class="modal modal-lg fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Quick Match</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-around align-items-center">
+          <form action="/?/soloQueue" method="post">
             <div>
               <h3 class="my-4">Solo Queue</h3>
 
               <button class="btn btn-success">Search</button>
             </div>
-            <div class="fs-1">|</div>
+          </form>
+          <div class="fs-1">|</div>
+
+          <form action="/?/makeQuickMatch" method="post" use:enhance>
             <div>
               <h3 class="my-4">Custom Match</h3>
 
@@ -126,10 +129,12 @@
                   value="13"
                 />
               </div>
+
+              <button class="btn btn-success">Invite</button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
-</form>
+</div>
