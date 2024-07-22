@@ -39,7 +39,7 @@
 
 <form action="/?/makeQuickMatch" method="post" use:enhance>
   <div
-    class="modal fade"
+    class="modal modal-lg fade"
     id="exampleModal"
     tabindex="-1"
     aria-labelledby="exampleModalLabel"
@@ -57,73 +57,77 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label"
-              >Opponent</label
-            >
-            <input type="hidden" name="sender-id" value={userId} />
-            <input type="hidden" name="opponent-id" value={opponentId} />
+          <div class="d-flex justify-content-around align-items-center">
+            <div>
+              <h3 class="my-4">Solo Queue</h3>
 
-            <DropdownSearch
-              searchKey="teams"
-              searchColumn="name"
-              selectKey="*, team_members(user_profiles(id, user_id))"
-              filters={[
-                (item) => item.is_personal_team,
-                (item) => item.team_members[0].user_profiles.user_id !== userId,
-              ]}
-              {supabase}
-              text="Choose an Opponent"
-              selectRowFn={(item) => {
-                opponentId = item.team_members[0].user_profiles.id;
-              }}
-            />
-          </div>
+              <button class="btn btn-success">Search</button>
+            </div>
+            <div class="fs-1">|</div>
+            <div>
+              <h3 class="my-4">Custom Match</h3>
 
-          <div class="mb-3">
-            <label class="form-label">Map Pool</label>
-            <div class="d-flex gap-2">
-              <input type="hidden" name="map-pool-id" value={mapPoolId} />
-              <DropdownSearch
-                searchKey="map_pools"
-                selectKey="*"
-                searchColumn="name"
-                {supabase}
-                text="Choose a Map Pool"
-                selectRowFn={(item) => {
-                  mapPoolId = item.id;
-                }}
-              />
-              <button
-                class="btn btn-primary"
-                data-bs-target="#createMapPoolModal"
-                data-bs-toggle="modal"
-                type="button">+</button
-              >
+              <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label"
+                  >Opponent</label
+                >
+                <input type="hidden" name="sender-id" value={userId} />
+                <input type="hidden" name="opponent-id" value={opponentId} />
+
+                <DropdownSearch
+                  searchKey="teams"
+                  searchColumn="name"
+                  selectKey="*, team_members(user_profiles(id, user_id))"
+                  filters={[
+                    (item) => item.is_personal_team,
+                    (item) =>
+                      item.team_members[0].user_profiles.user_id !== userId,
+                  ]}
+                  {supabase}
+                  text="Choose an Opponent"
+                  selectRowFn={(item) => {
+                    opponentId = item.team_members[0].user_profiles.id;
+                  }}
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Map Pool</label>
+                <div class="d-flex gap-2">
+                  <input type="hidden" name="map-pool-id" value={mapPoolId} />
+                  <DropdownSearch
+                    searchKey="map_pools"
+                    selectKey="*"
+                    searchColumn="name"
+                    {supabase}
+                    text="Choose a Map Pool"
+                    selectRowFn={(item) => {
+                      mapPoolId = item.id;
+                    }}
+                  />
+                  <button
+                    class="btn btn-primary"
+                    data-bs-target="#createMapPoolModal"
+                    data-bs-toggle="modal"
+                    type="button">+</button
+                  >
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label"
+                  >Best of</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="bestOfInput"
+                  name="best-of"
+                  value="13"
+                />
+              </div>
             </div>
           </div>
-
-          <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Best of</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              id="bestOfInput"
-              name="best-of"
-              value="13"
-            />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">Close</button
-          >
-          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
-            Create
-          </button>
         </div>
       </div>
     </div>
