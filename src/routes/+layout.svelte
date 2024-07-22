@@ -229,7 +229,7 @@
       <div class="d-flex flex-column flex-md-row align-items-center">
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
         <div class="btn btn-warning btn-sm" style="pointer-events: none;">
-          PRIVATE ALPHA
+          PUBLIC ALPHA
         </div>
       </div>
       <div class="d-flex">
