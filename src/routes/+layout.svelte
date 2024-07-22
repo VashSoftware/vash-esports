@@ -13,6 +13,9 @@
   $: ({ supabase, session } = data);
 
   const ongoingMatch = writable(null);
+  const soloQueueState = writable(false);
+
+  // Combine the two sources of matches
   const userOngoingMatches = data.ongoingMatch.filter((match) =>
     match.match_participants.some((mp) =>
       mp.match_participant_players.some(
@@ -78,6 +81,8 @@
     } else if (userOngoingMatches.length === 0 && $ongoingMatch) {
       ongoingMatch.set(null);
     }
+
+    await fetchSoloQueue();
   }
 
   onMount(async () => {
@@ -94,6 +99,8 @@
     });
 
     subscription.unsubscribe();
+
+    await fetchSoloQueue();
 
     data.supabase
       .channel("schema-db-changes")
@@ -115,7 +122,6 @@
   });
 
   let searchQuery = "";
-
   let searchResults = [];
 
   async function search(event: Event) {
@@ -169,13 +175,45 @@
       password: password,
     });
   }
+
+  async function fetchSoloQueue() {
+    const soloQueue = await data.supabase
+      .from("solo_queue")
+      .select("*, user_profiles(user_id)")
+      .not("position", "is", null);
+
+    const userInQueue = soloQueue.data.some(
+      (queue) => queue.user_profiles.user_id === session?.user.id
+    );
+
+    soloQueueState.set(userInQueue);
+  }
 </script>
 
 <svelte:head>
   <title>{getNotificationsCount()}Vash Esports</title>
 </svelte:head>
 
-{#if $ongoingMatch && $page.url.pathname !== `/matches/${$ongoingMatch.id}/play`}
+{#if $soloQueueState}
+  <div class="banner-link">
+    <div class="banner">
+      <div class="banner-content text-center">
+        Searching for solo queue players...
+        <button
+          on:click={async () => {
+            await data.supabase
+              .from("solo_queue")
+              .delete()
+              .eq("user_id", data.userProfile.data[0].id);
+
+            soloQueueState.set(false);
+          }}
+          class="btn btn-danger mx-3">Cancel</button
+        >
+      </div>
+    </div>
+  </div>
+{:else if $ongoingMatch && $page.url.pathname !== `/matches/${$ongoingMatch.id}/play`}
   {#if !$ongoingMatch?.match_queue?.[0]?.position}
     <a href="/matches/{$ongoingMatch.id}/play" class="banner-link">
       <div class="banner">
@@ -218,7 +256,8 @@
           </button>
         </div>
       </div>
-    </div>{/if}
+    </div>
+  {/if}
 {/if}
 
 <main class="d-flex flex-column min-vh-100">
