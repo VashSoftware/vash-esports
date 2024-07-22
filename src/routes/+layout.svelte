@@ -575,21 +575,36 @@
     <div class="container">
       <div class="row text-center my-3">
         <div class="col-12 col-md text-center text-md-start">
-          <stripe-buy-button
-            buy-button-id="buy_btn_1OmnmQK4YdEKZm47w7jpTVA9"
-            publishable-key="pk_live_51KvfIRK4YdEKZm472sIZDQb4WIyCSWkXfzBwwGbgMJtE0siYmYvUME8510RaUi7TVnxRvXJxGEDsrniLLx1r72Gr00tmk9MPx7"
-          >
-          </stripe-buy-button>
-        </div>
-        <div class="col-12 col-md text-center">
-          <div class="d-flex justify-content-center align-items-center gap-2">
-            <a class="text-decoration-none" href="/terms">Terms</a> •
-            <a class="text-decoration-none" href="/privacy">Privacy</a> •
-            <a class="text-decoration-none" href="/wiki">Wiki</a> •
-            <a class="text-decoration-none" href="/status">Status</a>
+          <div class="text-center">
+            <div class="mb-3">
+              <small>
+                Vash Esports is free and open source, sustained by community
+                support. Please consider donating to keep the servers running.
+              </small>
+            </div>
+            <div class="text-center">
+              <stripe-buy-button
+                class="stripe-buy-button w-100"
+                buy-button-id="buy_btn_1OmnmQK4YdEKZm47w7jpTVA9"
+                publishable-key="pk_live_51KvfIRK4YdEKZm472sIZDQb4WIyCSWkXfzBwwGbgMJtE0siYmYvUME8510RaUi7TVnxRvXJxGEDsrniLLx1r72Gr00tmk9MPx7"
+              ></stripe-buy-button>
+            </div>
           </div>
-          <div>Made by <a href="https://vash.software">Vash Software</a></div>
         </div>
+        <div
+          class="col-12 col-md d-flex justify-content-center align-items-center"
+        >
+          <div class=" text-center">
+            <div class="d-flex justify-content-center align-items-center gap-2">
+              <a class="text-decoration-none" href="/terms">Terms</a> •
+              <a class="text-decoration-none" href="/privacy">Privacy</a> •
+              <a class="text-decoration-none" href="/wiki">Wiki</a> •
+              <a class="text-decoration-none" href="/status">Status</a>
+            </div>
+            <div>Made by <a href="https://vash.software">Vash Software</a></div>
+          </div>
+        </div>
+
         <div
           class="col-12 col-md d-flex justify-content-center justify-content-md-end align-items-center gap-4"
         >
@@ -732,5 +747,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .stripe-button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .stripe-buy-button {
+    width: 100%;
+    max-width: 100%;
   }
 </style>
