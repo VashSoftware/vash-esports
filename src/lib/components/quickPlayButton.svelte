@@ -57,11 +57,13 @@
       </div>
       <div class="modal-body">
         <div class="d-flex justify-content-around align-items-center">
-          <form action="/?/soloQueue" method="post">
+          <form action="/?/quickQueue" method="post" use:enhance>
             <div>
               <h3 class="my-4">Solo Queue</h3>
 
-              <button class="btn btn-success">Search</button>
+              <button class="btn btn-success" data-bs-dismiss="modal"
+                >Search</button
+              >
             </div>
           </form>
           <div class="fs-1">|</div>

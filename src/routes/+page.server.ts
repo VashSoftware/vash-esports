@@ -91,8 +91,6 @@ export const actions = {
       .select("id")
       .single();
 
-    console.log(notification);
-
     const invite = await locals.supabase.from("match_invites").insert({
       //@ts-ignore
       sender_id: user.data.team_members[0].teams.id,
@@ -326,27 +324,31 @@ export const actions = {
 
     throw redirect(303, `/map-pools/${mapPool.data[0].id}`);
   },
-  soloQueue: async ({ locals }) => {
+  quickQueue: async ({ locals }) => {
     const queuePosition = await locals.supabase
-      .from("solo_queue")
-      .select("*, user_profiles(user_id)")
+      .from("quick_queue")
+      .select("*, teams!inner(team_members(user_profiles(user_id)))")
+      .eq("teams.is_personal_team", true)
       .not("position", "is", null);
 
     const session = await locals.getSession();
-    const user = queuePosition.data.find(
-      (queue) => queue.user_profiles.user_id == session.user.id
+    const user = queuePosition.data.find((queue) =>
+      queue.teams.team_members.find(
+        (tm) => tm.user_profiles.user_id == session.user.id
+      )
     );
 
     if (user) {
       return;
     }
 
-    await locals.supabase.from("solo_queue").insert({
-      user_id: (
+    await locals.supabase.from("quick_queue").insert({
+      team_id: (
         await locals.supabase
-          .from("user_profiles")
-          .select("id")
-          .eq("user_id", session.user.id)
+          .from("teams")
+          .select("id, team_members!inner(user_profiles!inner(user_id))")
+          .eq("team_members.user_profiles.user_id", session.user.id)
+          .eq("is_personal_team", true)
           .single()
       ).data.id,
       position: queuePosition.data.length + 1,
