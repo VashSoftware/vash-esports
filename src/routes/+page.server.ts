@@ -326,4 +326,30 @@ export const actions = {
 
     throw redirect(303, `/map-pools/${mapPool.data[0].id}`);
   },
+  soloQueue: async ({ locals }) => {
+    const queuePosition = await locals.supabase
+      .from("solo_queue")
+      .select("*, user_profiles(user_id)")
+      .not("position", "is", null);
+
+    const session = await locals.getSession();
+    const user = queuePosition.data.find(
+      (queue) => queue.user_profiles.user_id == session.user.id
+    );
+
+    if (user) {
+      return;
+    }
+
+    await locals.supabase.from("solo_queue").insert({
+      user_id: (
+        await locals.supabase
+          .from("user_profiles")
+          .select("id")
+          .eq("user_id", session.user.id)
+          .single()
+      ).data.id,
+      position: queuePosition.data.length + 1,
+    });
+  },
 } satisfies Actions;
