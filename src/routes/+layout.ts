@@ -84,6 +84,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     .from("announcements")
     .select("*")
     .order("created_at", { ascending: false })
+    .is("removed_at", null)
     .limit(1);
 
   const [
