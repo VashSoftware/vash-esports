@@ -201,6 +201,17 @@
   <title>{getNotificationsCount()}Vash Esports</title>
 </svelte:head>
 
+{#if data.announcement || true}
+  <a href={data.announcement?.link}>
+    <div
+      class="alert alert-{data.announcement?.color} text-center my-0"
+      role="alert"
+    >
+      {data.announcement?.title}
+    </div>
+  </a>
+{/if}
+
 {#if $soloQueueState}
   <div class="banner-link">
     <div class="banner">
