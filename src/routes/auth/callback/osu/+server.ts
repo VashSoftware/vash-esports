@@ -92,6 +92,34 @@ export const GET = async ({ url, locals: { supabase, getSession } }) => {
       )
       .select("*");
 
+    function rankToStar(rank) {
+      return Math.max(0, -0.65 * Math.log10(rank + 100) + 9);
+    }
+
+    console.log(
+      osuData.statistics.global_rank,
+      rankToStar(osuData.statistics.global_rank)
+    );
+
+    const gameId = await supabase
+      .from("games")
+      .select("id")
+      .eq("name", "osu!")
+      .single();
+
+    const userRating = await supabase.from("user_ratings").upsert(
+      {
+        user_id: userProfile.data.id,
+        game_id: gameId.data.id,
+        rating: rankToStar(osuData.statistics.global_rank),
+      },
+      {
+        onConflict: "user_id, game_id",
+      }
+    );
+
+    console.dir(userRating);
+
     redirect(303, `/users/${userProfile.data.id}`);
   }
 
