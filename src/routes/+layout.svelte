@@ -201,7 +201,7 @@
   <title>{getNotificationsCount()}Vash Esports</title>
 </svelte:head>
 
-{#if data.announcement || true}
+{#if data.announcement }
   <a href={data.announcement?.link}>
     <div
       class="alert alert-{data.announcement?.color} text-center my-0"
