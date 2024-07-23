@@ -80,6 +80,13 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     )
     .eq("ongoing", true);
 
+  const announcementPromise = supabase
+    .from("announcements")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .is("removed_at", null)
+    .limit(1);
+
   const [
     events,
     matches,
@@ -89,6 +96,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     notifications,
     userProfile,
     ongoingMatch,
+    announcement,
   ] = await Promise.all([
     eventsPromise,
     matchesPromise,
@@ -98,6 +106,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     notificationsPromise,
     userProfilePromise,
     ongoingMatchPromise,
+    announcementPromise,
   ]);
 
   return {
@@ -111,5 +120,6 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     organisations: organisations.data,
     notifications: notifications.data ?? [],
     ongoingMatch: ongoingMatch?.data,
+    announcement: announcement.data[0],
   };
 };
