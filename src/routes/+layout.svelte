@@ -19,6 +19,7 @@
   const userOngoingMatches = data.ongoingMatch.filter((match) =>
     match.match_participants.some((mp) =>
       mp.match_participant_players.some(
+        // @ts-ignore
         (mpp) => mpp.team_members.user_profiles.user_id === session?.user.id
       )
     )
@@ -68,6 +69,7 @@
     const userOngoingMatches = ongoingMatchData.data.filter((match) =>
       match.match_participants.some((mp) =>
         mp.match_participant_players.some(
+          // @ts-ignore
           (mpp) => mpp.team_members.user_profiles.user_id === session?.user.id
         )
       )
@@ -85,40 +87,43 @@
     await fetchSoloQueue();
   }
 
-  onMount(async () => {
+  onMount(() => {
     if (!browser) return;
 
-    await import("bootstrap");
+    let intervalId;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, _session) => {
-      if (_session?.expires_at !== session?.expires_at) {
-        invalidate("supabase:auth");
-      }
-    });
+    (async () => {
+      await import("bootstrap");
 
-    subscription.unsubscribe();
-
-    await fetchSoloQueue();
-
-    data.supabase
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-        },
-        async (payload) => {
-          fetchNotifications();
+      const {
+        data: { subscription },
+      } = await supabase.auth.onAuthStateChange(async (event, _session) => {
+        if (_session?.expires_at !== session?.expires_at) {
+          invalidate("supabase:auth");
         }
-      )
-      .subscribe();
+      });
 
-    // Set interval to call fetchNotifications every second (1000 ms)
-    const intervalId = setInterval(fetchNotifications, 5000);
-    return () => clearInterval(intervalId);
+      subscription.unsubscribe();
+
+      await fetchSoloQueue();
+
+      data.supabase
+        .channel("schema-db-changes")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public" },
+          async (payload) => {
+            fetchNotifications();
+          }
+        )
+        .subscribe();
+
+      intervalId = setInterval(fetchNotifications, 5000);
+    })();
+
+    return () => {
+      clearInterval(intervalId);
+    };
   });
 
   let searchQuery = "";
@@ -178,12 +183,14 @@
 
   async function fetchSoloQueue() {
     const soloQueue = await data.supabase
-      .from("solo_queue")
-      .select("*, user_profiles(user_id)")
+      .from("quick_queue")
+      .select("*, teams(team_members(user_profiles(user_id)))")
       .not("position", "is", null);
 
-    const userInQueue = soloQueue.data.some(
-      (queue) => queue.user_profiles.user_id === session?.user.id
+    const userInQueue = soloQueue.data.some((queue) =>
+      queue.teams.team_members.some(
+        (tm) => tm.user_profiles.user_id == session?.user.id
+      )
     );
 
     soloQueueState.set(userInQueue);
@@ -202,9 +209,12 @@
         <button
           on:click={async () => {
             await data.supabase
-              .from("solo_queue")
+              .from("quick_queue")
               .delete()
-              .eq("user_id", data.userProfile.data[0].id);
+              .eq(
+                "teams.team_members.user_profiles.id",
+                data.userProfile.data[0].id
+              );
 
             soloQueueState.set(false);
           }}
