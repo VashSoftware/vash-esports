@@ -129,6 +129,18 @@ export const actions = {
       .eq("id", mapId)
       .single();
 
+    const existingMatchMap = await locals.supabase
+      .from("match_maps")
+      .select("*")
+      .eq("match_id", params.match_id)
+      .eq("map_pool_map_id", mapId)
+      .maybeSingle();
+
+    if (existingMatchMap.data) {
+      console.log("Map already picked with ID: ", mapId);
+      return;
+    }
+
     const matchMap = await locals.supabase
       .from("match_maps")
       .insert({
