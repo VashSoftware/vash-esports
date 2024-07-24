@@ -8,7 +8,8 @@ export async function load(request) {
 
   const teamsPromise = request.locals.supabase
     .from("teams")
-    .select("*, participants(count)");
+    .select("*, participants(count)")
+    .eq("is_personal_team", false);
 
   const organisationsPromise = request.locals.supabase
     .from("organisations")
