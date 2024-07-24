@@ -262,6 +262,16 @@
 
 <!-- This match is being broadcasted on the following official channels: -->
 
+{#if dev}
+  <div class="text-center my-3">
+    <button
+      class="btn btn-secondary"
+      data-bs-toggle="modal"
+      data-bs-target="#debugModal">Debug Options</button
+    >
+  </div>
+{/if}
+
 {#if data.match.type == "event"}
   <div class="my-4 text-center">
     <a href="/events/{data.match.rounds.events.id}">
@@ -1002,6 +1012,53 @@
             Back to Home
           </button>
         </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="debugModal"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Debug Menu</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body text-center">
+        <h4 class="mb-3">Web Client</h4>
+        <div class="d-flex justify-content-between align-items-center my-2">
+          Roll screen
+
+          <button class="btn btn-primary ms-5">Show</button>
+        </div>
+        <div class="d-flex justify-content-between align-items-center my-2">
+          Pick screen
+
+          <button class="btn btn-primary ms-5">Show</button>
+        </div>
+        <div class="d-flex justify-content-between align-items-center my-2">
+          Match over screen
+
+          <button class="btn btn-primary ms-5">Show</button>
+        </div>
+
+        <h4 class="my-3">osu! Server</h4>
+        <div class="d-flex justify-content-between align-items-center my-2">
+          Get scores
+
+          <button class="btn btn-primary ms-5">Fetch</button>
+        </div>
       </div>
     </div>
   </div>
