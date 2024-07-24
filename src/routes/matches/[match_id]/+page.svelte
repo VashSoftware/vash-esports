@@ -70,41 +70,6 @@
   >
 </svelte:head>
 
-{#if data.match.ongoing || new Date(data.match.start_time) > new Date() || data.match.type == "event"}
-  <div class="row align-items-center mt-5">
-    {#if data.match.type == "event"}
-      <div class="col"></div>
-      <div class="col">
-        <div class="text-center">
-          <a href="/events/{data.match.rounds.events.id}">
-            <h2>
-              {#if data.match.rounds.events.event_groups}{data.match.rounds
-                  .events.event_groups.name}
-              {/if}
-
-              {data.match.rounds.events.name}
-            </h2></a
-          >
-          <h3>Grand Finals</h3>
-        </div>
-      </div>
-    {/if}
-    <div class="col d-flex justify-content-end gap-3">
-      {#if data.match.ongoing}<a
-          href="/matches/{data.match.id}/play"
-          class="btn btn-primary">Play</a
-        >{/if}
-      {#if new Date(data.match.start_time) > new Date()}
-        <form action="?/addToCalendar" method="post">
-          <button type="submit" class="btn btn-secondary"
-            >Add to Calendar</button
-          >
-        </form>
-      {/if}
-    </div>
-  </div>
-{/if}
-
 <div class="row py-5">
   <div class="col-8">
     <iframe
