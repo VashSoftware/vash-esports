@@ -10,7 +10,7 @@
         `*,
       rounds ( best_of, events (id, name, event_links(*, platforms(*)), event_groups(*))),
       match_participants(participants(id, teams(id, name, team_members(*, user_profiles(*))))),
-      match_maps(map_pool_maps(*, map_pool_map_mods(*, mods(*)), maps(*, mapsets(*))), scores(*)),
+      match_maps(id, map_pool_maps(*, map_pool_map_mods(*, mods(*)), maps(*, mapsets(*))), scores(*)),
       match_predictions(*, user_profiles(*))`
       )
       .eq("id", data.match.id)
@@ -267,7 +267,7 @@
 
 <div class="text-center mb-5">
   <h2 class="mb-4">Maps Played ({data.match.match_maps.length})</h2>
-  {#each data.match.match_maps as map}
+  {#each data.match.match_maps.sort((a, b) => a.id - b.id) as map}
     <div class="row my-1 align-items-center">
       <div class="col text-end">
         <h3>{map.scores[0]?.score.toLocaleString()}</h3>
