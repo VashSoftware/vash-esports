@@ -4,7 +4,8 @@ export async function load(request) {
     .select(
       "*, user_ratings(*), team_members (teams( participants (match_participants (matches (id)))))"
     )
-    .eq("finished_setup", true);
+    .eq("finished_setup", true)
+    .order("rating", { referencedTable: "user_ratings", ascending: false });
 
   const teamsPromise = request.locals.supabase
     .from("teams")
