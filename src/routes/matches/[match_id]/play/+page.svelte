@@ -2,8 +2,10 @@
   import { dev } from "$app/environment";
   import { enhance } from "$app/forms";
   import _ from "lodash";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import { browser } from "$app/environment";
+  import { io, Socket } from "socket.io-client";
+  import { PUBLIC_REALTIME_SERVER_DOMAIN } from "$env/static/public";
 
   export let data;
 
@@ -90,110 +92,13 @@
     await activeModals.pickMap?.hide();
   }
 
-  async function getMatch() {
-    if (!browser) return; // Ensure we're in a browser environment
-    const updatedMatch = await data.supabase
-      .from("matches")
-      .select(
-        `
-      *,
-      rounds(
-        *,
-        events(
-          *,
-          event_groups(
-            *
-          )
-        )
-      ),
-      match_participants(
-        *,
-        match_participant_players(
-          *,
-          match_participant_player_states(
-            *
-          ),
-          team_members(
-            *,
-            user_profiles(
-              *
-            )
-          )
-        ),
-        participants(*,
-          teams(*, team_members(user_profiles(id, user_id)))
-        )
-      ),
-      match_maps(*,
-        map_pool_maps(*,
-          maps(*,
-            mapsets(*)
-          ),
-          map_pool_map_mods(*, mods(*))
-        ),
-        scores(*,
-          match_participant_players(*)
-        )
-      ),
-      match_bans(*,
-        match_participants(*,
-          participants(*,
-            teams(name)
-          )
-        )
-      ),
-      map_pools(
-        *,          
-        map_pool_maps(
-          *,
-          maps(
-            *,
-            mapsets(
-              *
-            )
-          ),
-          map_pool_map_mods(
-            *,
-            mods(
-              *
-            )
-          )
-        )
-      )
-      `
-      )
-      .eq("id", data.match.id)
-      .order("created_at", { referencedTable: "match_maps" })
-      .single();
-
-    data.match = updatedMatch.data;
-    processMatch();
-  }
-
-  let interval;
+  let socket: Socket;
 
   onMount(async () => {
-    if (!browser) return; // Ensure we're in a browser environment
+    if (!browser) return;
     console.log("checking match");
 
     processMatch();
-
-    const subscription = data.supabase
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-        },
-        (payload) => {
-          getMatch();
-        }
-      )
-      .subscribe();
-
-    // Set interval to call getMatch every second (1000 ms)
-    interval = setInterval(getMatch, 5000);
 
     await data.supabase
       .from("notifications")
@@ -211,14 +116,34 @@
         )[0].participants.teams.team_members[0].user_profiles.id
       );
 
-    console.log(
-      data.match.match_participants.filter(
-        (mp) =>
-          mp.participants.teams.team_members.filter(
-            (tm) => tm.user_profiles.user_id == data.session.user.id
-          )[0]
-      )[0].participants.teams.team_members[0].user_profiles.id
-    );
+    socket = io(PUBLIC_REALTIME_SERVER_DOMAIN);
+
+    socket.emit("join-match", data.match.id);
+
+    socket.on("matches-update", async () => {
+      await updateMatches();
+      await processMatch();
+    });
+
+    socket.on("match-maps-update", async () => {
+      await updateMatchMaps();
+      await processMatch();
+    });
+
+    socket.on("match-participants-update", async () => {
+      await updateMatchParticipantPlayers();
+      await processMatch();
+    });
+
+    socket.on("match-participant-players-update", async () => {
+      await updateMatchParticipantPlayers();
+      await processMatch();
+    });
+
+    socket.on("scores-update", async () => {
+      await updateScores();
+      await processMatch();
+    });
   });
 
   function getShortenedMapName(map) {
@@ -247,6 +172,85 @@
       formattedTime = `${hours.toString().padStart(2, "0")}:${formattedTime}`;
     }
     return formattedTime;
+  }
+
+  async function updateMatches() {
+    console.log("Updating matches");
+
+    data.match.match_maps = (
+      await data.supabase.from("matches").select("*")
+    ).data;
+  }
+
+  async function updateMatchMaps() {
+    console.log("Updating match maps");
+
+    data.match.match_maps = (
+      await data.supabase
+        .from("match_maps")
+        .select(
+          `*,
+          map_pool_maps(*,
+            maps(*,
+              mapsets(*)
+            ),
+            map_pool_map_mods(*, mods(*))
+          ),
+          scores(*,
+            match_participant_players(*)
+          )
+        )`
+        )
+        .eq("match_id", data.match.id)
+        .order("created_at")
+    ).data;
+  }
+
+  async function updateMatchParticipantPlayers() {
+    console.log("Updating match participant players");
+
+    data.match.match_participants = (
+      await data.supabase
+        .from("match_participants")
+        .select(
+          `
+      *,
+      match_participant_players(
+        *,
+        match_participant_player_states(
+          *
+        ),
+        team_members(
+          *,
+          user_profiles(
+            *
+          )
+        )
+      ),
+      participants(*,
+        teams(*, team_members(user_profiles(id, user_id)))
+      )
+      `
+        )
+        .eq("match_id", data.match.id)
+    ).data;
+  }
+
+  async function updateScores() {
+    console.log("Updating scores");
+
+    data.match.scores = (
+      await data.supabase
+        .from("scores")
+        .select(
+          `*,
+          match_participant_players(*, match_participants(match_id))`
+        )
+        .eq(
+          "match_participant_players.match_participants.match_id",
+          data.match.id
+        )
+    ).data;
   }
 </script>
 
@@ -526,8 +530,13 @@
                 <form action="?/addSampleScores" method="post" use:enhance>
                   <input type="hidden" name="match-map-id" value={map.id} />
 
-                  <button type="submit" class="btn btn-primary"
-                    >Add sample scores</button
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    on:click={() =>
+                      socket.emit("match-maps-update", {
+                        new: { id: data.match.id },
+                      })}>Add sample scores</button
                   >
                 </form>
               {/if}
@@ -535,8 +544,13 @@
               <form action="?/deleteScores" method="post" use:enhance>
                 <input type="hidden" name="match-map-id" value={map.id} />
 
-                <button type="submit" class="btn btn-danger"
-                  >Delete scores</button
+                <button
+                  type="submit"
+                  class="btn btn-danger"
+                  on:click={() =>
+                    socket.emit("match-maps-update", {
+                      new: { id: data.match.id },
+                    })}>Delete scores</button
                 >
               </form>
             </div>
@@ -708,6 +722,10 @@
                       style="height: 160px; cursor: pointer;"
                       on:click={() => {
                         activeModals.pickMap.hide();
+
+                        socket.emit("match-maps-update", {
+                          new: { id: data.match.id },
+                        });
                       }}
                     >
                       <img
@@ -997,7 +1015,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <a href="/" on:click={() => clearInterval(interval)}>
+        <a href="/">
           <button class="btn btn-success" data-bs-dismiss="modal">
             Back to Home
           </button>
