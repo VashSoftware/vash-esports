@@ -111,62 +111,6 @@ export const actions = {
 
     console.log("Surrendered bans for participant with ID: ", matchParticipant);
   },
-  pickMap: async ({ locals, params, request }) => {
-    const formData = await request.formData();
-
-    const mapId = formData.get("map-id");
-    const matchParticipant = formData.get("match-participant-id");
-
-    const match = await locals.supabase
-      .from("matches")
-      .select(`*, match_participants(match_participant_players(id))`)
-      .eq("id", params.match_id)
-      .single();
-
-    const mapPoolMap = await locals.supabase
-      .from("map_pool_maps")
-      .select("*, maps(*), map_pool_map_mods(mods(code))")
-      .eq("id", mapId)
-      .single();
-
-    const existingMatchMap = await locals.supabase
-      .from("match_maps")
-      .select("*")
-      .eq("match_id", params.match_id)
-      .eq("map_pool_map_id", mapId)
-      .maybeSingle();
-
-    if (existingMatchMap.data) {
-      console.log("Map already picked with ID: ", mapId);
-      return;
-    }
-
-    const matchMap = await locals.supabase
-      .from("match_maps")
-      .insert({
-        map_pool_map_id: mapId,
-        match_id: params.match_id,
-        status: "waiting",
-        picked_by: matchParticipant,
-      })
-      .select("id, map_pool_maps(maps(osu_id))")
-      .single();
-
-    const scores = [];
-
-    for (const participant of match.data.match_participants) {
-      for (const player of participant.match_participant_players) {
-        scores.push({
-          match_map_id: matchMap.data.id,
-          match_participant_player_id: player.id,
-        });
-      }
-    }
-
-    await locals.supabase.from("scores").insert(scores);
-
-    console.log("Picked map with ID: ", mapId);
-  },
   endMatch: async ({ locals, params, request }) => {
     const match = await locals.supabase
       .from("matches")
@@ -226,14 +170,6 @@ export const actions = {
       "Invited player: ",
       matchParticipantPlayer.data.team_members.user_profiles.name
     );
-  },
-  roll: async ({ locals, params, request }) => {
-    const formData = await request.formData();
-
-    const matchParticipantPlayer = await locals.supabase
-      .from("match_participants")
-      .update({ roll: Math.floor(Math.random() * 100) + 1 })
-      .eq("id", formData.get("match-participant-id"));
   },
   addSampleScores: async ({ locals, params, request }) => {
     const formData = await request.formData();

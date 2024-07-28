@@ -65,18 +65,7 @@
     const matchQueue = await data.supabase
       .from("match_queue")
       .select(
-        `
-        *,
-        matches(*
-          match_participants(
-            match_participant_players(
-              team_members(
-                user_profiles(user_id)
-              )
-            )
-          )
-      )
-        `
+        "*, match(*, match_participants(*, match_participant_players(*, team_members( user_profiles(*, user_id)))))"
       )
       .not("position", "is", null);
   }
@@ -198,13 +187,19 @@
     }
 
     if (
-      data.matchQueue?.some((queue) =>
-        queue.teams.team_members.some(
-          (tm) => tm.user_profiles.user_id == data.session?.user.id
+      data.matchQueue.some((mq) =>
+        mq.matches.match_participants.some((mp) =>
+          mp.match_participant_players.some(
+            (mpp) =>
+              mpp.team_members.user_profiles.user_id === data.session?.user.id
+          )
         )
       )
     ) {
-      return { status: "matchQueue", text: "Waiting for match to be created." };
+      return {
+        status: "matchQueue",
+        text: "Waiting for match to be created...",
+      };
     }
 
     if (
@@ -216,7 +211,7 @@
     ) {
       return {
         status: "quickQueue",
-        text: "You are queueing for an opponent.",
+        text: "Queueing for an opponent...",
       };
     }
 
@@ -247,10 +242,12 @@
   </a>
 {/if}
 
-{#if getBannerData() && $page.url.pathname !== `/matches/${getBannerData()?.userOngoingMatches[0]?.id}/play`}
+{#if getBannerData() && $page.url.pathname !== `/matches/${getBannerData()?.userOngoingMatches?.[0]?.id}/play`}
   <a
     class="banner-link"
-    href="/matches/{getBannerData()?.userOngoingMatches[0]?.id}/play"
+    href={getBannerData()?.status == "activeMatch"
+      ? `/matches/${getBannerData()?.userOngoingMatches?.[0]?.id}/play`
+      : null}
   >
     <div class="banner">
       <div class="banner-content text-center">

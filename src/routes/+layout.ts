@@ -87,12 +87,16 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 
   const quickQueuePromise = supabase
     .from("quick_queue")
-    .select("*, teams(*)")
+    .select(
+      "*, teams!inner(*, team_members!inner(user_profiles!inner(user_id)))"
+    )
     .not("position", "is", null);
 
   const matchQueuePromise = supabase
     .from("match_queue")
-    .select("*, match(*)")
+    .select(
+      "*, matches(match_participants(match_participant_players(team_members(user_profiles(user_id)))))"
+    )
     .not("position", "is", null);
 
   const [

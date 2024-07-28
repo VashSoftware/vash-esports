@@ -709,68 +709,95 @@
             <div class="row d-flex justify-content-center align-items-stretch">
               {#each maps.sort((a, b) => a.mod_priority - b.mod_priority) as map}
                 <div class="col-12 col-md-2 d-flex">
-                  <form
-                    id={`map-${map.id}`}
-                    action="?/pickMap"
-                    method="post"
-                    class="w-100"
-                    use:enhance
+                  <button
+                    type="button"
+                    class="position-relative rounded overflow-hidden w-100 h-100 border-0 p-0"
+                    style="height: 160px; cursor: pointer;"
+                    on:click={async () => {
+                      activeModals.pickMap.hide();
+
+                      const matchParticipant =
+                        data.match.match_participants.filter(
+                          (mp) =>
+                            mp.participants.teams.team_members.filter(
+                              (tm) =>
+                                tm.user_profiles.user_id == data.session.user.id
+                            )[0]
+                        )[0].id;
+
+                      const existingMatchMap = await data.supabase
+                        .from("match_maps")
+                        .select("*")
+                        .eq("match_id", data.match.id)
+                        .eq("map_pool_map_id", map.id)
+                        .maybeSingle();
+
+                      if (existingMatchMap.data) {
+                        console.log("Map already picked with ID: ", map.id);
+                        return;
+                      }
+
+                      const matchMap = await data.supabase
+                        .from("match_maps")
+                        .insert({
+                          map_pool_map_id: map.id,
+                          match_id: data.match.id,
+                          status: "waiting",
+                          picked_by: matchParticipant,
+                        })
+                        .select("id, map_pool_maps(maps(osu_id))")
+                        .single();
+
+                      const scores = [];
+
+                      for (const participant of data.match.match_participants) {
+                        for (const player of participant.match_participant_players) {
+                          scores.push({
+                            match_map_id: matchMap.data.id,
+                            match_participant_player_id: player.id,
+                          });
+                        }
+                      }
+
+                      await data.supabase.from("scores").insert(scores);
+
+                      console.log("Picked map with ID: ", map.id);
+
+                      socket.emit("match-maps-update", {
+                        new: { id: data.match.id },
+                      });
+                    }}
                   >
-                    <button
-                      type="submit"
-                      class="position-relative rounded overflow-hidden w-100 h-100 border-0 p-0"
-                      style="height: 160px; cursor: pointer;"
-                      on:click={() => {
-                        activeModals.pickMap.hide();
-
-                        socket.emit("match-maps-update", {
-                          new: { id: data.match.id },
-                        });
-                      }}
+                    <img
+                      class="img-fluid position-absolute top-0 start-0 w-100 h-100"
+                      src={`https://assets.ppy.sh/beatmaps/${map.maps.mapsets.osu_id}/covers/cover@2x.jpg`}
+                      alt="Match map cover"
+                      style="filter: blur(1px) brightness(50%); object-fit: cover; z-index: 0;"
+                    />
+                    <div
+                      class="position-relative text-light p-2 d-flex flex-column justify-content-between"
+                      style="z-index: 1; background: rgba(0, 0, 0, 0.5); height: 160px;"
                     >
-                      <img
-                        class="img-fluid position-absolute top-0 start-0 w-100 h-100"
-                        src={`https://assets.ppy.sh/beatmaps/${map.maps.mapsets.osu_id}/covers/cover@2x.jpg`}
-                        alt="Match map cover"
-                        style="filter: blur(1px) brightness(50%); object-fit: cover; z-index: 0;"
-                      />
-                      <div
-                        class="position-relative text-light p-2 d-flex flex-column justify-content-between"
-                        style="z-index: 1; background: rgba(0, 0, 0, 0.5); height: 160px;"
-                      >
-                        <div>
-                          <input type="hidden" name="map-id" value={map.id} />
+                      <div>
+                        <input type="hidden" name="map-id" value={map.id} />
 
-                          <input
-                            type="hidden"
-                            name="match-participant-id"
-                            value={data.match.match_participants.filter(
-                              (mp) =>
-                                mp.participants.teams.team_members.filter(
-                                  (tm) =>
-                                    tm.user_profiles.user_id ==
-                                    data.session.user.id
-                                )[0]
-                            )[0].id}
-                          />
-                          <span class="fw-bold fs-4"
-                            >{map.map_pool_map_mods[0].mods.code ||
-                              "NM"}{map.mod_priority}</span
-                          >
-                        </div>
-                        <div
-                          class="d-flex flex-column justify-content-center align-items-center flex-grow-1"
+                        <span class="fw-bold fs-4"
+                          >{map.map_pool_map_mods[0].mods.code ||
+                            "NM"}{map.mod_priority}</span
                         >
-                          <div
-                            class="text-center"
-                            style="font-size: 0.9rem; white-space: normal;"
-                          >
-                            {getShortenedMapName(map)}
-                          </div>
+                      </div>
+                      <div
+                        class="d-flex flex-column justify-content-center align-items-center flex-grow-1"
+                      >
+                        <div
+                          class="text-center"
+                          style="font-size: 0.9rem; white-space: normal;"
+                        >
+                          {getShortenedMapName(map)}
                         </div>
                       </div>
-                    </button>
-                  </form>
+                    </div>
+                  </button>
                 </div>
               {/each}
             </div>
@@ -781,118 +808,116 @@
   </div>
 </div>
 
-<form action="?/roll" method="post" use:enhance>
-  <div
-    class="modal fade"
-    id="rollModal"
-    tabindex="-1"
-    aria-labelledby="staticBackdropLabel"
-    aria-hidden="true"
-    data-bs-backdrop="static"
-  >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">
-            Waiting for all players to roll...
-          </h1>
-        </div>
-        <div class="modal-body text-center">
-          <div>
-            <div class="d-flex align-items-center justify-content-around">
-              <div class="d-flex flex-column align-items-center">
+<div
+  class="modal fade"
+  id="rollModal"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          Waiting for all players to roll...
+        </h1>
+      </div>
+      <div class="modal-body text-center">
+        <div>
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="d-flex flex-column align-items-center">
+              <div
+                class="progress progress-bar-vertical mb-3 vertical-progress-bar"
+              >
                 <div
-                  class="progress progress-bar-vertical mb-3 vertical-progress-bar"
-                >
-                  <div
-                    class="progress-bar bg-primary"
-                    role="progressbar"
-                    style="height: {data.match.match_participants.filter(
-                      (mp) =>
-                        mp.participants.teams.team_members.filter(
-                          (tm) =>
-                            tm.user_profiles.user_id == data.session.user.id
-                        )[0]
-                    )[0].roll || 0}%;"
-                    aria-valuenow="25"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  >
-                    {data.match.match_participants.filter(
-                      (mp) =>
-                        mp.participants.teams.team_members.filter(
-                          (tm) =>
-                            tm.user_profiles.user_id == data.session.user.id
-                        )[0]
-                    )[0].roll}
-                  </div>
-                </div>
-
-                <input
-                  type="hidden"
-                  name="match-participant-id"
-                  value={data.match.match_participants.filter(
+                  class="progress-bar bg-primary"
+                  role="progressbar"
+                  style="height: {data.match.match_participants.filter(
                     (mp) =>
                       mp.participants.teams.team_members.filter(
                         (tm) => tm.user_profiles.user_id == data.session.user.id
                       )[0]
-                  )[0].id}
-                />
-                <button
-                  class="btn btn-lg btn-success"
-                  class:disabled={data.match.match_participants.filter(
+                  )[0].roll || 0}%;"
+                  aria-valuenow="25"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  {data.match.match_participants.filter(
                     (mp) =>
                       mp.participants.teams.team_members.filter(
                         (tm) => tm.user_profiles.user_id == data.session.user.id
                       )[0]
                   )[0].roll}
-                >
-                  Roll
-                </button>
+                </div>
               </div>
 
-              {#each data.match.match_participants.filter((mp) => mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id != data.session.user.id)[0]) as participant}
-                <div class="d-flex flex-column align-items-center">
-                  <div
-                    class="progress progress-bar-vertical mb-3 vertical-progress-bar"
-                  >
-                    <div
-                      class="progress-bar bg-danger"
-                      role="progressbar"
-                      style="height: {participant.roll}%;"
-                      aria-valuenow="25"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    >
-                      {participant.roll}
-                    </div>
-                  </div>
+              <button
+                class="btn btn-lg btn-success"
+                class:disabled={data.match.match_participants.filter(
+                  (mp) =>
+                    mp.participants.teams.team_members.filter(
+                      (tm) => tm.user_profiles.user_id == data.session.user.id
+                    )[0]
+                )[0].roll}
+                on:click={async () => {
+                  rollModalOver = true;
+                  userDismissedRollModal = true;
 
-                  <h4>{participant.participants.teams.name}</h4>
-                </div>
-              {/each}
+                  await data.supabase
+                    .from("match_participants")
+                    .update({ roll: Math.floor(Math.random() * 100) + 1 })
+                    .eq(
+                      "id",
+                      data.match.match_participants.filter(
+                        (mp) =>
+                          mp.participants.teams.team_members.filter(
+                            (tm) =>
+                              tm.user_profiles.user_id == data.session.user.id
+                          )[0]
+                      )[0].id
+                    );
+
+                  socket.emit("match-participants-update", {
+                    new: { id: data.match.id },
+                  });
+                }}
+              >
+                Roll
+              </button>
             </div>
+
+            {#each data.match.match_participants.filter((mp) => mp.participants.teams.team_members.filter((tm) => tm.user_profiles.user_id != data.session.user.id)[0]) as participant}
+              <div class="d-flex flex-column align-items-center">
+                <div
+                  class="progress progress-bar-vertical mb-3 vertical-progress-bar"
+                >
+                  <div
+                    class="progress-bar bg-danger"
+                    role="progressbar"
+                    style="height: {participant.roll}%;"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    {participant.roll}
+                  </div>
+                </div>
+
+                <h4>{participant.participants.teams.name}</h4>
+              </div>
+            {/each}
           </div>
         </div>
-        {#if allRollsCompleted}
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-success"
-              on:click={() => {
-                rollModalOver = true;
-                userDismissedRollModal = true;
-                document.querySelector("#rollModal .btn-close")?.click();
-              }}
-            >
-              Close
-            </button>
-          </div>
-        {/if}
       </div>
+      {#if allRollsCompleted}
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success"> Close </button>
+        </div>
+      {/if}
     </div>
   </div>
-</form>
+</div>
 
 <div
   class="modal fade"
