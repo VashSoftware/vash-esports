@@ -1,52 +1,30 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import type { LayoutData } from "./$types";
-  import { onMount, onDestroy, setContext } from "svelte";
+  import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { invalidate } from "$app/navigation";
   import { browser } from "$app/environment";
-  import { writable } from "svelte/store";
+  import { io, Socket } from "socket.io-client";
+  import { PUBLIC_REALTIME_SERVER_DOMAIN } from "$env/static/public";
 
   export let data: LayoutData;
 
-  let { supabase, session } = data;
-  $: ({ supabase, session } = data);
-
-  const ongoingMatch = writable(null);
-  const soloQueueState = writable(false);
-
-  // Combine the two sources of matches
-  const userOngoingMatches = data.ongoingMatch.filter((match) =>
-    match.match_participants.some((mp) =>
-      mp.match_participant_players.some(
-        // @ts-ignore
-        (mpp) => mpp.team_members.user_profiles.user_id === session?.user.id
-      )
-    )
-  );
-
-  if (
-    userOngoingMatches.length > 0 &&
-    userOngoingMatches[0].id !== $ongoingMatch?.id
-  ) {
-    ongoingMatch.set(userOngoingMatches[0]);
-  } else if (userOngoingMatches.length === 0 && $ongoingMatch) {
-    ongoingMatch.set(null);
-  }
-
-  setContext("ongoingMatch", ongoingMatch);
-
   async function fetchNotifications() {
-    console.log("Checking for notifications & ongoing matches.");
+    console.log("Updating notifications");
 
     const notifications = await data.supabase
       .from("notifications")
       .select("*, user_profiles!inner(user_id), match_invites(id)")
-      .eq("user_profiles.user_id", session?.user.id)
+      .eq("user_profiles.user_id", data.session?.user.id)
       .is("dismissed_at", null)
       .order("created_at", { ascending: false });
 
     data.notifications = notifications.data;
+  }
+
+  async function fetchOngoingMatches() {
+    console.log("Updating active matches");
 
     const ongoingMatchData = await data.supabase
       .from("matches")
@@ -65,65 +43,73 @@
       )
       .eq("ongoing", true);
 
-    // Filter matches where the current user is a participant
-    const userOngoingMatches = ongoingMatchData.data.filter((match) =>
-      match.match_participants.some((mp) =>
-        mp.match_participant_players.some(
-          // @ts-ignore
-          (mpp) => mpp.team_members.user_profiles.user_id === session?.user.id
-        )
-      )
-    );
-
-    if (
-      userOngoingMatches.length > 0 &&
-      userOngoingMatches[0].id !== $ongoingMatch?.id
-    ) {
-      ongoingMatch.set(userOngoingMatches[0]);
-    } else if (userOngoingMatches.length === 0 && $ongoingMatch) {
-      ongoingMatch.set(null);
-    }
-
-    await fetchSoloQueue();
+    data.ongoingMatches = ongoingMatchData.data;
   }
+
+  async function updateQuickQueue() {
+    const quickQueue = await data.supabase
+      .from("quick_queue")
+      .select("*, teams(team_members(user_profiles(user_id)))")
+      .not("position", "is", null);
+
+    // const userInQueue = soloQueue.data.some((queue) =>
+    //   queue.teams.team_members.some(
+    //     (tm) => tm.user_profiles.user_id == session?.user.id
+    //   )
+    // );
+
+    data.quickQueue = quickQueue.data;
+  }
+
+  async function updateMatchQueue() {
+    const matchQueue = await data.supabase
+      .from("match_queue")
+      .select(
+        "*, match(*, match_participants(*, match_participant_players(*, team_members( user_profiles(*, user_id)))))"
+      )
+      .not("position", "is", null);
+  }
+
+  let socket: Socket;
 
   onMount(() => {
     if (!browser) return;
-
-    let intervalId;
 
     (async () => {
       await import("bootstrap");
 
       const {
         data: { subscription },
-      } = await supabase.auth.onAuthStateChange(async (event, _session) => {
-        if (_session?.expires_at !== session?.expires_at) {
-          invalidate("supabase:auth");
+      } = await data.supabase.auth.onAuthStateChange(
+        async (event, _session) => {
+          if (_session?.expires_at !== data.session?.expires_at) {
+            invalidate("supabase:auth");
+          }
         }
-      });
+      );
 
       subscription.unsubscribe();
 
-      await fetchSoloQueue();
+      socket = io(PUBLIC_REALTIME_SERVER_DOMAIN);
 
-      data.supabase
-        .channel("schema-db-changes")
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public" },
-          async (payload) => {
-            fetchNotifications();
-          }
-        )
-        .subscribe();
+      socket.emit("join-user", data.userProfile.data[0].id);
 
-      intervalId = setInterval(fetchNotifications, 5000);
+      socket.on("notifications-update", async () => {
+        await fetchNotifications();
+      });
+
+      socket.on("matches-update", async () => {
+        await fetchOngoingMatches();
+      });
+
+      socket.on("quick-queue-update", async () => {
+        await updateQuickQueue();
+      });
+
+      socket.on("match-queue-update", async () => {
+        await updateMatchQueue();
+      });
     })();
-
-    return () => {
-      clearInterval(intervalId);
-    };
   });
 
   let searchQuery = "";
@@ -181,19 +167,63 @@
     });
   }
 
-  async function fetchSoloQueue() {
-    const soloQueue = await data.supabase
-      .from("quick_queue")
-      .select("*, teams(team_members(user_profiles(user_id)))")
-      .not("position", "is", null);
-
-    const userInQueue = soloQueue.data.some((queue) =>
-      queue.teams.team_members.some(
-        (tm) => tm.user_profiles.user_id == session?.user.id
+  function getBannerData() {
+    const userOngoingMatches = data.ongoingMatches.filter((match) =>
+      match.match_participants.some((mp) =>
+        mp.match_participant_players.some(
+          (mpp) =>
+            // @ts-ignore
+            mpp.team_members.user_profiles.user_id == data.session?.user.id
+        )
       )
     );
 
-    soloQueueState.set(userInQueue);
+    if (userOngoingMatches.length > 0) {
+      return {
+        status: "activeMatch",
+        text: "You are in a match!",
+        userOngoingMatches,
+      };
+    }
+
+    if (
+      data.matchQueue.some((mq) =>
+        mq.matches.match_participants.some((mp) =>
+          mp.match_participant_players.some(
+            (mpp) =>
+              mpp.team_members.user_profiles.user_id === data.session?.user.id
+          )
+        )
+      )
+    ) {
+      return {
+        status: "matchQueue",
+        text: "Waiting for match to be created...",
+      };
+    }
+
+    if (
+      data.quickQueue.some((queue) =>
+        queue.teams.team_members.some(
+          (tm) => tm.user_profiles.user_id == data.session?.user.id
+        )
+      )
+    ) {
+      return {
+        status: "quickQueue",
+        text: "Queueing for an opponent...",
+      };
+    }
+
+    return false;
+  }
+
+  async function cancelQuickQueue() {
+    return true;
+  }
+
+  async function cancelMatchQueue() {
+    return true;
   }
 </script>
 
@@ -201,7 +231,7 @@
   <title>{getNotificationsCount()}Vash Esports</title>
 </svelte:head>
 
-{#if data.announcement }
+{#if data.announcement}
   <a href={data.announcement?.link}>
     <div
       class="alert alert-{data.announcement?.color} text-center my-0"
@@ -212,52 +242,21 @@
   </a>
 {/if}
 
-{#if $soloQueueState}
-  <div class="banner-link">
+{#if getBannerData() && $page.url.pathname !== `/matches/${getBannerData()?.userOngoingMatches?.[0]?.id}/play`}
+  <a
+    class="banner-link"
+    href={getBannerData()?.status == "activeMatch"
+      ? `/matches/${getBannerData()?.userOngoingMatches?.[0]?.id}/play`
+      : null}
+  >
     <div class="banner">
       <div class="banner-content text-center">
-        Searching for solo queue players...
-        <button
-          on:click={async () => {
-            await data.supabase
-              .from("quick_queue")
-              .delete()
-              .eq(
-                "teams.team_members.user_profiles.id",
-                data.userProfile.data[0].id
-              );
+        <h3 class="fw-bold">{getBannerData().text}</h3>
 
-            soloQueueState.set(false);
-          }}
-          class="btn btn-danger mx-3">Cancel</button
-        >
-      </div>
-    </div>
-  </div>
-{:else if $ongoingMatch && $page.url.pathname !== `/matches/${$ongoingMatch.id}/play`}
-  {#if !$ongoingMatch?.match_queue?.[0]?.position}
-    <a href="/matches/{$ongoingMatch.id}/play" class="banner-link">
-      <div class="banner">
-        <div class="banner-content text-center">
-          Active Match: {$ongoingMatch?.match_participants?.[0]?.participants
-            ?.teams.name} vs {$ongoingMatch?.match_participants?.[1]
-            ?.participants?.teams.name}
-        </div>
-      </div>
-    </a>
-  {:else}
-    <div class="banner-link">
-      <div class="banner">
-        <div class="d-flex justify-content-center gap-2">
-          <div class="banner-content text-center">
-            Queueing for: {$ongoingMatch?.match_participants?.[0]?.participants
-              ?.teams.name} vs {$ongoingMatch?.match_participants?.[1]
-              ?.participants?.teams.name}
-          </div>
-
+        {#if getBannerData().status != "activeMatch"}
           <button
             type="button"
-            class="btn btn-sm"
+            class="btn btn-sm mx-2"
             style="background-color: #212529;"
             data-bs-toggle="modal"
             data-bs-target="#queuePositionModal"
@@ -275,10 +274,15 @@
               />
             </svg>
           </button>
-        </div>
+
+          <button
+            on:click={getBannerData().cancelFn}
+            class="btn btn-danger mx-2">Cancel</button
+          >
+        {/if}
       </div>
     </div>
-  {/if}
+  </a>
 {/if}
 
 <main class="d-flex flex-column min-vh-100">
@@ -286,7 +290,7 @@
     <div
       class="container d-flex flex-column justify-content-between flex-md-row p-0"
     >
-      <div class="d-flex flex-column flex-md-row align-items-center">
+      <div class="d-flex flex-column flex-xl-row align-items-center my-3">
         <a class="navbar-brand fs-3" href="/"><b>Vash Esports</b></a>
         <div class="btn btn-warning btn-sm" style="pointer-events: none;">
           PUBLIC ALPHA
@@ -343,7 +347,7 @@
             class:active={$page.url.pathname === "/map-pools"}>Map Pools</a
           >
         </li>
-        {#if session}
+        {#if data.session}
           <li
             class="nav-item mx-2 ms-3 dropdown d-flex flex-column align-items-center"
           >
@@ -751,16 +755,13 @@
       <div class="modal-body">
         <div class="text-center my-5">
           <h3>
-            No. {$ongoingMatch?.match_queue?.[0]?.position} in the Queue
+            No. {data.ongoingMatches[0]?.match_queue?.[0]?.position} in the Queue
           </h3>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-          >Close</button
-        >
-        {#if !$ongoingMatch?.match_queue?.[0]?.position}
-          <a href="/matches/{$ongoingMatch?.id}/play"
+        {#if !data.ongoingMatches[0]?.match_queue?.[0]?.position}
+          <a href="/matches/{data.ongoingMatches[0]?.id}/play"
             ><button
               type="button"
               class="btn btn-secondary"

@@ -61,7 +61,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     .is("dismissed_at", null)
     .order("created_at", { ascending: false });
 
-  const ongoingMatchPromise = supabase
+  const ongoingMatchesPromise = supabase
     .from("matches")
     .select(
       `
@@ -85,6 +85,20 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     .is("removed_at", null)
     .limit(1);
 
+  const quickQueuePromise = supabase
+    .from("quick_queue")
+    .select(
+      "*, teams!inner(*, team_members!inner(user_profiles!inner(user_id)))"
+    )
+    .not("position", "is", null);
+
+  const matchQueuePromise = supabase
+    .from("match_queue")
+    .select(
+      "*, matches(match_participants(match_participant_players(team_members(user_profiles(user_id)))))"
+    )
+    .not("position", "is", null);
+
   const [
     events,
     matches,
@@ -93,8 +107,10 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     organisations,
     notifications,
     userProfile,
-    ongoingMatch,
+    ongoingMatches,
     announcement,
+    quickQueue,
+    matchQueue,
   ] = await Promise.all([
     eventsPromise,
     matchesPromise,
@@ -103,8 +119,10 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     organisationsPromise,
     notificationsPromise,
     userProfilePromise,
-    ongoingMatchPromise,
+    ongoingMatchesPromise,
     announcementPromise,
+    quickQueuePromise,
+    matchQueuePromise,
   ]);
 
   return {
@@ -117,7 +135,9 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     teams: teams.data,
     organisations: organisations.data,
     notifications: notifications.data ?? [],
-    ongoingMatch: ongoingMatch?.data,
+    ongoingMatches: ongoingMatches?.data,
     announcement: announcement.data[0],
+    quickQueue: quickQueue.data,
+    matchQueue: matchQueue.data,
   };
 };
