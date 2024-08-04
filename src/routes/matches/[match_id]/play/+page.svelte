@@ -1131,7 +1131,13 @@
       </div>
       <div class="modal-footer">
         <a href="/">
-          <button class="btn btn-success" data-bs-dismiss="modal">
+          <button
+            class="btn btn-success"
+            data-bs-dismiss="modal"
+            on:click={async () => {
+              socket.close();
+            }}
+          >
             Back to Home
           </button>
         </a>
