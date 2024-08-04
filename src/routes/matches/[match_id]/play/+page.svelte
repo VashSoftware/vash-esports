@@ -18,80 +18,129 @@
   let rollModalOver = false;
   let allRollsCompleted = false;
   let userDismissedRollModal = false;
+  let highestRoller: number | null = null;
+
+  async function handleMatchOverModal(bootstrap) {
+    if (activeModals.matchOver === null) {
+      activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
+    }
+    await hideModals(["roll", "pickMap"]);
+    return activeModals.matchOver.show();
+  }
+
+  async function handlePickMapModal(bootstrap) {
+    if (activeModals.pickMap === null) {
+      activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
+    }
+    await hideModals(["roll"]);
+    return activeModals.pickMap.show();
+  }
+
+  async function handleRollModal(bootstrap) {
+    if (activeModals.roll === null) {
+      activeModals.roll = new bootstrap.Modal("#rollModal");
+    }
+    return activeModals.roll.show();
+  }
+
+  async function hideModals(modalNames) {
+    for (const modalName of modalNames) {
+      await activeModals[modalName]?.hide();
+    }
+  }
+
+  async function isNextPicker() {
+    const userMatchParticipant = data.match.match_participants.find((mp) =>
+      mp.participants.teams.team_members.some(
+        (tm) => tm.user_profiles.user_id == data.session.user.id
+      )
+    );
+
+    if (!userMatchParticipant) {
+      return false; // User not part of this match
+    }
+
+    const existingMatchMap = await data.supabase
+      .from("match_maps")
+      .select("*")
+      .eq("match_id", data.match.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (
+      existingMatchMap.data.length > 0 &&
+      existingMatchMap.data[0].status === "waiting"
+    ) {
+      return false; // Don't show the pick map modal if the current match map status is still "waiting"
+    }
+
+    // 1. If there are no match maps yet, it's the highest roller's turn
+    if (existingMatchMap.data.length === 0) {
+      return userMatchParticipant.roll === highestRoller;
+    }
+
+    // 2. If there are match maps, determine the next picker based on modulo and roll order
+    const numberOfMapsPicked = data.match.match_maps.length;
+    const totalParticipants = data.match.match_participants.length;
+    const nextPickerIndex = numberOfMapsPicked % totalParticipants;
+
+    // Sort match participants by roll in descending order
+    const sortedParticipants = data.match.match_participants.sort(
+      (a, b) => (b.roll || 0) - (a.roll || 0)
+    );
+
+    const nextPickerId = sortedParticipants[nextPickerIndex]?.id;
+
+    return userMatchParticipant.id === nextPickerId;
+  }
 
   async function processMatch() {
     const bootstrap = await import("bootstrap");
 
-    // Check if the match is over
     if (!data.match.ongoing) {
-      if (activeModals.matchOver === null) {
-        activeModals.matchOver = new bootstrap.Modal("#matchOverModal");
-      }
-      await activeModals.roll?.hide();
-      await activeModals.pickMap?.hide();
-      return activeModals.matchOver.show();
-    }
-
-    // Hide match over modal if the match is ongoing
-    await activeModals.matchOver?.hide();
-
-    // Check if any participants need to roll
-    if (
-      !userDismissedRollModal &&
-      data.match.match_participants.some((mp) => mp.roll === null)
-    ) {
-      if (activeModals.roll === null) {
-        activeModals.roll = new bootstrap.Modal("#rollModal");
-      }
-      allRollsCompleted = false;
-      return activeModals.roll.show();
+      await handleMatchOverModal(bootstrap);
     } else {
-      allRollsCompleted = true;
-    }
+      await activeModals.matchOver?.hide();
 
-    // Only hide the roll modal if the user has dismissed it
-    if (userDismissedRollModal) {
-      await activeModals.roll?.hide();
-    }
-
-    // Check if the current user needs to pick a map
-    const lastMap = data.match.match_maps[data.match.match_maps.length - 1];
-    const userShouldPickMap =
-      data.match.ongoing &&
-      ((data.match.match_maps.length === 0 &&
-        data.match.match_participants.filter(
-          (mp) =>
-            mp.participants.teams.team_members.filter(
-              (tm) => tm.user_profiles.user_id == data.session.user.id
-            )[0]
-        )[0].roll >
-          data.match.match_participants.filter(
-            (mp) =>
-              !mp.participants.teams.team_members.filter(
-                (tm) => tm.user_profiles.user_id == data.session.user.id
-              )[0]
-          )[0].roll) ||
-        lastMap.status === "finished") &&
-      data.match.match_participants.some((mp) =>
-        mp.match_participant_players.some(
-          (mpp) =>
-            mpp.team_members.user_profiles.user_id === data.session.user.id &&
-            (!lastMap || lastMap.picked_by !== mp.id)
-        )
+      const allRollsCompleted = data.match.match_participants.every(
+        (mp) => mp.roll !== null
       );
 
-    if (userShouldPickMap) {
-      if (activeModals.pickMap === null) {
-        activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
-      }
-      // Ensure the roll modal is hidden before showing the pick map modal
-      await activeModals.roll?.hide();
-      return activeModals.pickMap.show();
-    }
+      const userIsHighestRoller =
+        allRollsCompleted &&
+        highestRoller !== null &&
+        data.match.match_participants.some(
+          (mp) =>
+            mp.participants.teams.team_members.some(
+              (tm) => tm.user_profiles.user_id == data.session.user.id
+            ) && mp.roll === highestRoller
+        );
 
-    await activeModals.pickMap?.hide();
+      if (!allRollsCompleted) {
+        // Keep the roll modal open until all rolls are done
+        await handleRollModal(bootstrap);
+        await hideModals(["pickMap"]);
+      }
+
+      if (await isNextPicker()) {
+        if (data.match.match_maps.length == 0 && !userIsHighestRoller) {
+          return;
+        }
+
+        await handlePickMapModal(bootstrap);
+        await hideModals(["roll"]);
+      }
+
+      if (
+        allRollsCompleted &&
+        (!userIsHighestRoller || !(await isNextPicker()))
+      ) {
+        await hideModals(["roll", "pickMap"]);
+      }
+    }
   }
 
+  let rollButtonDisabled = false;
   let socket: Socket;
 
   onMount(async () => {
@@ -99,6 +148,12 @@
     console.log("checking match");
 
     processMatch();
+
+    if (data.match.match_participants.every((mp) => mp.roll !== null)) {
+      highestRoller = Math.max(
+        ...data.match.match_participants.map((mp) => mp.roll ?? 0)
+      );
+    }
 
     await data.supabase
       .from("notifications")
@@ -132,6 +187,9 @@
 
     socket.on("match-participants-update", async () => {
       await updateMatchParticipantPlayers();
+      rollButtonDisabled = data.match.match_participants.every(
+        (mp) => mp.roll !== null
+      );
       await processMatch();
     });
 
@@ -717,24 +775,52 @@
                       activeModals.pickMap.hide();
 
                       const matchParticipant =
-                        data.match.match_participants.filter(
-                          (mp) =>
-                            mp.participants.teams.team_members.filter(
-                              (tm) =>
-                                tm.user_profiles.user_id == data.session.user.id
-                            )[0]
-                        )[0].id;
+                        data.match.match_participants.find((mp) =>
+                          mp.participants.teams.team_members.some(
+                            (tm) =>
+                              tm.user_profiles.user_id == data.session.user.id
+                          )
+                        );
+
+                      if (!matchParticipant) {
+                        console.error("User not part of this match");
+                        return;
+                      }
+
+                      if (!(await isNextPicker())) {
+                        console.log("It's not your turn to pick a map.");
+                        return;
+                      }
 
                       const existingMatchMap = await data.supabase
                         .from("match_maps")
                         .select("*")
                         .eq("match_id", data.match.id)
-                        .eq("map_pool_map_id", map.id)
-                        .maybeSingle();
+                        .order("created_at", { ascending: false })
+                        .limit(1);
 
-                      if (existingMatchMap.data) {
-                        console.log("Map already picked with ID: ", map.id);
-                        return;
+                      if (existingMatchMap.data.length > 0) {
+                        if (
+                          existingMatchMap.data[0].status != "finished" &&
+                          existingMatchMap.data[0].status != "aborted"
+                        ) {
+                          console.log(
+                            "Map already picked with ID: ",
+                            existingMatchMap.data[0].id
+                          );
+                          return;
+                        }
+
+                        if (
+                          existingMatchMap.data[0].picked_by ==
+                          matchParticipant.id
+                        ) {
+                          console.log(
+                            "Map already picked by you with ID: ",
+                            existingMatchMap.data[0].id
+                          );
+                          return;
+                        }
                       }
 
                       const matchMap = await data.supabase
@@ -743,7 +829,7 @@
                           map_pool_map_id: map.id,
                           match_id: data.match.id,
                           status: "waiting",
-                          picked_by: matchParticipant,
+                          picked_by: matchParticipant.id,
                         })
                         .select("id, map_pool_maps(maps(osu_id))")
                         .single();
@@ -881,6 +967,8 @@
                   socket.emit("match-participants-update", {
                     new: { id: data.match.id },
                   });
+
+                  await processMatch();
                 }}
               >
                 Roll
@@ -912,7 +1000,9 @@
       </div>
       {#if allRollsCompleted}
         <div class="modal-footer">
-          <button type="button" class="btn btn-success"> Close </button>
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+            Close
+          </button>
         </div>
       {/if}
     </div>
