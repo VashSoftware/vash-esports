@@ -47,6 +47,8 @@
   }
 
   async function updateQuickQueue() {
+    console.log("Updating quick queue");
+
     const quickQueue = await data.supabase
       .from("quick_queue")
       .select("*, teams(team_members(user_profiles(user_id)))")
@@ -62,12 +64,16 @@
   }
 
   async function updateMatchQueue() {
+    console.log("Updating match queue");
+
     const matchQueue = await data.supabase
       .from("match_queue")
       .select(
         "*, match(*, match_participants(*, match_participant_players(*, team_members( user_profiles(*, user_id)))))"
       )
       .not("position", "is", null);
+
+    data.matchQueue = matchQueue.data;
   }
 
   let socket: Socket;
@@ -93,6 +99,10 @@
       socket = io(PUBLIC_REALTIME_SERVER_DOMAIN);
 
       socket.emit("join-user", data.userProfile.data[0].id);
+
+      socket.on("connected", () => {
+        console.log("Connected to server");
+      });
 
       socket.on("notifications-update", async () => {
         await fetchNotifications();
@@ -212,6 +222,7 @@
       return {
         status: "quickQueue",
         text: "Queueing for an opponent...",
+        cancelFn: cancelQuickQueue,
       };
     }
 
@@ -219,6 +230,13 @@
   }
 
   async function cancelQuickQueue() {
+    await data.supabase
+      .from("quick_queue")
+      .delete()
+      .eq("id", data.quickQueue[0].id);
+
+    socket.emit("quick-queue-update");
+
     return true;
   }
 
@@ -249,11 +267,11 @@
       ? `/matches/${getBannerData()?.userOngoingMatches?.[0]?.id}/play`
       : null}
   >
-    <div class="banner">
+    <div class="banner d-flex align-items-center justify-content-center">
       <div class="banner-content text-center">
         <h3 class="fw-bold">{getBannerData().text}</h3>
 
-        {#if getBannerData().status != "activeMatch"}
+        {#if getBannerData().status == "matchQueue"}
           <button
             type="button"
             class="btn btn-sm mx-2"
@@ -274,7 +292,9 @@
               />
             </svg>
           </button>
+        {/if}
 
+        {#if getBannerData().status != "activeMatch"}
           <button
             on:click={getBannerData().cancelFn}
             class="btn btn-danger mx-2">Cancel</button
@@ -808,6 +828,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
   }
 
   .stripe-button-container {
