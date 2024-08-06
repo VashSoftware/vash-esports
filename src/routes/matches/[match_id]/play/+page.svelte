@@ -17,8 +17,10 @@
 
   let rollModalOver = false;
   let allRollsCompleted = false;
+  let rollButtonDisabled = false;
   let userDismissedRollModal = false;
   let highestRoller: number | null = null;
+  let userMustPickMap = false;
 
   async function handleMatchOverModal(bootstrap) {
     if (activeModals.matchOver === null) {
@@ -29,9 +31,6 @@
   }
 
   async function handlePickMapModal(bootstrap) {
-    if (activeModals.pickMap === null) {
-      activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
-    }
     await hideModals(["roll"]);
     return activeModals.pickMap.show();
   }
@@ -76,6 +75,7 @@
 
     // 1. If there are no match maps yet, it's the highest roller's turn
     if (existingMatchMap.data.length === 0) {
+      userMustPickMap = userMatchParticipant.roll === highestRoller;
       return userMatchParticipant.roll === highestRoller;
     }
 
@@ -91,11 +91,14 @@
 
     const nextPickerId = sortedParticipants[nextPickerIndex]?.id;
 
+    userMustPickMap = userMatchParticipant.id === nextPickerId;
     return userMatchParticipant.id === nextPickerId;
   }
 
   async function processMatch() {
     const bootstrap = await import("bootstrap");
+
+    activeModals.pickMap = new bootstrap.Modal("#pickMapModal");
 
     if (!data.match.ongoing) {
       await handleMatchOverModal(bootstrap);
@@ -140,7 +143,6 @@
     }
   }
 
-  let rollButtonDisabled = false;
   let socket: Socket;
 
   onMount(async () => {
@@ -575,9 +577,22 @@
 
 <div class="row shadow bg-body-tertiary rounded-5 py-4 mb-5">
   <div class="col">
-    <h1 class="text-center pb-3">
-      Maps Played ({data.match.match_maps.length})
-    </h1>
+    <div class="row pb-2">
+      <div class="col"></div>
+      <div class="col d-flex justify-content-center align-items-center">
+        <h1>
+          Maps Played ({data.match.match_maps.length})
+        </h1>
+      </div>
+
+      <div class="col d-flex justify-content-center align-items-center">
+        <button
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#pickMapModal">View Map Pool</button
+        >
+      </div>
+    </div>
 
     {#each data.match.match_maps as map}
       <div class="row py-1 align-items-center">
@@ -746,12 +761,14 @@
   tabindex="-1"
   aria-labelledby="staticBackdropLabel"
   aria-hidden="true"
-  data-bs-backdrop="static"
+  data-bs-backdrop={userMustPickMap ? "static" : true}
 >
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Pick a Map</h1>
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          {userMustPickMap ? "Pick a Map" : data.match.map_pools.name}
+        </h1>
       </div>
       <div class="modal-body text-center">
         {#each Object.entries(_.groupBy( data.match.map_pools.map_pool_maps.filter( (map) => {
@@ -759,7 +776,7 @@
                   if (data.match.tiebreaker) {
                     return true;
                   }
-                  return map.map_pool_map_mods[0].mods.id !== 12;
+                  return map.map_pool_map_mods[0].mods.code !== "TB";
                 }
                 return false;
               } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order_no - b[1][0].map_pool_map_mods[0].mods.order_no) as [modId, maps]}
@@ -770,89 +787,93 @@
                   <button
                     type="button"
                     class="position-relative rounded overflow-hidden w-100 h-100 border-0 p-0"
-                    style="height: 160px; cursor: pointer;"
-                    on:click={async () => {
-                      activeModals.pickMap.hide();
+                    style={`height: 160px; cursor: ${userMustPickMap ? "pointer" : "not-allowed"}; `}
+                    on:click={userMustPickMap
+                      ? async () => {
+                          activeModals.pickMap.hide();
 
-                      const matchParticipant =
-                        data.match.match_participants.find((mp) =>
-                          mp.participants.teams.team_members.some(
-                            (tm) =>
-                              tm.user_profiles.user_id == data.session.user.id
-                          )
-                        );
+                          const matchParticipant =
+                            data.match.match_participants.find((mp) =>
+                              mp.participants.teams.team_members.some(
+                                (tm) =>
+                                  tm.user_profiles.user_id ==
+                                  data.session.user.id
+                              )
+                            );
 
-                      if (!matchParticipant) {
-                        console.error("User not part of this match");
-                        return;
-                      }
+                          if (!matchParticipant) {
+                            console.error("User not part of this match");
+                            return;
+                          }
 
-                      if (!(await isNextPicker())) {
-                        console.log("It's not your turn to pick a map.");
-                        return;
-                      }
+                          if (!(await isNextPicker())) {
+                            console.log("It's not your turn to pick a map.");
+                            return;
+                          }
 
-                      const existingMatchMap = await data.supabase
-                        .from("match_maps")
-                        .select("*")
-                        .eq("match_id", data.match.id)
-                        .order("created_at", { ascending: false })
-                        .limit(1);
+                          const existingMatchMap = await data.supabase
+                            .from("match_maps")
+                            .select("*")
+                            .eq("match_id", data.match.id)
+                            .order("created_at", { ascending: false })
+                            .limit(1);
 
-                      if (existingMatchMap.data.length > 0) {
-                        if (
-                          existingMatchMap.data[0].status != "finished" &&
-                          existingMatchMap.data[0].status != "aborted"
-                        ) {
-                          console.log(
-                            "Map already picked with ID: ",
-                            existingMatchMap.data[0].id
-                          );
-                          return;
-                        }
+                          if (existingMatchMap.data.length > 0) {
+                            if (
+                              existingMatchMap.data[0].status != "finished" &&
+                              existingMatchMap.data[0].status != "aborted"
+                            ) {
+                              console.log(
+                                "Map already picked with ID: ",
+                                existingMatchMap.data[0].id
+                              );
+                              return;
+                            }
 
-                        if (
-                          existingMatchMap.data[0].picked_by ==
-                          matchParticipant.id
-                        ) {
-                          console.log(
-                            "Map already picked by you with ID: ",
-                            existingMatchMap.data[0].id
-                          );
-                          return;
-                        }
-                      }
+                            if (
+                              existingMatchMap.data[0].picked_by ==
+                              matchParticipant.id
+                            ) {
+                              console.log(
+                                "Map already picked by you with ID: ",
+                                existingMatchMap.data[0].id
+                              );
+                              return;
+                            }
+                          }
 
-                      const matchMap = await data.supabase
-                        .from("match_maps")
-                        .insert({
-                          map_pool_map_id: map.id,
-                          match_id: data.match.id,
-                          status: "waiting",
-                          picked_by: matchParticipant.id,
-                        })
-                        .select("id, map_pool_maps(maps(osu_id))")
-                        .single();
+                          const matchMap = await data.supabase
+                            .from("match_maps")
+                            .insert({
+                              map_pool_map_id: map.id,
+                              match_id: data.match.id,
+                              status: "waiting",
+                              picked_by: matchParticipant.id,
+                            })
+                            .select("id, map_pool_maps(maps(osu_id))")
+                            .single();
 
-                      const scores = [];
+                          const scores = [];
 
-                      for (const participant of data.match.match_participants) {
-                        for (const player of participant.match_participant_players) {
-                          scores.push({
-                            match_map_id: matchMap.data.id,
-                            match_participant_player_id: player.id,
+                          for (const participant of data.match
+                            .match_participants) {
+                            for (const player of participant.match_participant_players) {
+                              scores.push({
+                                match_map_id: matchMap.data.id,
+                                match_participant_player_id: player.id,
+                              });
+                            }
+                          }
+
+                          await data.supabase.from("scores").insert(scores);
+
+                          console.log("Picked map with ID: ", map.id);
+
+                          socket.emit("match-maps-update", {
+                            new: { id: data.match.id },
                           });
                         }
-                      }
-
-                      await data.supabase.from("scores").insert(scores);
-
-                      console.log("Picked map with ID: ", map.id);
-
-                      socket.emit("match-maps-update", {
-                        new: { id: data.match.id },
-                      });
-                    }}
+                      : null}
                   >
                     <img
                       class="img-fluid position-absolute top-0 start-0 w-100 h-100"
