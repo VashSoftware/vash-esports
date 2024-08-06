@@ -136,8 +136,8 @@
             >
             <td role="button" on:click={() => goto(`/events/${event.id}`)}>
               {event.participants.length}
-              {#if event.event_options.max_registrations}
-                / {event.event_options.max_registrations}{/if}</td
+              {#if event.event_options?.max_registrations}
+                / {event.event_options?.max_registrations}{/if}</td
             >
 
             <td class="align-middle text-end col-1">
