@@ -15,9 +15,10 @@ export const load: PageServerLoad = async ({ locals }) => {
   const events = await locals.supabase
     .from("events")
     .select(
-      `*, participants(teams(team_members( user_profiles(*)))), organisations(name), event_groups(*), event_options(*)`
+      `*, participants(teams(team_members( user_profiles(*)))), organisations(name), event_groups(*), event_options(*), event_statuses(*)`
     )
-    .neq("event_status_id", 1)
+    .eq("event_statuses.status", "Ongoing")
+    .eq("quick_event", false)
     .order("created_at", { ascending: false })
     .limit(10);
 
