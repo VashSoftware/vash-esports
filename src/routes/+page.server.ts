@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   const events = await locals.supabase
     .from("events")
     .select(
-      `*, participants(teams(team_members( user_profiles(*)))), organisations(name), event_groups(*), event_options(*), event_statuses(*)`
+      `*, participants(teams(team_members( user_profiles(*)))), organisations(name), event_groups(*), event_options(*), event_statuses!inner(*)`
     )
     .eq("event_statuses.status", "Ongoing")
     .eq("quick_event", false)
