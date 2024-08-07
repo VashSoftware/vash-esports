@@ -772,13 +772,10 @@
       </div>
       <div class="modal-body text-center">
         {#each Object.entries(_.groupBy( data.match.map_pools.map_pool_maps.filter( (map) => {
-                if (!data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id)) {
-                  if (data.match.tiebreaker) {
-                    return true;
-                  }
-                  return map.map_pool_map_mods[0].mods.code !== "TB";
+                if (data.match.tiebreaker) {
+                  return true;
                 }
-                return false;
+                return map.map_pool_map_mods[0].mods.code !== "TB";
               } ), (map) => map.map_pool_map_mods[0].mod_id )).sort((a, b) => a[1][0].map_pool_map_mods[0].mods.order_no - b[1][0].map_pool_map_mods[0].mods.order_no) as [modId, maps]}
           <div class="bg-body-tertiary shadow rounded my-4 p-3">
             <div class="row d-flex justify-content-center align-items-stretch">
@@ -787,8 +784,15 @@
                   <button
                     type="button"
                     class="position-relative rounded overflow-hidden w-100 h-100 border-0 p-0"
-                    style={`height: 160px; cursor: ${userMustPickMap ? "pointer" : "not-allowed"}; `}
-                    on:click={userMustPickMap
+                    style={`height: 160px; cursor: ${userMustPickMap && !data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id) ? "pointer" : "not-allowed"};`}
+                    disabled={!userMustPickMap ||
+                      data.match.match_maps.some(
+                        (matchMap) => matchMap.map_pool_map_id == map.id
+                      )}
+                    on:click={userMustPickMap &&
+                    !data.match.match_maps.some(
+                      (matchMap) => matchMap.map_pool_map_id == map.id
+                    )
                       ? async () => {
                           activeModals.pickMap.hide();
 
@@ -888,10 +892,10 @@
                       <div>
                         <input type="hidden" name="map-id" value={map.id} />
 
-                        <span class="fw-bold fs-4"
-                          >{map.map_pool_map_mods[0].mods.code ||
-                            "NM"}{map.mod_priority}</span
-                        >
+                        <span class="fw-bold fs-4">
+                          {map.map_pool_map_mods[0].mods.code ||
+                            "NM"}{map.mod_priority}
+                        </span>
                       </div>
                       <div
                         class="d-flex flex-column justify-content-center align-items-center flex-grow-1"
