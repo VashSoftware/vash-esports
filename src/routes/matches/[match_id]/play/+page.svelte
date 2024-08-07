@@ -312,6 +312,15 @@
         )
     ).data;
   }
+
+  function getMapPoolAverageSR() {
+    return (
+      data.match.map_pools.map_pool_maps.reduce(
+        (sum, map) => sum + map.maps.star_rating,
+        0
+      ) / data.match.map_pools.map_pool_maps.length
+    );
+  }
 </script>
 
 <!-- <div class="d-flex justify-content-center gap-3 my-4">
@@ -765,10 +774,12 @@
 >
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header d-flex justify-content-between">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">
           {userMustPickMap ? "Pick a Map" : data.match.map_pools.name}
         </h1>
+
+        <div>Average SR: {getMapPoolAverageSR().toFixed(2)}★</div>
       </div>
       <div class="modal-body text-center">
         {#each Object.entries(_.groupBy( data.match.map_pools.map_pool_maps.filter( (map) => {
