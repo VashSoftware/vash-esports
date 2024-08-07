@@ -185,6 +185,15 @@
   }
 
   let addModForm;
+
+  function getMapPoolAverageSR() {
+    return (
+      data.mapPool.map_pool_maps.reduce(
+        (sum, map) => sum + map.maps.star_rating,
+        0
+      ) / data.mapPool.map_pool_maps.length
+    );
+  }
 </script>
 
 <a href="/map-pools" type="button" class="btn btn-secondary my-4"
@@ -195,6 +204,7 @@
   <div>
     <h1>{data.mapPool.name || `Map Pool ${data.mapPool.id}`}</h1>
     <p>{data.mapPool.description || ""}</p>
+    <p>Average SR: {getMapPoolAverageSR().toFixed(2)}★</p>
   </div>
   <div>
     <button
