@@ -46,19 +46,13 @@
     data.ongoingMatches = ongoingMatchData.data;
   }
 
-  async function updateQuickQueue() {
+  export async function updateQuickQueue() {
     console.log("Updating quick queue");
 
     const quickQueue = await data.supabase
       .from("quick_queue")
       .select("*, teams(team_members(user_profiles(user_id)))")
       .not("position", "is", null);
-
-    // const userInQueue = soloQueue.data.some((queue) =>
-    //   queue.teams.team_members.some(
-    //     (tm) => tm.user_profiles.user_id == session?.user.id
-    //   )
-    // );
 
     data.quickQueue = quickQueue.data;
   }
@@ -69,7 +63,7 @@
     const matchQueue = await data.supabase
       .from("match_queue")
       .select(
-        "*, match(*, match_participants(*, match_participant_players(*, team_members( user_profiles(*, user_id)))))"
+        "*, matches(*, match_participants(*, match_participant_players(*, team_members( user_profiles(*, user_id)))))"
       )
       .not("position", "is", null);
 
@@ -177,12 +171,12 @@
     });
   }
 
-  function getBannerData() {
+  // Reactive statement to update bannerData when dependencies change
+  $: bannerData = (() => {
     const userOngoingMatches = data.ongoingMatches.filter((match) =>
       match.match_participants.some((mp) =>
         mp.match_participant_players.some(
           (mpp) =>
-            // @ts-ignore
             mpp.team_members.user_profiles.user_id == data.session?.user.id
         )
       )
@@ -194,9 +188,7 @@
         text: "You are in a match!",
         userOngoingMatches,
       };
-    }
-
-    if (
+    } else if (
       data.matchQueue.some((mq) =>
         mq.matches.match_participants.some((mp) =>
           mp.match_participant_players.some(
@@ -210,9 +202,7 @@
         status: "matchQueue",
         text: "Waiting for match to be created...",
       };
-    }
-
-    if (
+    } else if (
       data.quickQueue.some((queue) =>
         queue.teams.team_members.some(
           (tm) => tm.user_profiles.user_id == data.session?.user.id
@@ -224,10 +214,10 @@
         text: "Queueing for an opponent...",
         cancelFn: cancelQuickQueue,
       };
+    } else {
+      return false;
     }
-
-    return false;
-  }
+  })();
 
   async function cancelQuickQueue() {
     await data.supabase
@@ -260,18 +250,18 @@
   </a>
 {/if}
 
-{#if getBannerData() && $page.url.pathname !== `/matches/${getBannerData()?.userOngoingMatches?.[0]?.id}/play`}
+{#if bannerData && $page.url.pathname !== `/matches/${bannerData?.userOngoingMatches?.[0]?.id}/play`}
   <a
     class="banner-link"
-    href={getBannerData()?.status == "activeMatch"
-      ? `/matches/${getBannerData()?.userOngoingMatches?.[0]?.id}/play`
+    href={bannerData?.status == "activeMatch"
+      ? `/matches/${bannerData?.userOngoingMatches?.[0]?.id}/play`
       : null}
   >
     <div class="banner d-flex align-items-center justify-content-center">
       <div class="banner-content text-center">
-        <h3 class="fw-bold">{getBannerData().text}</h3>
+        <h3 class="fw-bold">{bannerData.text}</h3>
 
-        {#if getBannerData().status == "matchQueue"}
+        {#if bannerData.status == "matchQueue"}
           <button
             type="button"
             class="btn btn-sm mx-2"
@@ -284,7 +274,6 @@
               width="2em"
               height="2em"
               viewBox="0 0 24 24"
-              {...$$props}
             >
               <path
                 fill="currentColor"
@@ -294,10 +283,9 @@
           </button>
         {/if}
 
-        {#if getBannerData().status != "activeMatch"}
-          <button
-            on:click={getBannerData().cancelFn}
-            class="btn btn-danger mx-2">Cancel</button
+        {#if bannerData.status != "activeMatch"}
+          <button on:click={bannerData.cancelFn} class="btn btn-danger mx-2"
+            >Cancel</button
           >
         {/if}
       </div>
