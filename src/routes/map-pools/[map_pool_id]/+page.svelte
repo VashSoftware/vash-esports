@@ -40,12 +40,12 @@
       cell: (props) => {
         return props.row.original.mod_priority == 1
           ? renderComponent(MapPoolModAddButton, {
-              modId: props.row.original.map_pool_map_mods[0].mod_id,
+              modId: props.row.original.map_pool_map_mods[0]?.mod_id,
               modPriority:
                 data.mapPool.map_pool_maps.filter(
                   (map) =>
-                    map.map_pool_map_mods[0].mod_id ==
-                    props.row.original.map_pool_map_mods[0].mod_id
+                    map.map_pool_map_mods[0]?.mod_id ==
+                    props.row.original.map_pool_map_mods[0]?.mod_id
                 ).length + 1,
             })
           : "";
@@ -189,7 +189,7 @@
   function getMapPoolAverageSR() {
     return (
       data.mapPool.map_pool_maps.reduce(
-        (sum, map) => sum + map.maps.star_rating,
+        (sum, map) => sum + map.maps?.star_rating,
         0
       ) / data.mapPool.map_pool_maps.length
     );
