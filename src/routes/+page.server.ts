@@ -315,6 +315,127 @@ export const actions = {
       })
       .select("*");
 
+    const defaultMapPoolMaps = await locals.supabase
+      .from("map_pool_maps")
+      .insert([
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 1,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 2,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 3,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 4,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 1,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 2,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 1,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 2,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 1,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 2,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 1,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 2,
+        },
+        {
+          map_pool_id: mapPool.data[0].id,
+          mod_priority: 1,
+        },
+      ])
+      .select("*");
+
+    const mods = await locals.supabase.from("mods").select("*");
+
+    const mapMods = await locals.supabase
+      .from("map_pool_map_mods")
+      .insert([
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[0].id,
+          mod_id: mods.data.find((mod) => mod.code === null).id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[1].id,
+          mod_id: mods.data.find((mod) => mod.code === null).id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[2].id,
+          mod_id: mods.data.find((mod) => mod.code === null).id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[3].id,
+          mod_id: mods.data.find((mod) => mod.code === null).id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[4].id,
+          mod_id: mods.data.find((mod) => mod.code === "HD").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[5].id,
+          mod_id: mods.data.find((mod) => mod.code === "HD").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[6].id,
+          mod_id: mods.data.find((mod) => mod.code === "HR").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[7].id,
+          mod_id: mods.data.find((mod) => mod.code === "HR").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[8].id,
+          mod_id: mods.data.find((mod) => mod.code === "DT").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[9].id,
+          mod_id: mods.data.find((mod) => mod.code === "DT").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[10].id,
+          mod_id: mods.data.find((mod) => mod.code === "FM").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[11].id,
+          mod_id: mods.data.find((mod) => mod.code === "FM").id,
+        },
+        {
+          map_pool_map_id: defaultMapPoolMaps.data[12].id,
+          mod_id: mods.data.find((mod) => mod.code === "TB").id,
+        },
+      ])
+      .select("*");
+
+    console.dir(defaultMapPoolMaps);
+    console.dir(mapMods);
+
     if (mapPool.error) {
       return fail(500, {
         error: {
