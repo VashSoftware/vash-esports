@@ -147,12 +147,24 @@
         contentType: file.type,
       });
 
-    await data.supabase
+    const userProfile = await data.supabase
       .from("user_profiles")
       .update({
         picture_url: `https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/${upload.data.fullPath}`,
       })
-      .eq("id", $page.params.user_id);
+      .eq("id", $page.params.user_id)
+      .select("team_members(teams(*))");
+
+    const team = userProfile.data[0].team_members.find(
+      (teamMember) => teamMember.teams.is_personal_team
+    );
+
+    await data.supabase
+      .from("teams")
+      .update({
+        picture_url: `https://mdixwlzweijevgjmcsmt.supabase.co/storage/v1/object/public/${upload.data.fullPath}`,
+      })
+      .eq("id", team.teams.id);
 
     await data.supabase
       .from("teams")
