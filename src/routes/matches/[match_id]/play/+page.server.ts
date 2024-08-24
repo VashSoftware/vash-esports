@@ -45,7 +45,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
         ),
         scores(*,
           match_participant_players(*)
-        )
+        ),
+        match_participants(participants(teams(name)))
       ),
       match_bans(*,
         match_participants(*,

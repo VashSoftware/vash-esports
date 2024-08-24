@@ -684,22 +684,30 @@
                     {map.map_pool_maps.mod_priority}</span
                   >
                 </div>
-                <div>
+                <div class="d-flex justify-content-between">
                   <div>
-                    <b
-                      >{map.map_pool_maps.maps.mapsets.artist} - {map
-                        .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
-                        .maps.difficulty_name}]</b
-                    >
-                  </div>
+                    <div>
+                      <b
+                        >{map.map_pool_maps.maps.mapsets.artist} - {map
+                          .map_pool_maps.maps.mapsets.title} [{map.map_pool_maps
+                          .maps.difficulty_name}]</b
+                      >
+                    </div>
 
-                  <div>
-                    {map.map_pool_maps.maps.star_rating}★ | {formatTime(
-                      map.map_pool_maps.maps.mapsets.time
-                    )} | {map.map_pool_maps.maps.mapsets.bpm}BPM
+                    <div class="d-flex justify-content-around">
+                      <div>
+                        {map.map_pool_maps.maps.star_rating}★ | {formatTime(
+                          map.map_pool_maps.maps.mapsets.time
+                        )} | {map.map_pool_maps.maps.mapsets.bpm}BPM
+                      </div>
+
+                      <div>
+                        Picked by: {map.match_participants.participants.teams
+                          .name}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div></div>
               </div>
             </div>
           </div>
