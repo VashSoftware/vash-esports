@@ -29,6 +29,28 @@
         };
       };
     };
+    map_pool_maps: {
+      id: number;
+      map: {
+        id: number;
+        name: string;
+      };
+      map_pool: {
+        id: number;
+        name: string;
+      };
+      map_pool_map_mods: {
+        id: number;
+        map_pool_map: {
+          id: number;
+        };
+        mods: {
+          id: number;
+          name: string;
+          code: string;
+        };
+      }[];
+    }[];
   };
 
   const defaultColumns: ColumnDef<MapPool>[] = [
@@ -49,7 +71,22 @@
     },
     {
       accessorFn: (row) => {
-        return "6 / 3 / 3 / 3";
+        const modsMap = new Map<string, number>();
+
+        for (const maps of row.map_pool_maps) {
+          for (const map of maps.map_pool_map_mods) {
+            const modCode = map.mods.code || "NM";
+            if (modsMap.has(modCode)) {
+              modsMap.set(modCode, modsMap.get(modCode) + 1);
+            } else {
+              modsMap.set(modCode, 1);
+            }
+          }
+        }
+
+        return Array.from(modsMap.entries())
+          .map(([key, value]) => `${value} ${key}`)
+          .join(", ");
       },
       header: "Mod Counts",
       cell: (info) => info.getValue(),
