@@ -54,6 +54,7 @@ export const GET = async ({ url, locals: { supabase, getSession } }) => {
       .update({
         name: userProfile.data.name ? userProfile.data.name : osuData.username,
         country_code: osuData.country_code,
+        picture_url: osuData.avatar_url,
       })
       .eq("user_id", session.user.id)
       .select("id, user_id")
