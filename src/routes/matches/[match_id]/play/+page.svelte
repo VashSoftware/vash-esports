@@ -321,6 +321,12 @@
       ) / data.match.map_pools.map_pool_maps.length
     );
   }
+
+  function formatTime(time: number) {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  }
 </script>
 
 <!-- <div class="d-flex justify-content-center gap-3 my-4">
@@ -688,8 +694,9 @@
                   </div>
 
                   <div>
-                    {map.map_pool_maps.maps.star_rating}★ - {map.map_pool_maps
-                      .maps.mapsets.bpm}BPM
+                    {map.map_pool_maps.maps.star_rating}★ | {formatTime(
+                      map.map_pool_maps.maps.mapsets.time
+                    )} | {map.map_pool_maps.maps.mapsets.bpm}BPM
                   </div>
                 </div>
                 <div></div>
@@ -791,11 +798,11 @@
           <div class="bg-body-tertiary shadow rounded my-4 p-3">
             <div class="row d-flex justify-content-center align-items-stretch">
               {#each maps.sort((a, b) => a.mod_priority - b.mod_priority) as map}
-                <div class="col-12 col-md-2 d-flex">
+                <div class="col-12 col-md-3 d-flex">
                   <button
                     type="button"
                     class="position-relative rounded overflow-hidden w-100 h-100 border-0 p-0"
-                    style={`height: 160px; cursor: ${userMustPickMap && !data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id) ? "pointer" : "not-allowed"};`}
+                    style={`min-width: 200px; height: 160px; cursor: ${userMustPickMap && !data.match.match_maps.some((matchMap) => matchMap.map_pool_map_id == map.id) ? "pointer" : "not-allowed"};`}
                     disabled={!userMustPickMap ||
                       data.match.match_maps.some(
                         (matchMap) => matchMap.map_pool_map_id == map.id
@@ -898,7 +905,7 @@
                     />
                     <div
                       class="position-relative text-light p-2 d-flex flex-column justify-content-between"
-                      style="z-index: 1; background: rgba(0, 0, 0, 0.5); height: 160px;"
+                      style="z-index: 1; background: rgba(0, 0, 0, 0.5); height: 150px;"
                     >
                       <div>
                         <input type="hidden" name="map-id" value={map.id} />
@@ -917,6 +924,11 @@
                         >
                           {getShortenedMapName(map)}
                         </div>
+                        <small class="my-2"
+                          >{map.maps.star_rating}★ | {formatTime(
+                            map.maps.mapsets.time
+                          )} | {map.maps.mapsets.bpm}BPM</small
+                        >
                       </div>
                     </div>
                   </button>
