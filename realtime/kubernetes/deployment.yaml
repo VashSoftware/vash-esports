@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esports-realtime-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: esports-realtime
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esports-realtime
+    spec:
+      containers:
+      - name: esports-realtime
+        image: europe-docker.pkg.dev/vash-esports/esports-realtime/esports-realtime
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 3001
+        volumeMounts:
+        - name: tls-certs
+          mountPath: "/etc/tls"
+          readOnly: true
+        env:
+        - name: CORS_ORIGIN
+          valueFrom:
+            configMapKeyRef:
+              name: esports-realtime-config
+              key: CORS_ORIGIN
+        - name: SUPABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: esports-realtime-config
+              key: SUPABASE_URL
+        - name: SUPABASE_SERVICE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: esports-realtime-secret
+              key: SUPABASE_SERVICE_KEY
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: tls-secret

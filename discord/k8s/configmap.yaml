@@ -1,0 +1,10 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: discord-config
+  namespace: default
+data:
+  SUPABASE_URL: https://mdixwlzweijevgjmcsmt.supabase.co
+  SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kaXh3bHp3ZWlqZXZnam1jc210Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIwMzQyNDcsImV4cCI6MjAwNzYxMDI0N30.a8SWatAgGUn8MDCSVcjEdNhlEJum177aIVQnxVZaY8w
+  DISCORD_CLIENT_ID: "657086823482523669"
+  DISCORD_GUILD_ID: "639921094974898176"

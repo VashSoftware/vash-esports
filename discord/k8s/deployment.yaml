@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  discord-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: discord
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  discord
+    spec:
+      containers:
+      - name:  discord
+        image:  europe-docker.pkg.dev/vash-esports/discord/discord:1.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        env:
+        - name: SUPABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: discord-config
+              key: SUPABASE_URL
+        - name: SUPABASE_ANON_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: discord-config
+              key: SUPABASE_ANON_KEY
+        - name: DISCORD_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: discord-config
+              key: DISCORD_CLIENT_ID
+        - name: DISCORD_GUILD_ID
+          valueFrom:
+            configMapKeyRef:
+              name: discord-config
+              key: DISCORD_GUILD_ID
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: discord-secret
+              key: DISCORD_TOKEN
+        ports:
+        - containerPort:  3000
+          name:  discord
+      restartPolicy: Always
