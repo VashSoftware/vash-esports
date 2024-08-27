@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: osu-server-service
+spec:
+  selector:
+    app: osu-server
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000 

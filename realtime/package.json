@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.44.4",
+    "express": "^4.19.2",
+    "http2": "^3.3.7",
+    "socket.io": "^4.7.5"
+  },
+  "name": "esports-realtime",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

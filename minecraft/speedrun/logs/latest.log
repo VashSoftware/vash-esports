@@ -1,0 +1,85 @@
+[01:48:27] [Paper Plugin Remapper Thread - 1/INFO]: [PluginRemapper] Remapping plugin 'cache/spark.jar'...
+[01:48:28] [Paper Plugin Remapper Thread - 1/INFO]: [PluginRemapper] Done remapping plugin 'cache/spark.jar' in 806ms.
+[01:48:30] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[01:48:30] [ServerMain/INFO]: Found new data pack file/bukkit, loading it automatically
+[01:48:30] [ServerMain/INFO]: Found new data pack paper, loading it automatically
+[01:48:31] [ServerMain/INFO]: No existing world data, creating new world
+[01:48:31] [ServerMain/INFO]: Loaded 1175 recipes
+[01:48:31] [ServerMain/INFO]: Loaded 1276 advancements
+[01:48:31] [Server thread/INFO]: Starting minecraft server version 1.20.6
+[01:48:31] [Server thread/INFO]: Loading properties
+[01:48:31] [Server thread/INFO]: This server is running Purpur version 1.20.6-2233-ver/1.20.6@0d6766e (2024-06-18T04:01:10Z) (Implementing API version 1.20.6-R0.1-SNAPSHOT)
+[01:48:32] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[01:48:32] [Server thread/INFO]: Using 4 threads for Netty based IO
+[01:48:32] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using 1 I/O threads, 3 worker threads, and gen parallelism of 3 threads
+[01:48:32] [Server thread/INFO]: Default game type: SURVIVAL
+[01:48:32] [Server thread/INFO]: Generating keypair
+[01:48:32] [Server thread/INFO]: Starting Minecraft server on *:25565
+[01:48:32] [Server thread/INFO]: Using default channel type
+[01:48:32] [Server thread/INFO]: Paper: Using libdeflate (macOS ARM64 / Apple Silicon) compression from Velocity.
+[01:48:32] [Server thread/INFO]: Paper: Using native (macOS ARM64 / Apple Silicon) cipher from Velocity.
+[01:48:33] [Server thread/INFO]: [spark] Loading server plugin spark v1.10.81
+[01:48:33] [Server thread/INFO]: Preparing level "world"
+[01:48:36] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[01:48:38] [Server thread/INFO]: Time elapsed: 2046 ms
+[01:48:38] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
+[01:48:39] [Server thread/INFO]: Time elapsed: 675 ms
+[01:48:39] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[01:48:39] [Server thread/INFO]: Time elapsed: 146 ms
+[01:48:39] [Server thread/INFO]: [spark] Enabling spark v1.10.81
+[01:48:40] [Server thread/INFO]: [spark] Using Paper ServerTickStartEvent for tick monitoring
+[01:48:40] [Server thread/INFO]: [spark] Starting background profiler...
+[01:48:41] [Server thread/INFO]: Running delayed init tasks
+[01:48:41] [Server thread/INFO]: Done (9.660s)! For help, type "help"
+[01:48:41] [Server thread/INFO]: *************************************************************************************
+[01:48:41] [Server thread/INFO]: This is the first time you're starting this server.
+[01:48:41] [Server thread/INFO]: It's recommended you read our 'Getting Started' documentation for guidance.
+[01:48:41] [Server thread/INFO]: View this and more helpful information here: https://docs.papermc.io/paper/next-steps
+[01:48:41] [Server thread/INFO]: *************************************************************************************
+[01:49:54] [Server console handler/ERROR]: Caught previously unhandled exception :
+java.io.IOError: java.io.IOException: Input/output error
+	at org.jline.keymap.BindingReader.readCharacter(BindingReader.java:170) ~[jline-reader-3.20.0.jar:?]
+	at org.jline.keymap.BindingReader.readBinding(BindingReader.java:110) ~[jline-reader-3.20.0.jar:?]
+	at org.jline.keymap.BindingReader.readBinding(BindingReader.java:61) ~[jline-reader-3.20.0.jar:?]
+	at org.jline.reader.impl.LineReaderImpl.doReadBinding(LineReaderImpl.java:923) ~[jline-reader-3.20.0.jar:?]
+	at org.jline.reader.impl.LineReaderImpl.readBinding(LineReaderImpl.java:956) ~[jline-reader-3.20.0.jar:?]
+	at org.jline.reader.impl.LineReaderImpl.readLine(LineReaderImpl.java:651) ~[jline-reader-3.20.0.jar:?]
+	at org.jline.reader.impl.LineReaderImpl.readLine(LineReaderImpl.java:468) ~[jline-reader-3.20.0.jar:?]
+	at net.minecrell.terminalconsole.SimpleTerminalConsole.readCommands(SimpleTerminalConsole.java:158) ~[terminalconsoleappender-1.3.0.jar:?]
+	at net.minecrell.terminalconsole.SimpleTerminalConsole.start(SimpleTerminalConsole.java:141) ~[terminalconsoleappender-1.3.0.jar:?]
+	at net.minecraft.server.dedicated.DedicatedServer$1.run(DedicatedServer.java:114) ~[purpur-1.20.6.jar:1.20.6-2233-0d6766e]
+Caused by: java.io.IOException: Input/output error
+	at java.base/java.io.FileInputStream.read0(Native Method) ~[?:?]
+	at java.base/java.io.FileInputStream.read(FileInputStream.java:231) ~[?:?]
+	at org.jline.terminal.impl.AbstractPty$PtyInputStream.read(AbstractPty.java:73) ~[jline-terminal-3.21.0.jar:?]
+	at org.jline.utils.NonBlockingInputStream.read(NonBlockingInputStream.java:62) ~[jline-terminal-3.21.0.jar:?]
+	at org.jline.utils.NonBlocking$NonBlockingInputStreamReader.read(NonBlocking.java:168) ~[jline-terminal-3.21.0.jar:?]
+	at org.jline.utils.NonBlockingReader.read(NonBlockingReader.java:57) ~[jline-terminal-3.21.0.jar:?]
+	at org.jline.keymap.BindingReader.readCharacter(BindingReader.java:160) ~[jline-reader-3.20.0.jar:?]
+	... 9 more
+[01:49:54] [Server thread/INFO]: Stopping server
+[01:49:54] [Server thread/INFO]: [spark] Disabling spark v1.10.81
+[01:49:54] [Server thread/INFO]: Saving players
+[01:49:54] [Server thread/INFO]: Saving worlds
+[01:49:54] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[01:49:54] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world'
+[01:49:54] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world'
+[01:49:54] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world'
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Saved 841 block chunks, 49 entity chunks, 0 poi chunks in world 'world' in 0,43s
+[01:49:55] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[01:49:55] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_nether]'/minecraft:the_nether
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_nether'
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_nether'
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_nether'
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Saved 841 block chunks, 49 entity chunks, 0 poi chunks in world 'world_nether' in 0,16s
+[01:49:55] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[01:49:55] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_the_end]'/minecraft:the_end
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_the_end'
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_the_end'
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_the_end'
+[01:49:55] [Server thread/INFO]: [ChunkHolderManager] Saved 841 block chunks, 49 entity chunks, 0 poi chunks in world 'world_the_end' in 0,13s
+[01:49:55] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[01:49:55] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[01:49:55] [Server thread/INFO]: Flushing Chunk IO
+[01:49:55] [Server thread/INFO]: Closing Thread Pool
+[01:49:55] [Server thread/INFO]: Closing Server

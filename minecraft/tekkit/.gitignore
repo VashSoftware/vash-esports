@@ -1,0 +1,15 @@
+# Ignore Tekkit server files and directories
+/cache/
+/logs/
+/world/
+/world_nether/
+/world_the_end/
+/plugins/
+/updates/
+/banned-ips.txt
+/banned-players.txt
+/ops.txt
+/whitelist.txt
+/crash-reports/
+*.log
+*.log.ick

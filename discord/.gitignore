@@ -1,0 +1,18 @@
+# Config files
+config.json
+config-prod.json
+keyfile.json
+.env
+
+# Dependencies
+node_modules
+
+# Target
+target
+
+# Developer files
+.idea
+.fleet
+.vscode
+
+k8s/secret.yaml

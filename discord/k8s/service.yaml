@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: discord-service
+  namespace: default
+spec:
+  selector:
+    app: discord
+  type: LoadBalancer
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 3000

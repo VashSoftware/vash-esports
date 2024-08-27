@@ -1,0 +1,11 @@
+# Config files
+config.json
+config-prod.json
+keyfile.json
+.env
+
+# Dependencies
+node_modules
+
+# Developer files
+.idea
