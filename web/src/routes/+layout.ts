@@ -11,10 +11,6 @@ import {
 } from "@supabase/ssr";
 import { dev } from "$app/environment";
 
-import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
-
-injectSpeedInsights();
-
 export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   depends("supabase:auth");
 
