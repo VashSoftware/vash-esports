@@ -1,41 +1,66 @@
 services:
+  web:
+    build: ./web
+    networks:
+      - webnet
+    environment:
+      - PUBLIC_OSU_CLIENT_ID=${OSU_CLIENT_ID}
+      - OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
+      - PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+      - PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_SERVICE_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+
+  realtime:
+    build: ./realtime
+    networks:
+      - webnet
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+
+  osu-server:
+    build: ./osu-server
+    networks:
+      - webnet
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - OSU_USERNAME=${OSU_USERNAME}
+      - OSU_API_KEY=${OSU_API_KEY}
+      - OSU_IRC_KEY=${OSU_IRC_KEY}
+      - OSU_CLIENT_ID=${OSU_CLIENT_ID}
+      - OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
+
   nginx:
     image: nginx:latest
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./html:/usr/share/nginx/html
-      - /etc/letsencrypt:/etc/letsencrypt # Mount certificates
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./esports.conf:/etc/nginx/conf.d/esports.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - certbot
     networks:
       - webnet
-
-  web:
-    build: ./web
-    networks:
-      - webnet
-
-  realtime:
-    build: ./realtime
-    networks:
-      - webnet
-
-  osu-server:
-    build: ./osu-server
-    networks:
-      - webnet
-
-  # discord:
-  #   build: ./discord
 
   certbot:
     image: certbot/certbot
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
-      - /var/lib/letsencrypt:/var/lib/letsencrypt
       - ./html:/var/www/html
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'
+    entrypoint: "/bin/sh -c"
+    command: |
+      "trap exit TERM; 
+      while :; 
+      do certbot certonly --webroot -w /var/www/html \
+      -d esports.vash.software --email stan@vash.software --agree-tos --non-interactive \
+      --rsa-key-size 4096 --no-eff-email --force-renewal; 
+      sleep 12h & wait $${!}; 
+      done"
     networks:
       - webnet
 

@@ -18,7 +18,7 @@ await banchoClient.connect();
 
 console.log("Connected to Bancho");
 
-const socket = io(process.env.REALTIME_SERVER_DOMAIN!, {
+const socket = io("realtime", {
   transports: ["websocket"],
 });
 
@@ -45,7 +45,7 @@ socket.on("reconnect", (attemptNumber) => {
 
 const supabase: SupabaseClient = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_KEY!
 );
 
 const ongoingMatches = await supabase

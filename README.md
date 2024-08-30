@@ -25,7 +25,15 @@ Vash Esports is a platform for hosting esports tournaments and matchmaking. Init
    cd vash-esports
    ```
 
-2. **Build and Run**
+2. **Enter Environment Variables**
+
+   Rename `.env.example` to `.env` and fill in the necessary environment variables.
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Build and Run**
 
    Ensure Docker and Docker Compose are installed. Run the following command to build and start all services:
 
@@ -33,7 +41,7 @@ Vash Esports is a platform for hosting esports tournaments and matchmaking. Init
    docker-compose up --build
    ```
 
-3. **Access the App**
+4. **Access the App**
 
    - Web App: [http://localhost:5173](http://localhost:5173)
    - Supabase Studio: [http://localhost:54321](http://localhost:54321)

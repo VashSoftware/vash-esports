@@ -1,7 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 import express from "express";
-import { readFileSync } from "fs";
-import { createServer } from "https";
 import http from "http";
 import { Server } from "socket.io";
 import { handleMapPoolUpdate } from "./events/mapPoolUpdate";
@@ -21,14 +19,9 @@ const supabase = createClient(
 
 const app = express();
 
-// const httpsServer = createServer({
-//   key: readFileSync("/etc/tls/tls.key"),
-//   cert: readFileSync("/etc/tls/tls.crt"),
-// });
+const httpServer = http.createServer();
 
-const httpsServer = http.createServer();
-
-const io = new Server(httpsServer, {
+const io = new Server(httpServer, {
   cors: {
     origin: "*",
   },
@@ -93,6 +86,6 @@ io.on("connection", (socket) => {
   });
 });
 
-httpsServer.listen(3001, () => {
+httpServer.listen(3001, () => {
   console.log("Server is listening on port 3001");
 });
