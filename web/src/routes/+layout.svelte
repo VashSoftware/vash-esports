@@ -6,7 +6,6 @@
   import { invalidate } from "$app/navigation";
   import { browser } from "$app/environment";
   import { io, Socket } from "socket.io-client";
-  import { PUBLIC_REALTIME_SERVER_DOMAIN } from "$env/static/public";
 
   export let data: LayoutData;
 
@@ -90,7 +89,7 @@
 
       subscription.unsubscribe();
 
-      socket = io(PUBLIC_REALTIME_SERVER_DOMAIN);
+      socket = io("/realtime");
 
       socket.emit("join-user", data.userProfile.data[0].id);
 

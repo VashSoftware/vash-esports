@@ -5,7 +5,6 @@
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
   import { io, Socket } from "socket.io-client";
-  import { PUBLIC_REALTIME_SERVER_DOMAIN } from "$env/static/public";
 
   export let data;
 
@@ -173,7 +172,7 @@
         )[0].participants.teams.team_members[0].user_profiles.id
       );
 
-    socket = io(PUBLIC_REALTIME_SERVER_DOMAIN);
+    socket = io("/realtime");
 
     socket.emit("join-match", data.match.id);
 

@@ -1,4 +1,3 @@
-import { PUBLIC_OSU_SERVER_ENDPOINT } from "$env/static/public";
 import type { Actions, PageServerLoad } from "./$types";
 import { redirect } from "@sveltejs/kit";
 import _ from "lodash";
@@ -120,7 +119,7 @@ export const actions = {
       .select("*")
       .single();
 
-    await fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
+    await fetch("/osu/send-messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -150,7 +149,7 @@ export const actions = {
       .eq("id", matchParticipantPlayerId)
       .single();
 
-    await fetch(PUBLIC_OSU_SERVER_ENDPOINT + "/send-messages", {
+    await fetch("/osu/send-messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
