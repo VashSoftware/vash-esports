@@ -53,8 +53,12 @@ const ongoingMatches = await supabase
   .select("*")
   .eq("ongoing", true);
 
-for (const match of ongoingMatches.data!) {
-  createMatch(match.id, banchoClient, supabase, socket);
+if (ongoingMatches.error) {
+  console.error("Error fetching ongoing matches:", ongoingMatches.error);
+} else {
+  for (const match of ongoingMatches.data!) {
+    createMatch(match.id, banchoClient, supabase, socket);
+  }
 }
 
 async function canMakeMatch(supabase: SupabaseClient) {
