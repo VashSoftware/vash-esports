@@ -1,33 +1,36 @@
-# Use the official Bun image
-FROM oven/bun:1 as base
-WORKDIR /usr/src/app
+# Start with the official Golang image to build the application
+FROM golang:1.21-alpine AS builder
 
-# Install dependencies into temp directory (cache them to speed up future builds)
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+# Set the working directory inside the container
+WORKDIR /app
 
-# Install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+# Copy go.mod and go.sum files to the container
+COPY go.mod go.sum ./
 
-# Copy node_modules from temp directory and project files into the image
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
-COPY . .
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
 
-# [optional] Tests & build
-ENV NODE_ENV=production
-# RUN bun test
-# RUN bun run build
+# Copy the source code to the container
+COPY src/ ./src/
 
-# Copy production dependencies and source code into final image
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY . .
+# Build the Go server
+RUN go build -o main ./src/main.go
 
-# Run the app
-USER bun
-ENTRYPOINT [ "bun", "run", "src/index.ts" ]
+# Start a new stage from scratch
+FROM alpine:latest
+
+# Set the timezone
+RUN apk --no-cache add tzdata
+
+# Set the working directory inside the container
+WORKDIR /root/
+
+# Copy the binary from the builder stage
+COPY --from=builder /app/main .
+COPY --from=builder /app/.env .
+
+# Expose port 8080 to the outside world
+EXPOSE 8080
+
+# Command to run the executable
+CMD ["./main"]
