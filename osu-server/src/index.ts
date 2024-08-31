@@ -18,9 +18,7 @@ await banchoClient.connect();
 
 console.log("Connected to Bancho");
 
-const socket = io("realtime", {
-  transports: ["websocket"],
-});
+const socket = io("realtime");
 
 socket.on("connect", () => {
   console.log("Connected to Realtime Server");

@@ -1,4 +1,24 @@
 services:
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./html:/var/www/html
+    entrypoint: "/bin/sh -c"
+    command: |
+      trap exit TERM; 
+      while :; 
+      do certbot certonly --webroot -w /var/www/html \
+      --config-dir /etc/letsencrypt/config \
+      --work-dir /etc/letsencrypt/work \
+      --logs-dir /etc/letsencrypt/logs \
+      -d esports.vash.software --email stan@vash.software --agree-tos --non-interactive \
+      --rsa-key-size 4096 --no-eff-email --force-renewal; 
+      sleep 12h & wait $${!}; 
+      done
+    networks:
+      - webnet
+
   web:
     build: ./web
     networks:
@@ -11,6 +31,10 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+    develop:
+      watch:
+        - path: ./web
+          action: rebuild
 
   realtime:
     build: ./realtime
@@ -19,6 +43,10 @@ services:
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    develop:
+      watch:
+        - path: ./realtime
+          action: rebuild
 
   osu-server:
     build: ./osu-server
@@ -32,6 +60,10 @@ services:
       - OSU_IRC_KEY=${OSU_IRC_KEY}
       - OSU_CLIENT_ID=${OSU_CLIENT_ID}
       - OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
+    develop:
+      watch:
+        - path: ./osu-server
+          action: rebuild
 
   nginx:
     image: nginx:latest
@@ -41,28 +73,17 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./esports.conf:/etc/nginx/conf.d/esports.conf
-      - /etc/letsencrypt:/etc/letsencrypt
+      - ./letsencrypt:/etc/letsencrypt
     depends_on:
       - certbot
+    entrypoint: /bin/sh -c "while [ ! -f /etc/letsencrypt/live/esports.vash.software/fullchain.pem ]; do echo 'Waiting for SSL certificates...'; sleep 5; done && nginx -g 'daemon off;'"
     networks:
       - webnet
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-      - ./html:/var/www/html
-    entrypoint: "/bin/sh -c"
-    command: |
-      "trap exit TERM; 
-      while :; 
-      do certbot certonly --webroot -w /var/www/html \
-      -d esports.vash.software --email stan@vash.software --agree-tos --non-interactive \
-      --rsa-key-size 4096 --no-eff-email --force-renewal; 
-      sleep 12h & wait $${!}; 
-      done"
-    networks:
-      - webnet
+    develop:
+      watch:
+        - path: ./nginx.conf
+          action: sync+restart
+          target: /etc/nginx/nginx.conf
 
 networks:
   webnet:

@@ -1,56 +1,55 @@
-# Stage 1: Build the application
-FROM node:18 AS builder
-
-# Set the working directory
+# Use the official Bun image
+FROM oven/bun:canary AS base
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (or yarn.lock) first
-COPY package*.json ./
+# Install Python and other build dependencies
+RUN apt-get update && apt-get install -y python3 build-essential liblzma-dev
 
-# Install dependencies
-RUN npm install
+# Install dependencies into a temp directory
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lockb /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Copy the rest of the application code
+# Install with --production (exclude devDependencies)
+RUN mkdir -p /temp/prod
+COPY package.json bun.lockb /temp/prod/
+RUN cd /temp/prod && bun install --production --frozen-lockfile
+
+# Copy node_modules from the temp directory
+FROM base AS prerelease
+COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 # Set environment variables for the build process
-ARG PUBLIC_OSU_CLIENT_ID
-ARG OSU_CLIENT_SECRET
-ARG PUBLIC_SUPABASE_URL
-ARG PUBLIC_SUPABASE_ANON_KEY
-ARG JWT_SECRET
-ARG PUBLIC_DISCORD_CLIENT_ID
-ARG DISCORD_CLIENT_SECRET
-
-ENV PUBLIC_OSU_CLIENT_ID=${PUBLIC_OSU_CLIENT_ID}
+ENV PUBLIC_OSU_CLIENT_ID=${OSU_CLIENT_ID}
 ENV OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
-ENV PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
-ENV PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+ENV PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+ENV PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_SERVICE_KEY}
 ENV JWT_SECRET=${JWT_SECRET}
-ENV PUBLIC_DISCORD_CLIENT_ID=${PUBLIC_DISCORD_CLIENT_ID}
+ENV PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
 ENV DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
 
-# Build the application
-RUN npm run build
+# [Optional] Tests & build
+# RUN bun test
+RUN bun run build
 
-# Stage 2: Serve the application
-FROM node:18 AS runtime
+# Copy production dependencies and source code into the final image
+FROM base AS release
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/app/build build
+COPY --from=prerelease /usr/src/app/package.json .
 
-# Set the working directory
-WORKDIR /usr/src/app
+# Set environment variables for the runtime process
+ENV PUBLIC_OSU_CLIENT_ID=${OSU_CLIENT_ID}
+ENV OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
+ENV PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+ENV PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_SERVICE_KEY}
+ENV JWT_SECRET=${JWT_SECRET}
+ENV PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
+ENV DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
 
-# Copy only the necessary files from the build stage
-COPY --from=builder /usr/src/app/build /usr/src/app/build
-COPY --from=builder /usr/src/app/package*.json ./
-
-# Install only production dependencies
-RUN npm install --only=production
-
-# Use a lightweight server to serve the built files
-RUN npm install -g serve
-
-# Expose the port the app runs on
-EXPOSE 3000
-
-# Start the application using a static file server
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Run the app
+USER bun
+EXPOSE 5173/tcp
+ENTRYPOINT [ "bun", "run", "build/index.js" ]

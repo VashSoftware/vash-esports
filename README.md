@@ -38,7 +38,7 @@ Vash Esports is a platform for hosting esports tournaments and matchmaking. Init
    Ensure Docker and Docker Compose are installed. Run the following command to build and start all services:
 
    ```bash
-   docker-compose up --build
+   docker compose up --watch
    ```
 
 4. **Access the App**
