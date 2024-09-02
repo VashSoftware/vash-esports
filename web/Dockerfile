@@ -1,20 +1,20 @@
-# Use the official Bun image
-FROM oven/bun:canary AS base
+# Use the official Node.js image
+FROM node:18-alpine AS base
 WORKDIR /usr/src/app
 
 # Install Python and other build dependencies
-RUN apt-get update && apt-get install -y python3 build-essential liblzma-dev
+RUN apk add --no-cache python3 make g++ libc6-compat
 
 # Install dependencies into a temp directory
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+COPY package.json package-lock.json* /temp/dev/
+RUN cd /temp/dev && npm ci
 
-# Install with --production (exclude devDependencies)
+# Install production dependencies
 RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
-RUN cd /temp/prod && bun install --production --frozen-lockfile
+COPY package.json package-lock.json* /temp/prod/
+RUN cd /temp/prod && npm ci --only=production
 
 # Copy node_modules from the temp directory
 FROM base AS prerelease
@@ -31,8 +31,8 @@ ENV PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
 ENV DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
 
 # [Optional] Tests & build
-# RUN bun test
-RUN bun run build
+# RUN npm test
+RUN npm run build
 
 # Copy production dependencies and source code into the final image
 FROM base AS release
@@ -50,6 +50,6 @@ ENV PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
 ENV DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
 
 # Run the app
-USER bun
-EXPOSE 5173/tcp
-ENTRYPOINT [ "bun", "run", "build/index.js" ]
+USER node
+EXPOSE 5173
+CMD [ "node", "build/index.js" ]

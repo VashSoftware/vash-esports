@@ -31,18 +31,22 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+    ports:
+      - "5173:5173"
     develop:
       watch:
         - path: ./web
           action: rebuild
 
-  realtime:
+  socket.io:
     build: ./realtime
     networks:
       - webnet
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    ports:
+      - "3001:3001"
     develop:
       watch:
         - path: ./realtime
@@ -60,6 +64,8 @@ services:
       - OSU_IRC_KEY=${OSU_IRC_KEY}
       - OSU_CLIENT_ID=${OSU_CLIENT_ID}
       - OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
+    ports:
+      - "3000:3000"
     develop:
       watch:
         - path: ./osu-server
@@ -76,6 +82,9 @@ services:
       - ./letsencrypt:/etc/letsencrypt
     depends_on:
       - certbot
+      - socket.io
+      - osu-server
+      - web
     entrypoint: /bin/sh -c "while [ ! -f /etc/letsencrypt/live/esports.vash.software/fullchain.pem ]; do echo 'Waiting for SSL certificates...'; sleep 5; done && nginx -g 'daemon off;'"
     networks:
       - webnet
@@ -84,6 +93,9 @@ services:
         - path: ./nginx.conf
           action: sync+restart
           target: /etc/nginx/nginx.conf
+        - path: ./esports.conf
+          action: sync+restart
+          target: /etc/nginx/conf.d/esports.conf
 
 networks:
   webnet:

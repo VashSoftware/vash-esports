@@ -18,14 +18,12 @@ await banchoClient.connect();
 
 console.log("Connected to Bancho");
 
-const socket = io("realtime");
-
-socket.on("connect", () => {
-  console.log("Connected to Realtime Server");
+const socket = io("http://socket.io:3001", {
+  transports: ["websocket"],
 });
 
 socket.on("connect", () => {
-  console.log("Connected to Realtime Server - ID:", socket.id); // Log the socket ID
+  console.log("Connected to Realtime Server - ID:", socket.id);
 });
 
 socket.on("connect_error", (error) => {
@@ -33,12 +31,25 @@ socket.on("connect_error", (error) => {
 });
 
 socket.on("disconnect", (reason) => {
-  console.warn("Socket.IO disconnected:", reason); // Add 'disconnect' handler
+  console.warn("Socket.IO disconnected:", reason);
+  // Attempt to reconnect
   socket.connect();
+});
+
+socket.on("reconnect_attempt", (attemptNumber) => {
+  console.log("Attempting to reconnect:", attemptNumber);
 });
 
 socket.on("reconnect", (attemptNumber) => {
   console.log("Socket.IO reconnected after", attemptNumber, "attempts");
+});
+
+socket.on("reconnect_error", (error) => {
+  console.error("Socket.IO reconnection error:", error);
+});
+
+socket.on("reconnect_failed", () => {
+  console.error("Socket.IO reconnection failed");
 });
 
 const supabase: SupabaseClient = createClient(

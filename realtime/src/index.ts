@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import express from "express";
-import http from "http";
+import { createServer } from "http";
+
 import { Server } from "socket.io";
 import { handleMapPoolUpdate } from "./events/mapPoolUpdate";
 import { handleMatchesUpdate } from "./events/matchesUpdate";
@@ -17,18 +17,11 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const app = express();
-
-const httpServer = http.createServer();
-
+const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
   },
-});
-
-app.get("/healthz", (req, res) => {
-  res.status(200).send("OK");
 });
 
 io.on("connection", (socket) => {
@@ -86,6 +79,4 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(3001, () => {
-  console.log("Server is listening on port 3001");
-});
+httpServer.listen(3001);
