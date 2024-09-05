@@ -132,7 +132,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     organisations: organisations.data,
     notifications: notifications.data ?? [],
     ongoingMatches: ongoingMatches?.data,
-    announcement: announcement.data[0],
+    announcement: announcement.data?.[0],
     quickQueue: quickQueue.data,
     matchQueue: matchQueue.data,
   };

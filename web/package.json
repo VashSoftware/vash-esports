@@ -36,6 +36,7 @@
     "@tanstack/svelte-query": "^5.29.0",
     "@tanstack/svelte-table": "^8.19.2",
     "bootstrap": "^5.3.3",
+    "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "osu-api-extended": "^2.8.51",

@@ -1,35 +1,24 @@
 services:
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./letsencrypt:/etc/letsencrypt
-      - ./html:/var/www/html
-    entrypoint: "/bin/sh -c"
-    command: |
-      trap exit TERM; 
-      while :; 
-      do certbot certonly --webroot -w /var/www/html \
-      --config-dir /etc/letsencrypt/config \
-      --work-dir /etc/letsencrypt/work \
-      --logs-dir /etc/letsencrypt/logs \
-      -d esports.vash.software --email stan@vash.software --agree-tos --non-interactive \
-      --rsa-key-size 4096 --no-eff-email --force-renewal; 
-      sleep 12h & wait $${!}; 
-      done
-    networks:
-      - webnet
-
   web:
-    build: ./web
+    build:
+      context: ./web
+      args:
+        OSU_CLIENT_ID: ${OSU_CLIENT_ID}
+        OSU_CLIENT_SECRET: ${OSU_CLIENT_SECRET}
+        SUPABASE_URL: ${SUPABASE_URL}
+        SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+        JWT_SECRET: ${JWT_SECRET}
+        DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+        DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
     networks:
       - webnet
     environment:
       - PUBLIC_OSU_CLIENT_ID=${OSU_CLIENT_ID}
       - OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
-      - PUBLIC_SUPABASE_URL=${SUPABASE_URL}
-      - PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
       - JWT_SECRET=${JWT_SECRET}
-      - PUBLIC_DISCORD_CLIENT_ID=${DISCORD_APPLICATION_ID}
+      - DISCORD_APPLICATION_ID=${DISCORD_APPLICATION_ID}
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
     ports:
       - "5173:5173"
@@ -37,6 +26,8 @@ services:
       watch:
         - path: ./web
           action: rebuild
+    depends_on:
+      - socket.io
 
   socket.io:
     build: ./realtime
@@ -66,6 +57,8 @@ services:
       - OSU_CLIENT_SECRET=${OSU_CLIENT_SECRET}
     ports:
       - "3000:3000"
+    depends_on:
+      - socket.io
     develop:
       watch:
         - path: ./osu-server
@@ -75,17 +68,13 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./esports.conf:/etc/nginx/conf.d/esports.conf
-      - ./letsencrypt:/etc/letsencrypt
     depends_on:
-      - certbot
       - socket.io
       - osu-server
       - web
-    entrypoint: /bin/sh -c "while [ ! -f /etc/letsencrypt/live/esports.vash.software/fullchain.pem ]; do echo 'Waiting for SSL certificates...'; sleep 5; done && nginx -g 'daemon off;'"
     networks:
       - webnet
     develop:

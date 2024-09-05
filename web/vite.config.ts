@@ -1,22 +1,21 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export default defineConfig({
-    plugins: [sveltekit()],
+  plugins: [sveltekit()],
 
-    // Normally this would be unnecessary, but we
-    // need it for learn.svelte.dev
-    server: {
-        fs: {
-            strict: false
-        }
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@use "src/variables.scss" as *;',
+      },
     },
+  },
 
-    css: {
-        preprocessorOptions: {
-            scss: {
-                additionalData: "@use \"src/variables.scss\" as *;"
-            }
-        }
-    }
+  define: {
+    "process.env": process.env,
+  },
 });
