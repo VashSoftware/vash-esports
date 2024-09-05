@@ -4,3 +4,4 @@ realtime/.DS_Store
 .DS_Store
 .env
 letsencrypt/
+nginx_logs

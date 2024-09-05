@@ -71,6 +71,8 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./esports.conf:/etc/nginx/conf.d/esports.conf
+      - ./nginx_logs:/var/log/nginx
+      - /dev/null:/etc/nginx/conf.d/default.conf
     depends_on:
       - socket.io
       - osu-server
