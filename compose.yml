@@ -88,6 +88,24 @@ services:
           action: sync+restart
           target: /etc/nginx/conf.d/esports.conf
 
+  minecraft-hub:
+    build: ./minecraft/hub
+    ports:
+      - "25565:25565"
+    networks:
+      - webnet
+    develop:
+      watch:
+        - path: ./minecraft/hub
+          action: rebuild
+    volumes:
+      - ./minecraft/hub/plugins:/server/plugins
+      - ./minecraft/hub/world:/server/world
+      - ./minecraft/hub/server.properties:/server/server.properties
+      - ./minecraft/hub/world_nether:/server/world_nether
+      - ./minecraft/hub/world_the_end:/server/world_the_end
+      - ./minecraft/hub/permissions.yml:/server/permissions.yml
+
 networks:
   webnet:
     driver: bridge
