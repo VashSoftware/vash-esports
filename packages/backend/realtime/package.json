@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
+    "express": "^4.20.0",
     "http2": "^3.3.7",
+    "prom-client": "^15.1.3",
     "socket.io": "^4.7.5"
   },
   "name": "esports-realtime",
