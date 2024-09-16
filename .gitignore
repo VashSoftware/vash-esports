@@ -5,3 +5,4 @@ realtime/.DS_Store
 .env
 letsencrypt/
 nginx_logs
+packages/db/postgres/postgres_data

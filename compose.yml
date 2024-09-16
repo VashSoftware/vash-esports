@@ -2,7 +2,7 @@ services:
   prometheus:
     image: prom/prometheus
     volumes:
-      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./packages/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
     networks:
       - webnet
     ports:
@@ -37,9 +37,23 @@ services:
   #   ports:
   #     - 9090:9090
 
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./packages/db/postgres/postgres_data:/var/lib/postgresql/data
+    networks:
+      - webnet
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+
   web:
     build:
-      context: ./web
+      context: ./packages/frontend/web
       args:
         OSU_CLIENT_ID: ${OSU_CLIENT_ID}
         OSU_CLIENT_SECRET: ${OSU_CLIENT_SECRET}
@@ -68,12 +82,9 @@ services:
       - socket.io
 
   socket.io:
-    build: ./realtime
+    build: ./packages/backend/realtime
     networks:
       - webnet
-    environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
     ports:
       - "3001:3001"
     develop:
@@ -82,7 +93,7 @@ services:
           action: rebuild
 
   osu-server:
-    build: ./osu-server
+    build: ./packages/backend/game-services/osu
     networks:
       - webnet
     environment:
@@ -107,9 +118,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./esports.conf:/etc/nginx/conf.d/esports.conf
-      - ./nginx_logs:/var/log/nginx
+      - ./packages/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./packages/nginx/esports.conf:/etc/nginx/conf.d/esports.conf
+      - ./packages/nginx/nginx_logs:/var/log/nginx
       - /dev/null:/etc/nginx/conf.d/default.conf
     depends_on:
       - socket.io
@@ -127,30 +138,29 @@ services:
           target: /etc/nginx/conf.d/esports.conf
 
   minecraft-hub:
-    build: ./minecraft/hub
+    build: ./packages/backend/game-services/minecraft/hub
     ports:
       - "25565:25565"
     networks:
       - webnet
     develop:
       watch:
-        - path: ./minecraft/hub
+        - path: ./packages/backend/game-services/minecraft/hub
           action: rebuild
     volumes:
-      - ./minecraft/hub/plugins:/server/plugins
-      - ./minecraft/hub/world:/server/world
-      - ./minecraft/hub/server.properties:/server/server.properties
-      - ./minecraft/hub/world_nether:/server/world_nether
-      - ./minecraft/hub/world_the_end:/server/world_the_end
-      - ./minecraft/hub/permissions.yml:/server/permissions.yml
+      - ./packages/backend/game-services/minecraft/hub/plugins:/server/plugins
+      - ./packages/backend/game-services/minecraft/hub/world:/server/world
+      - ./packages/backend/game-services/minecraft/hub/server.properties:/server/server.properties
+      - ./packages/backend/game-services/minecraft/hub/world_nether:/server/world_nether
+      - ./packages/backend/game-services/minecraft/hub/world_the_end:/server/world_the_end
+      - ./packages/backend/game-services/minecraft/hub/permissions.yml:/server/permissions.yml
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    image: docker.elastic.co/elasticsearch/elasticsearch
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
-      - ELASTIC_PASSWORD=VashElasticPassword
     ulimits:
       memlock:
         soft: -1
@@ -164,10 +174,10 @@ services:
     restart: unless-stopped
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:8.7.0
+    image: docker.elastic.co/logstash/logstash
     container_name: logstash
     volumes:
-      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./packages/monitoring/logstash/pipeline:/usr/share/logstash/pipeline
     ports:
       - 5000:5000
     environment:
@@ -179,7 +189,7 @@ services:
     restart: unless-stopped
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.7.0
+    image: docker.elastic.co/kibana/kibana
     container_name: kibana
     ports:
       - 5601:5601
@@ -194,19 +204,42 @@ services:
     restart: unless-stopped
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat:8.7.0
+    image: docker.elastic.co/beats/filebeat
     container_name: filebeat
     user: root
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./packages/monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
     networks:
       - webnet
     depends_on:
       - logstash
     restart: unless-stopped
 
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    user: root
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./packages/jenkins/jenkins.yml:/var/jenkins_home/jenkins.yml
+    networks:
+      - webnet
+    restart: unless-stopped
+
 networks:
   webnet:
     driver: bridge
+
+volumes:
+  esdata:
+    driver: local
+  grafana_data:
+    driver: local
+  jenkins_home:
+    driver: local

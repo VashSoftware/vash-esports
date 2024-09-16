@@ -1,0 +1,12 @@
+metricbeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+output.logstash:
+  hosts: ["logstash:5044"]
+  ssl.certificate_authorities: ["/usr/share/metricbeat/certs/ca.crt"]
+  ssl.certificate: "/usr/share/metricbeat/certs/metricbeat.crt"
+  ssl.key: "/usr/share/metricbeat/certs/metricbeat.key"
+
+processors:
+  - add_cloud_metadata: ~
