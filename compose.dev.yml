@@ -216,6 +216,9 @@ services:
       - postgres
     restart: unless-stopped
 
+  structurizr:
+    
+
 networks:
   webnet:
     driver: bridge
