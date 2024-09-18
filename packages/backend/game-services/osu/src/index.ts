@@ -4,7 +4,6 @@ import type { Request, Response } from "express";
 import { createMatch } from "./endpoints/createMatch.ts";
 import { sendMessages } from "./endpoints/sendMessages.ts";
 import { invitePlayer } from "./endpoints/invitePlayer.ts";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { io } from "socket.io-client";
 
 console.log("Starting osu! server.");
@@ -51,11 +50,6 @@ socket.on("reconnect_error", (error) => {
 socket.on("reconnect_failed", () => {
   console.error("Socket.IO reconnection failed");
 });
-
-const supabase: SupabaseClient = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
 
 const ongoingMatches = await supabase
   .from("matches")
