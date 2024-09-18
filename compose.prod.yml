@@ -1,0 +1,227 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./packages/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      - webnet
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  traefik:
+    image: traefik:v3.1
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    volumes:
+      - "./packages/db/postgres/postgres_data:/var/lib/postgresql/data"
+    networks:
+      - webnet
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: "./packages/frontend/web"
+      args:
+        OSU_CLIENT_ID: "${OSU_CLIENT_ID}"
+        OSU_CLIENT_SECRET: "${OSU_CLIENT_SECRET}"
+        SUPABASE_URL: "${SUPABASE_URL}"
+        SUPABASE_SERVICE_KEY: "${SUPABASE_SERVICE_KEY}"
+        JWT_SECRET: "${JWT_SECRET}"
+        DISCORD_APPLICATION_ID: "${DISCORD_APPLICATION_ID}"
+        DISCORD_CLIENT_SECRET: "${DISCORD_CLIENT_SECRET}"
+    environment:
+      PUBLIC_OSU_CLIENT_ID: "${OSU_CLIENT_ID}"
+      OSU_CLIENT_SECRET: "${OSU_CLIENT_SECRET}"
+      SUPABASE_URL: "${SUPABASE_URL}"
+      SUPABASE_SERVICE_KEY: "${SUPABASE_SERVICE_KEY}"
+      JWT_SECRET: "${JWT_SECRET}"
+      DISCORD_APPLICATION_ID: "${DISCORD_APPLICATION_ID}"
+      DISCORD_CLIENT_SECRET: "${DISCORD_CLIENT_SECRET}"
+    networks:
+      - webnet
+    ports:
+      - "5173:5173"
+    depends_on:
+      - socket.io
+    restart: unless-stopped
+
+  socket.io:
+    build:
+      context: "./packages/backend/realtime"
+    networks:
+      - webnet
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
+  osu-server:
+    build:
+      context: "./packages/backend/game-services/osu"
+    environment:
+      SUPABASE_URL: "${SUPABASE_URL}"
+      SUPABASE_SERVICE_KEY: "${SUPABASE_SERVICE_KEY}"
+      OSU_USERNAME: "${OSU_USERNAME}"
+      OSU_API_KEY: "${OSU_API_KEY}"
+      OSU_IRC_KEY: "${OSU_IRC_KEY}"
+      OSU_CLIENT_ID: "${OSU_CLIENT_ID}"
+      OSU_CLIENT_SECRET: "${OSU_CLIENT_SECRET}"
+    networks:
+      - webnet
+    ports:
+      - "3000:3000"
+    depends_on:
+      - socket.io
+    restart: unless-stopped
+
+  minecraft-hub:
+    build:
+      context: "./packages/backend/game-services/minecraft/hub"
+    volumes:
+      - "./packages/backend/game-services/minecraft/hub/plugins:/server/plugins"
+      - "./packages/backend/game-services/minecraft/hub/world:/server/world"
+      - "./packages/backend/game-services/minecraft/hub/server.properties:/server/server.properties"
+      - "./packages/backend/game-services/minecraft/hub/world_nether:/server/world_nether"
+      - "./packages/backend/game-services/minecraft/hub/world_the_end:/server/world_the_end"
+      - "./packages/backend/game-services/minecraft/hub/permissions.yml:/server/permissions.yml"
+    ports:
+      - "25565:25565"
+    networks:
+      - webnet
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    container_name: elasticsearch
+    environment:
+      discovery.type: "single-node"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - "esdata:/usr/share/elasticsearch/data"
+    ports:
+      - "9200:9200"
+    networks:
+      - webnet
+    restart: unless-stopped
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.9.0
+    container_name: logstash
+    volumes:
+      - "./packages/monitoring/logstash/pipeline:/usr/share/logstash/pipeline"
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    ports:
+      - "5000:5000"
+    networks:
+      - webnet
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.9.0
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+      ELASTICSEARCH_USERNAME: "elastic"
+      ELASTICSEARCH_PASSWORD: "${ELASTICSEARCH_PASSWORD}"
+    ports:
+      - "5601:5601"
+    networks:
+      - webnet
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.9.0
+    container_name: filebeat
+    user: root
+    volumes:
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./packages/monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml"
+    networks:
+      - webnet
+    depends_on:
+      - logstash
+    restart: unless-stopped
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    user: root
+    volumes:
+      - "jenkins_home:/var/jenkins_home"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./packages/jenkins/jenkins.yml:/var/jenkins_home/jenkins.yml"
+    ports:
+      - "8082:8080"
+      - "50000:50000"
+    networks:
+      - webnet
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - webnet
+    command: ["redis-server", "--appendonly", "yes"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin_password # Change this to a secure password
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_USERNAME: "${POSTGRES_USER}"
+      KC_DB_PASSWORD: "${POSTGRES_PASSWORD}"
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_STRICT: "false"
+    command: start-dev
+    ports:
+      - "8081:8080" # Exposing Keycloak on port 8081
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    networks:
+      - webnet
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  webnet:
+    driver: bridge
+
+volumes:
+  esdata:
+  jenkins_home:
+  redis_data:
+  keycloak_data:
