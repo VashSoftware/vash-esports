@@ -13,11 +13,6 @@ struct EventView: View {
     
     var body: some View {
         Text(viewModel.event?.name ?? "Event Name")
-        .onAppear {
-            Task {
-                await viewModel.getEvent()
-            }
-            
-            }
-        }
+        
     }
+}

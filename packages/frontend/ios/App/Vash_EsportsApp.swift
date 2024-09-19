@@ -6,13 +6,12 @@
 //
 
 import SwiftUI
-import Supabase
 
 @main
 struct Vash_EsportsApp: App {  
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
         }
     }
 }

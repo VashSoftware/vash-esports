@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
         NavigationSplitView {            
