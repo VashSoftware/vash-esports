@@ -6,3 +6,4 @@ realtime/.DS_Store
 letsencrypt/
 nginx_logs
 packages/db/postgres/postgres_data
+.idx/
