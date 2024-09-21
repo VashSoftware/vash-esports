@@ -164,10 +164,7 @@
   let password = "";
 
   async function signIn() {
-    await data.supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    // TODO: Add signin function
   }
 
   // Reactive statement to update bannerData when dependencies change
