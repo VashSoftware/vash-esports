@@ -1,5 +1,3 @@
-import { express } from "express";
-import { createClient } from "@supabase/supabase-js";
 import { createServer } from "http";
 
 import { Server } from "socket.io";
@@ -14,7 +12,6 @@ import { handleQuickQueueUpdate } from "./events/quickQueueUpdate";
 import { handleScoresUpdate } from "./events/scoresUpdate";
 import { Registry, collectDefaultMetrics, Counter } from "prom-client";
 
-const app = express();
 const register = new Registry();
 collectDefaultMetrics({ register });
 
@@ -22,13 +19,6 @@ const requestCounter = new Counter({
   name: "http_requests_total",
   help: "Total number of HTTP requests.",
 });
-
-
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -80,7 +70,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("scores-update", (data) => {
-    handleScoresUpdate(data, io, supabase);
+    handleScoresUpdate(data, io, null);
   });
 
   socket.on("match-queue-update", (data) => {
