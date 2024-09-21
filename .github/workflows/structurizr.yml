@@ -1,0 +1,33 @@
+name: Update Structurizr Diagrams
+
+on:
+  push:
+    paths:
+      - 'diagrams/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java (if using Structurizr Java SDK)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Run Structurizr DSL Upload
+        env:
+          STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
+          STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
+          STRUCTURIZR_WORKSPACE_ID: ${{ secrets.STRUCTURIZR_WORKSPACE_ID }}
+        run: |
+          curl -O https://raw.githubusercontent.com/structurizr/dsl/master/structurizr-cli-1.19.0.jar
+          java -jar structurizr-cli-1.19.0.jar push \
+            --workspace architecture/architecture.dsl \
+            --api-key $STRUCTURIZR_API_KEY \
+            --api-secret $STRUCTURIZR_API_SECRET \
+            --workspace-id $STRUCTURIZR_WORKSPACE_ID

@@ -13,15 +13,6 @@
 		B81863C82B733AAE00B60352 /* Vash_EsportsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863C72B733AAE00B60352 /* Vash_EsportsTests.swift */; };
 		B81863D22B733AAE00B60352 /* Vash_EsportsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863D12B733AAE00B60352 /* Vash_EsportsUITests.swift */; };
 		B81863D42B733AAE00B60352 /* Vash_EsportsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863D32B733AAE00B60352 /* Vash_EsportsUITestsLaunchTests.swift */; };
-		B81863E32B733C8800B60352 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863E22B733C8800B60352 /* MatchView.swift */; };
-		B81863E62B733ECB00B60352 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = B81863E52B733ECB00B60352 /* Auth */; };
-		B81863E82B733ECB00B60352 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = B81863E72B733ECB00B60352 /* Functions */; };
-		B81863EA2B733ECB00B60352 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = B81863E92B733ECB00B60352 /* PostgREST */; };
-		B81863EC2B733ECB00B60352 /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = B81863EB2B733ECB00B60352 /* Realtime */; };
-		B81863EE2B733ECB00B60352 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = B81863ED2B733ECB00B60352 /* Storage */; };
-		B81863F02B733ECB00B60352 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = B81863EF2B733ECB00B60352 /* Supabase */; };
-		B81863F22B73406600B60352 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863F12B73406600B60352 /* LoginView.swift */; };
-		B81863F42B73409A00B60352 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863F32B73409A00B60352 /* HomeView.swift */; };
 		B81863FB2B7343ED00B60352 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863FA2B7343ED00B60352 /* User.swift */; };
 		B81863FD2B7343F500B60352 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863FC2B7343F500B60352 /* Event.swift */; };
 		B81863FF2B73440300B60352 /* Match.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81863FE2B73440300B60352 /* Match.swift */; };
@@ -34,20 +25,28 @@
 		B81D8EF32C08A06F004AAC00 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8EF22C08A06F004AAC00 /* Message.swift */; };
 		B81D8EF52C08A081004AAC00 /* TeamMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8EF42C08A081004AAC00 /* TeamMember.swift */; };
 		B81D8EF72C08A0A9004AAC00 /* UserRating.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8EF62C08A0A9004AAC00 /* UserRating.swift */; };
-		B81D8EFF2C08E7E3004AAC00 /* Vash_Esports_WatchKit_AppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8EFE2C08E7E3004AAC00 /* Vash_Esports_WatchKit_AppApp.swift */; };
-		B81D8F012C08E7E3004AAC00 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8F002C08E7E3004AAC00 /* ContentView.swift */; };
-		B81D8F032C08E7E5004AAC00 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B81D8F022C08E7E5004AAC00 /* Assets.xcassets */; };
-		B81D8F062C08E7E5004AAC00 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B81D8F052C08E7E5004AAC00 /* Preview Assets.xcassets */; };
-		B81D8F102C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8F0F2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppTests.swift */; };
-		B81D8F1A2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8F192C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITests.swift */; };
-		B81D8F1C2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81D8F1B2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITestsLaunchTests.swift */; };
-		B81D8F1F2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B81D8EFC2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		B84620D32B7B196F00639A65 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84620D22B7B196F00639A65 /* EventViewModel.swift */; };
-		B84620D52B7B19CE00639A65 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84620D42B7B19CE00639A65 /* SupabaseManager.swift */; };
-		B849A4852B734C6C009993D5 /* EventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B849A4842B734C6C009993D5 /* EventView.swift */; };
-		B849A4872B734C7D009993D5 /* TeamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B849A4862B734C7D009993D5 /* TeamView.swift */; };
-		B849A4892B734C88009993D5 /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B849A4882B734C88009993D5 /* UserView.swift */; };
-		B849A48B2B734C95009993D5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B849A48A2B734C95009993D5 /* SettingsView.swift */; };
+		B8201DC72C9C7E9000C8DB6C /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DC52C9C7E9000C8DB6C /* MatchView.swift */; };
+		B8201DCA2C9C7E9000C8DB6C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DC82C9C7E9000C8DB6C /* HomeView.swift */; };
+		B8201DCE2C9C7E9000C8DB6C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DCB2C9C7E9000C8DB6C /* SettingsView.swift */; };
+		B8201DCF2C9C7E9000C8DB6C /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DCC2C9C7E9000C8DB6C /* UserView.swift */; };
+		B8201DD32C9C7E9000C8DB6C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DD12C9C7E9000C8DB6C /* LoginView.swift */; };
+		B8201DD62C9C7E9000C8DB6C /* TeamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DD42C9C7E9000C8DB6C /* TeamView.swift */; };
+		B8201DD92C9C7E9000C8DB6C /* EventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DD72C9C7E9000C8DB6C /* EventView.swift */; };
+		B8201DDC2C9C7E9000C8DB6C /* EventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DDA2C9C7E9000C8DB6C /* EventsView.swift */; };
+		B8201DDE2C9C7FA800C8DB6C /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DDD2C9C7FA800C8DB6C /* AuthService.swift */; };
+		B8201DE02C9C7FAA00C8DB6C /* WebSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DDF2C9C7FAA00C8DB6C /* WebSocketService.swift */; };
+		B8201DE22C9C7FB200C8DB6C /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DE12C9C7FB200C8DB6C /* APIService.swift */; };
+		B8201DEE2C9C864B00C8DB6C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B8201DED2C9C864B00C8DB6C /* LaunchScreen.storyboard */; };
+		B8201DF02C9C86FC00C8DB6C /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DEF2C9C86FC00C8DB6C /* HomeViewModel.swift */; };
+		B8201DF22C9C875F00C8DB6C /* MatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DF12C9C875F00C8DB6C /* MatchViewModel.swift */; };
+		B8201DF42C9C876900C8DB6C /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DF32C9C876900C8DB6C /* AccountViewModel.swift */; };
+		B8201DF62C9C876F00C8DB6C /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DF52C9C876F00C8DB6C /* LoginViewModel.swift */; };
+		B8201DF82C9C877800C8DB6C /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DF72C9C877700C8DB6C /* EventViewModel.swift */; };
+		B8201DFA2C9C877E00C8DB6C /* TeamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DF92C9C877E00C8DB6C /* TeamViewModel.swift */; };
+		B8201DFC2C9CDFD500C8DB6C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DFB2C9CDFD500C8DB6C /* MainView.swift */; };
+		B8201E002C9CEB9900C8DB6C /* MatchesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DFD2C9CEB9900C8DB6C /* MatchesView.swift */; };
+		B8201E012C9CEB9900C8DB6C /* MatchesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8201DFE2C9CEB9900C8DB6C /* MatchesViewModel.swift */; };
+		B84620D32B7B196F00639A65 /* EventsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84620D22B7B196F00639A65 /* EventsViewModel.swift */; };
 		B849A48D2B734E33009993D5 /* Round.swift in Sources */ = {isa = PBXBuildFile; fileRef = B849A48C2B734E33009993D5 /* Round.swift */; };
 		B849A48F2B7350D5009993D5 /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = B849A48E2B7350D5009993D5 /* Team.swift */; };
 		B849A4912B735109009993D5 /* Participation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B849A4902B735109009993D5 /* Participation.swift */; };
@@ -58,8 +57,6 @@
 		B86002712C07EC2D00543286 /* MapPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86002702C07EC2D00543286 /* MapPool.swift */; };
 		B86002732C07EC3800543286 /* MapPoolMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86002722C07EC3800543286 /* MapPoolMap.swift */; };
 		B86002752C07EC4900543286 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86002742C07EC4900543286 /* Game.swift */; };
-		B882619F2B7B15C9009CE525 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B882619E2B7B15C9009CE525 /* ContentView.swift */; };
-		B88261A12B7B16AE009CE525 /* EventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B88261A02B7B16AE009CE525 /* EventsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,27 +74,6 @@
 			remoteGlobalIDString = B81863B22B733AAC00B60352;
 			remoteInfo = "Vash Esports";
 		};
-		B81D8F0C2C08E7E6004AAC00 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B81863AB2B733AAC00B60352 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B81D8EFB2C08E7E3004AAC00;
-			remoteInfo = "Vash Esports WatchKit App Watch App";
-		};
-		B81D8F162C08E7E6004AAC00 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B81863AB2B733AAC00B60352 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B81D8EFB2C08E7E3004AAC00;
-			remoteInfo = "Vash Esports WatchKit App Watch App";
-		};
-		B81D8F1D2C08E7E6004AAC00 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B81863AB2B733AAC00B60352 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B81D8EFB2C08E7E3004AAC00;
-			remoteInfo = "Vash Esports WatchKit App Watch App";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -107,7 +83,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				B81D8F1F2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -124,9 +99,6 @@
 		B81863CD2B733AAE00B60352 /* Vash EsportsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vash EsportsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B81863D12B733AAE00B60352 /* Vash_EsportsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vash_EsportsUITests.swift; sourceTree = "<group>"; };
 		B81863D32B733AAE00B60352 /* Vash_EsportsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vash_EsportsUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		B81863E22B733C8800B60352 /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
-		B81863F12B73406600B60352 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		B81863F32B73409A00B60352 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B81863FA2B7343ED00B60352 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		B81863FC2B7343F500B60352 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		B81863FE2B73440300B60352 /* Match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
@@ -139,22 +111,35 @@
 		B81D8EF22C08A06F004AAC00 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		B81D8EF42C08A081004AAC00 /* TeamMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamMember.swift; sourceTree = "<group>"; };
 		B81D8EF62C08A0A9004AAC00 /* UserRating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRating.swift; sourceTree = "<group>"; };
-		B81D8EFC2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Vash Esports WatchKit App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B81D8EFE2C08E7E3004AAC00 /* Vash_Esports_WatchKit_AppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vash_Esports_WatchKit_AppApp.swift; sourceTree = "<group>"; };
 		B81D8F002C08E7E3004AAC00 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B81D8F022C08E7E5004AAC00 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B81D8F052C08E7E5004AAC00 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B81D8F0B2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vash Esports WatchKit App Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B81D8F0F2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vash_Esports_WatchKit_App_Watch_AppTests.swift; sourceTree = "<group>"; };
-		B81D8F152C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vash Esports WatchKit App Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B81D8F192C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vash_Esports_WatchKit_App_Watch_AppUITests.swift; sourceTree = "<group>"; };
 		B81D8F1B2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vash_Esports_WatchKit_App_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		B84620D22B7B196F00639A65 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
-		B84620D42B7B19CE00639A65 /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
-		B849A4842B734C6C009993D5 /* EventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventView.swift; sourceTree = "<group>"; };
-		B849A4862B734C7D009993D5 /* TeamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamView.swift; sourceTree = "<group>"; };
-		B849A4882B734C88009993D5 /* UserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
-		B849A48A2B734C95009993D5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B8201DC52C9C7E9000C8DB6C /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
+		B8201DC82C9C7E9000C8DB6C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		B8201DCB2C9C7E9000C8DB6C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B8201DCC2C9C7E9000C8DB6C /* UserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
+		B8201DD12C9C7E9000C8DB6C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		B8201DD42C9C7E9000C8DB6C /* TeamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamView.swift; sourceTree = "<group>"; };
+		B8201DD72C9C7E9000C8DB6C /* EventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventView.swift; sourceTree = "<group>"; };
+		B8201DDA2C9C7E9000C8DB6C /* EventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsView.swift; sourceTree = "<group>"; };
+		B8201DDD2C9C7FA800C8DB6C /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		B8201DDF2C9C7FAA00C8DB6C /* WebSocketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketService.swift; sourceTree = "<group>"; };
+		B8201DE12C9C7FB200C8DB6C /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		B8201DED2C9C864B00C8DB6C /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B8201DEF2C9C86FC00C8DB6C /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		B8201DF12C9C875F00C8DB6C /* MatchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchViewModel.swift; sourceTree = "<group>"; };
+		B8201DF32C9C876900C8DB6C /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
+		B8201DF52C9C876F00C8DB6C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		B8201DF72C9C877700C8DB6C /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
+		B8201DF92C9C877E00C8DB6C /* TeamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamViewModel.swift; sourceTree = "<group>"; };
+		B8201DFB2C9CDFD500C8DB6C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		B8201DFD2C9CEB9900C8DB6C /* MatchesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesView.swift; sourceTree = "<group>"; };
+		B8201DFE2C9CEB9900C8DB6C /* MatchesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesViewModel.swift; sourceTree = "<group>"; };
+		B84620D22B7B196F00639A65 /* EventsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewModel.swift; sourceTree = "<group>"; };
 		B849A48C2B734E33009993D5 /* Round.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Round.swift; sourceTree = "<group>"; };
 		B849A48E2B7350D5009993D5 /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
 		B849A4902B735109009993D5 /* Participation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Participation.swift; sourceTree = "<group>"; };
@@ -165,8 +150,6 @@
 		B86002702C07EC2D00543286 /* MapPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPool.swift; sourceTree = "<group>"; };
 		B86002722C07EC3800543286 /* MapPoolMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPoolMap.swift; sourceTree = "<group>"; };
 		B86002742C07EC4900543286 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
-		B882619E2B7B15C9009CE525 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B88261A02B7B16AE009CE525 /* EventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,12 +157,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B81863EA2B733ECB00B60352 /* PostgREST in Frameworks */,
-				B81863E82B733ECB00B60352 /* Functions in Frameworks */,
-				B81863F02B733ECB00B60352 /* Supabase in Frameworks */,
-				B81863E62B733ECB00B60352 /* Auth in Frameworks */,
-				B81863EE2B733ECB00B60352 /* Storage in Frameworks */,
-				B81863EC2B733ECB00B60352 /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,40 +174,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B81D8EF92C08E7E3004AAC00 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B81D8F082C08E7E6004AAC00 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B81D8F122C08E7E6004AAC00 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		B81863AA2B733AAC00B60352 = {
 			isa = PBXGroup;
 			children = (
-				B81D8EFD2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App */,
-				B81D8F0E2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppTests */,
-				B81D8F182C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppUITests */,
+				B8201DEC2C9C85A300C8DB6C /* App */,
+				B8201DE52C9C802C00C8DB6C /* iOS */,
 				B81863B42B733AAC00B60352 /* Products */,
-				B81863B52B733AAC00B60352 /* Vash Esports */,
-				B81863C62B733AAE00B60352 /* Vash EsportsTests */,
-				B81863D02B733AAE00B60352 /* Vash EsportsUITests */,
+				B8201DE92C9C806900C8DB6C /* Resources */,
+				B8201DE82C9C806100C8DB6C /* Tests */,
+				B8201DE62C9C804200C8DB6C /* tvOS */,
+				B8201DE42C9C802100C8DB6C /* watchOS */,
+				B8201DE72C9C805500C8DB6C /* Widgets */,
 			);
 			sourceTree = "<group>";
 		};
@@ -240,28 +197,8 @@
 				B81863B32B733AAC00B60352 /* Vash Esports.app */,
 				B81863C32B733AAE00B60352 /* Vash EsportsTests.xctest */,
 				B81863CD2B733AAE00B60352 /* Vash EsportsUITests.xctest */,
-				B81D8EFC2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App.app */,
-				B81D8F0B2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppTests.xctest */,
-				B81D8F152C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		B81863B52B733AAC00B60352 /* Vash Esports */ = {
-			isa = PBXGroup;
-			children = (
-				B81863F92B7343CD00B60352 /* Utilities */,
-				B81863F82B7343C600B60352 /* Services */,
-				B81863F72B7343C000B60352 /* Controllers */,
-				B81863F62B7343B800B60352 /* ViewModels */,
-				B81863F52B7343A800B60352 /* Models */,
-				B81863E02B733C5A00B60352 /* Views */,
-				B81863B62B733AAC00B60352 /* Vash_EsportsApp.swift */,
-				B81863BA2B733AAE00B60352 /* Assets.xcassets */,
-				B81863BC2B733AAE00B60352 /* Preview Content */,
-				B882619E2B7B15C9009CE525 /* ContentView.swift */,
-			);
-			path = "Vash Esports";
 			sourceTree = "<group>";
 		};
 		B81863BC2B733AAE00B60352 /* Preview Content */ = {
@@ -292,24 +229,17 @@
 		B81863E02B733C5A00B60352 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B81863E12B733C6200B60352 /* Screens */,
+				B8201DCD2C9C7E9000C8DB6C /* Account */,
+				B8201DD02C9C7E9000C8DB6C /* Common */,
+				B8201DD82C9C7E9000C8DB6C /* Event */,
+				B8201DDB2C9C7E9000C8DB6C /* Events */,
+				B8201DC92C9C7E9000C8DB6C /* Home */,
+				B8201DD22C9C7E9000C8DB6C /* Login */,
+				B8201DC62C9C7E9000C8DB6C /* Match */,
+				B8201DFF2C9CEB9900C8DB6C /* Matches */,
+				B8201DD52C9C7E9000C8DB6C /* Team */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		B81863E12B733C6200B60352 /* Screens */ = {
-			isa = PBXGroup;
-			children = (
-				B81863E22B733C8800B60352 /* MatchView.swift */,
-				B81863F12B73406600B60352 /* LoginView.swift */,
-				B81863F32B73409A00B60352 /* HomeView.swift */,
-				B849A4842B734C6C009993D5 /* EventView.swift */,
-				B849A4862B734C7D009993D5 /* TeamView.swift */,
-				B849A4882B734C88009993D5 /* UserView.swift */,
-				B849A48A2B734C95009993D5 /* SettingsView.swift */,
-				B88261A02B7B16AE009CE525 /* EventsView.swift */,
-			);
-			path = Screens;
 			sourceTree = "<group>";
 		};
 		B81863F52B7343A800B60352 /* Models */ = {
@@ -341,14 +271,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		B81863F62B7343B800B60352 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				B84620D22B7B196F00639A65 /* EventViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
 		B81863F72B7343C000B60352 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -359,7 +281,9 @@
 		B81863F82B7343C600B60352 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				B84620D42B7B19CE00639A65 /* SupabaseManager.swift */,
+				B8201DDD2C9C7FA800C8DB6C /* AuthService.swift */,
+				B8201DDF2C9C7FAA00C8DB6C /* WebSocketService.swift */,
+				B8201DE12C9C7FB200C8DB6C /* APIService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -369,17 +293,6 @@
 			children = (
 			);
 			path = Utilities;
-			sourceTree = "<group>";
-		};
-		B81D8EFD2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App */ = {
-			isa = PBXGroup;
-			children = (
-				B81D8EFE2C08E7E3004AAC00 /* Vash_Esports_WatchKit_AppApp.swift */,
-				B81D8F002C08E7E3004AAC00 /* ContentView.swift */,
-				B81D8F022C08E7E5004AAC00 /* Assets.xcassets */,
-				B81D8F042C08E7E5004AAC00 /* Preview Content */,
-			);
-			path = "Vash Esports WatchKit App Watch App";
 			sourceTree = "<group>";
 		};
 		B81D8F042C08E7E5004AAC00 /* Preview Content */ = {
@@ -407,6 +320,161 @@
 			path = "Vash Esports WatchKit App Watch AppUITests";
 			sourceTree = "<group>";
 		};
+		B8201DC62C9C7E9000C8DB6C /* Match */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DC52C9C7E9000C8DB6C /* MatchView.swift */,
+				B8201DF12C9C875F00C8DB6C /* MatchViewModel.swift */,
+			);
+			path = Match;
+			sourceTree = "<group>";
+		};
+		B8201DC92C9C7E9000C8DB6C /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DC82C9C7E9000C8DB6C /* HomeView.swift */,
+				B8201DEF2C9C86FC00C8DB6C /* HomeViewModel.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		B8201DCD2C9C7E9000C8DB6C /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DCB2C9C7E9000C8DB6C /* SettingsView.swift */,
+				B8201DCC2C9C7E9000C8DB6C /* UserView.swift */,
+				B8201DF32C9C876900C8DB6C /* AccountViewModel.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		B8201DD02C9C7E9000C8DB6C /* Common */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		B8201DD22C9C7E9000C8DB6C /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DD12C9C7E9000C8DB6C /* LoginView.swift */,
+				B8201DF52C9C876F00C8DB6C /* LoginViewModel.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		B8201DD52C9C7E9000C8DB6C /* Team */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DD42C9C7E9000C8DB6C /* TeamView.swift */,
+				B8201DF92C9C877E00C8DB6C /* TeamViewModel.swift */,
+			);
+			path = Team;
+			sourceTree = "<group>";
+		};
+		B8201DD82C9C7E9000C8DB6C /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DD72C9C7E9000C8DB6C /* EventView.swift */,
+				B8201DF72C9C877700C8DB6C /* EventViewModel.swift */,
+			);
+			path = Event;
+			sourceTree = "<group>";
+		};
+		B8201DDB2C9C7E9000C8DB6C /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DDA2C9C7E9000C8DB6C /* EventsView.swift */,
+				B84620D22B7B196F00639A65 /* EventsViewModel.swift */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
+		B8201DE32C9C7FCF00C8DB6C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B8201DE42C9C802100C8DB6C /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				B81D8EFE2C08E7E3004AAC00 /* Vash_Esports_WatchKit_AppApp.swift */,
+				B81D8F002C08E7E3004AAC00 /* ContentView.swift */,
+				B81D8F022C08E7E5004AAC00 /* Assets.xcassets */,
+				B81D8F042C08E7E5004AAC00 /* Preview Content */,
+			);
+			path = watchOS;
+			sourceTree = "<group>";
+		};
+		B8201DE52C9C802C00C8DB6C /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				B81863F72B7343C000B60352 /* Controllers */,
+				B81863F52B7343A800B60352 /* Models */,
+				B81863BC2B733AAE00B60352 /* Preview Content */,
+				B8201DE32C9C7FCF00C8DB6C /* Resources */,
+				B81863F82B7343C600B60352 /* Services */,
+				B81863F92B7343CD00B60352 /* Utilities */,
+				B81863E02B733C5A00B60352 /* Views */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		B8201DE62C9C804200C8DB6C /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = tvOS;
+			sourceTree = "<group>";
+		};
+		B8201DE72C9C805500C8DB6C /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
+		B8201DE82C9C806100C8DB6C /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				B81863C62B733AAE00B60352 /* Vash EsportsTests */,
+				B81863D02B733AAE00B60352 /* Vash EsportsUITests */,
+				B81D8F0E2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppTests */,
+				B81D8F182C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppUITests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		B8201DE92C9C806900C8DB6C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B8201DEC2C9C85A300C8DB6C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B81863B62B733AAC00B60352 /* Vash_EsportsApp.swift */,
+				B81863BA2B733AAE00B60352 /* Assets.xcassets */,
+				B8201DED2C9C864B00C8DB6C /* LaunchScreen.storyboard */,
+				B8201DFB2C9CDFD500C8DB6C /* MainView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		B8201DFF2C9CEB9900C8DB6C /* Matches */ = {
+			isa = PBXGroup;
+			children = (
+				B8201DFD2C9CEB9900C8DB6C /* MatchesView.swift */,
+				B8201DFE2C9CEB9900C8DB6C /* MatchesViewModel.swift */,
+			);
+			path = Matches;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -422,16 +490,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				B81D8F1E2C08E7E6004AAC00 /* PBXTargetDependency */,
 			);
 			name = "Vash Esports";
 			packageProductDependencies = (
-				B81863E52B733ECB00B60352 /* Auth */,
-				B81863E72B733ECB00B60352 /* Functions */,
-				B81863E92B733ECB00B60352 /* PostgREST */,
-				B81863EB2B733ECB00B60352 /* Realtime */,
-				B81863ED2B733ECB00B60352 /* Storage */,
-				B81863EF2B733ECB00B60352 /* Supabase */,
 			);
 			productName = "Vash Esports";
 			productReference = B81863B32B733AAC00B60352 /* Vash Esports.app */;
@@ -473,59 +534,6 @@
 			productReference = B81863CD2B733AAE00B60352 /* Vash EsportsUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		B81D8EFB2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B81D8F202C08E7E6004AAC00 /* Build configuration list for PBXNativeTarget "Vash Esports WatchKit App Watch App" */;
-			buildPhases = (
-				B81D8EF82C08E7E3004AAC00 /* Sources */,
-				B81D8EF92C08E7E3004AAC00 /* Frameworks */,
-				B81D8EFA2C08E7E3004AAC00 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Vash Esports WatchKit App Watch App";
-			productName = "Vash Esports WatchKit App Watch App";
-			productReference = B81D8EFC2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App.app */;
-			productType = "com.apple.product-type.application";
-		};
-		B81D8F0A2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B81D8F242C08E7E6004AAC00 /* Build configuration list for PBXNativeTarget "Vash Esports WatchKit App Watch AppTests" */;
-			buildPhases = (
-				B81D8F072C08E7E6004AAC00 /* Sources */,
-				B81D8F082C08E7E6004AAC00 /* Frameworks */,
-				B81D8F092C08E7E6004AAC00 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B81D8F0D2C08E7E6004AAC00 /* PBXTargetDependency */,
-			);
-			name = "Vash Esports WatchKit App Watch AppTests";
-			productName = "Vash Esports WatchKit App Watch AppTests";
-			productReference = B81D8F0B2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		B81D8F142C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B81D8F272C08E7E6004AAC00 /* Build configuration list for PBXNativeTarget "Vash Esports WatchKit App Watch AppUITests" */;
-			buildPhases = (
-				B81D8F112C08E7E6004AAC00 /* Sources */,
-				B81D8F122C08E7E6004AAC00 /* Frameworks */,
-				B81D8F132C08E7E6004AAC00 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B81D8F172C08E7E6004AAC00 /* PBXTargetDependency */,
-			);
-			name = "Vash Esports WatchKit App Watch AppUITests";
-			productName = "Vash Esports WatchKit App Watch AppUITests";
-			productReference = B81D8F152C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -547,17 +555,6 @@
 						CreatedOnToolsVersion = 15.2;
 						TestTargetID = B81863B22B733AAC00B60352;
 					};
-					B81D8EFB2C08E7E3004AAC00 = {
-						CreatedOnToolsVersion = 15.4;
-					};
-					B81D8F0A2C08E7E6004AAC00 = {
-						CreatedOnToolsVersion = 15.4;
-						TestTargetID = B81D8EFB2C08E7E3004AAC00;
-					};
-					B81D8F142C08E7E6004AAC00 = {
-						CreatedOnToolsVersion = 15.4;
-						TestTargetID = B81D8EFB2C08E7E3004AAC00;
-					};
 				};
 			};
 			buildConfigurationList = B81863AE2B733AAC00B60352 /* Build configuration list for PBXProject "Vash Esports" */;
@@ -570,7 +567,6 @@
 			);
 			mainGroup = B81863AA2B733AAC00B60352;
 			packageReferences = (
-				B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			productRefGroup = B81863B42B733AAC00B60352 /* Products */;
 			projectDirPath = "";
@@ -579,9 +575,6 @@
 				B81863B22B733AAC00B60352 /* Vash Esports */,
 				B81863C22B733AAE00B60352 /* Vash EsportsTests */,
 				B81863CC2B733AAE00B60352 /* Vash EsportsUITests */,
-				B81D8EFB2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App */,
-				B81D8F0A2C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppTests */,
-				B81D8F142C08E7E6004AAC00 /* Vash Esports WatchKit App Watch AppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -591,6 +584,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B8201DEE2C9C864B00C8DB6C /* LaunchScreen.storyboard in Resources */,
 				B81863BE2B733AAE00B60352 /* Preview Assets.xcassets in Resources */,
 				B81863BB2B733AAE00B60352 /* Assets.xcassets in Resources */,
 			);
@@ -610,29 +604,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B81D8EFA2C08E7E3004AAC00 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B81D8F062C08E7E5004AAC00 /* Preview Assets.xcassets in Resources */,
-				B81D8F032C08E7E5004AAC00 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B81D8F092C08E7E6004AAC00 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B81D8F132C08E7E6004AAC00 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -640,40 +611,50 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B81863E32B733C8800B60352 /* MatchView.swift in Sources */,
-				B84620D32B7B196F00639A65 /* EventViewModel.swift in Sources */,
+				B84620D32B7B196F00639A65 /* EventsViewModel.swift in Sources */,
+				B8201DFC2C9CDFD500C8DB6C /* MainView.swift in Sources */,
 				B81D8EF52C08A081004AAC00 /* TeamMember.swift in Sources */,
 				B81863FF2B73440300B60352 /* Match.swift in Sources */,
-				B84620D52B7B19CE00639A65 /* SupabaseManager.swift in Sources */,
+				B8201DD92C9C7E9000C8DB6C /* EventView.swift in Sources */,
 				B849A48F2B7350D5009993D5 /* Team.swift in Sources */,
-				B81863F42B73409A00B60352 /* HomeView.swift in Sources */,
-				B81863F22B73406600B60352 /* LoginView.swift in Sources */,
+				B8201DCA2C9C7E9000C8DB6C /* HomeView.swift in Sources */,
+				B8201DDC2C9C7E9000C8DB6C /* EventsView.swift in Sources */,
+				B8201DDE2C9C7FA800C8DB6C /* AuthService.swift in Sources */,
+				B8201DF62C9C876F00C8DB6C /* LoginViewModel.swift in Sources */,
 				B81863FB2B7343ED00B60352 /* User.swift in Sources */,
 				B81863FD2B7343F500B60352 /* Event.swift in Sources */,
+				B8201DF42C9C876900C8DB6C /* AccountViewModel.swift in Sources */,
+				B8201DE22C9C7FB200C8DB6C /* APIService.swift in Sources */,
+				B8201DF82C9C877800C8DB6C /* EventViewModel.swift in Sources */,
 				B86002732C07EC3800543286 /* MapPoolMap.swift in Sources */,
-				B882619F2B7B15C9009CE525 /* ContentView.swift in Sources */,
+				B8201DC72C9C7E9000C8DB6C /* MatchView.swift in Sources */,
+				B8201DD32C9C7E9000C8DB6C /* LoginView.swift in Sources */,
 				B81D8EF12C08A060004AAC00 /* MatchParticipantPlayerStatus.swift in Sources */,
+				B8201DCE2C9C7E9000C8DB6C /* SettingsView.swift in Sources */,
+				B8201DE02C9C7FAA00C8DB6C /* WebSocketService.swift in Sources */,
+				B8201DCF2C9C7E9000C8DB6C /* UserView.swift in Sources */,
 				B81863B72B733AAC00B60352 /* Vash_EsportsApp.swift in Sources */,
+				B8201DF02C9C86FC00C8DB6C /* HomeViewModel.swift in Sources */,
 				B81D8EF32C08A06F004AAC00 /* Message.swift in Sources */,
-				B849A4892B734C88009993D5 /* UserView.swift in Sources */,
+				B8201E002C9CEB9900C8DB6C /* MatchesView.swift in Sources */,
 				B860026D2C07EC0C00543286 /* MatchParticipantPlayer.swift in Sources */,
 				B81D8EED2C089F95004AAC00 /* Mapset.swift in Sources */,
 				B81D8EEB2C089F84004AAC00 /* EventGroup.swift in Sources */,
-				B849A4852B734C6C009993D5 /* EventView.swift in Sources */,
 				B860026B2C07EADF00543286 /* MatchParticipant.swift in Sources */,
 				B86002752C07EC4900543286 /* Game.swift in Sources */,
 				B81D8EEF2C08A04C004AAC00 /* MatchBan.swift in Sources */,
 				B81D8EF72C08A0A9004AAC00 /* UserRating.swift in Sources */,
+				B8201DF22C9C875F00C8DB6C /* MatchViewModel.swift in Sources */,
 				B81D8EE72C07FE1C004AAC00 /* Participant.swift in Sources */,
 				B849A4932B735168009993D5 /* Map.swift in Sources */,
-				B849A4872B734C7D009993D5 /* TeamView.swift in Sources */,
+				B8201E012C9CEB9900C8DB6C /* MatchesViewModel.swift in Sources */,
 				B849A4912B735109009993D5 /* Participation.swift in Sources */,
 				B849A48D2B734E33009993D5 /* Round.swift in Sources */,
 				B81D8EE92C089AC1004AAC00 /* MatchMap.swift in Sources */,
 				B86002712C07EC2D00543286 /* MapPool.swift in Sources */,
-				B849A48B2B734C95009993D5 /* SettingsView.swift in Sources */,
 				B860026F2C07EC1A00543286 /* Score.swift in Sources */,
-				B88261A12B7B16AE009CE525 /* EventsView.swift in Sources */,
+				B8201DD62C9C7E9000C8DB6C /* TeamView.swift in Sources */,
+				B8201DFA2C9C877E00C8DB6C /* TeamViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,32 +675,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B81D8EF82C08E7E3004AAC00 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B81D8F012C08E7E3004AAC00 /* ContentView.swift in Sources */,
-				B81D8EFF2C08E7E3004AAC00 /* Vash_Esports_WatchKit_AppApp.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B81D8F072C08E7E6004AAC00 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B81D8F102C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B81D8F112C08E7E6004AAC00 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B81D8F1C2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITestsLaunchTests.swift in Sources */,
-				B81D8F1A2C08E7E6004AAC00 /* Vash_Esports_WatchKit_App_Watch_AppUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -732,21 +687,6 @@
 			isa = PBXTargetDependency;
 			target = B81863B22B733AAC00B60352 /* Vash Esports */;
 			targetProxy = B81863CE2B733AAE00B60352 /* PBXContainerItemProxy */;
-		};
-		B81D8F0D2C08E7E6004AAC00 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B81D8EFB2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App */;
-			targetProxy = B81D8F0C2C08E7E6004AAC00 /* PBXContainerItemProxy */;
-		};
-		B81D8F172C08E7E6004AAC00 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B81D8EFB2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App */;
-			targetProxy = B81D8F162C08E7E6004AAC00 /* PBXContainerItemProxy */;
-		};
-		B81D8F1E2C08E7E6004AAC00 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B81D8EFB2C08E7E3004AAC00 /* Vash Esports WatchKit App Watch App */;
-			targetProxy = B81D8F1D2C08E7E6004AAC00 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -878,7 +818,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Vash Esports/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -912,7 +852,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Vash Esports/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
 				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1014,148 +954,6 @@
 			};
 			name = Release;
 		};
-		B81D8F212C08E7E6004AAC00 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Vash Esports WatchKit App Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Vash Esports WatchKit App";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "dev.stanrunge.Vash-Esports";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.stanrunge.Vash-Esports.watchkitapp";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 10.5;
-			};
-			name = Debug;
-		};
-		B81D8F222C08E7E6004AAC00 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Vash Esports WatchKit App Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Vash Esports WatchKit App";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "dev.stanrunge.Vash-Esports";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.stanrunge.Vash-Esports.watchkitapp";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 10.5;
-			};
-			name = Release;
-		};
-		B81D8F252C08E7E6004AAC00 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.stanrunge.Vash-Esports-WatchKit-App-Watch-AppTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vash Esports WatchKit App Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vash Esports WatchKit App Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.5;
-			};
-			name = Debug;
-		};
-		B81D8F262C08E7E6004AAC00 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.stanrunge.Vash-Esports-WatchKit-App-Watch-AppTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vash Esports WatchKit App Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vash Esports WatchKit App Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.5;
-			};
-			name = Release;
-		};
-		B81D8F282C08E7E6004AAC00 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.stanrunge.Vash-Esports-WatchKit-App-Watch-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = "Vash Esports WatchKit App Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.5;
-			};
-			name = Debug;
-		};
-		B81D8F292C08E7E6004AAC00 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YDRS2YJ6Z7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.stanrunge.Vash-Esports-WatchKit-App-Watch-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = "Vash Esports WatchKit App Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.5;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1195,78 +993,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81D8F202C08E7E6004AAC00 /* Build configuration list for PBXNativeTarget "Vash Esports WatchKit App Watch App" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B81D8F212C08E7E6004AAC00 /* Debug */,
-				B81D8F222C08E7E6004AAC00 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B81D8F242C08E7E6004AAC00 /* Build configuration list for PBXNativeTarget "Vash Esports WatchKit App Watch AppTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B81D8F252C08E7E6004AAC00 /* Debug */,
-				B81D8F262C08E7E6004AAC00 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B81D8F272C08E7E6004AAC00 /* Build configuration list for PBXNativeTarget "Vash Esports WatchKit App Watch AppUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B81D8F282C08E7E6004AAC00 /* Debug */,
-				B81D8F292C08E7E6004AAC00 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.3.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		B81863E52B733ECB00B60352 /* Auth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Auth;
-		};
-		B81863E72B733ECB00B60352 /* Functions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Functions;
-		};
-		B81863E92B733ECB00B60352 /* PostgREST */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = PostgREST;
-		};
-		B81863EB2B733ECB00B60352 /* Realtime */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Realtime;
-		};
-		B81863ED2B733ECB00B60352 /* Storage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Storage;
-		};
-		B81863EF2B733ECB00B60352 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B81863E42B733ECA00B60352 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B81863AB2B733AAC00B60352 /* Project object */;
 }
