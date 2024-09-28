@@ -25,8 +25,11 @@ services:
       - "8080:8080"
       - "443:443"
       - "80:80"
+    environment:
+      - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE=/letsencrypt/acme.json
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
     networks:
       - webnet
 
