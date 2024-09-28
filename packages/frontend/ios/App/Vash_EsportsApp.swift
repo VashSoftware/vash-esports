@@ -15,3 +15,7 @@ struct Vash_EsportsApp: App {
         }
     }
 }
+
+#Preview {
+    MainView()
+}

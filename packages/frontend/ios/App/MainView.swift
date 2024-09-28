@@ -14,12 +14,12 @@ struct MainView: View {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
-            
-            MatchesView()
-                .tabItem {
-                    Label("Matches", systemImage: "calendar")
-                }
-            
+//            
+//            MatchesView()
+//                .tabItem {
+//                    Label("Matches", systemImage: "calendar")
+//                }
+//            
             EventsView()
                 .tabItem {
                     Label("Events", systemImage: "calendar")
@@ -29,9 +29,17 @@ struct MainView: View {
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }
-            }
         }
-        
-        
     }
+}
 
+struct MainView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            MainView()
+                .previewDevice("iPhone 14 Pro Max")
+            MainView()
+                .preferredColorScheme(.dark)
+        }
+    }
+}

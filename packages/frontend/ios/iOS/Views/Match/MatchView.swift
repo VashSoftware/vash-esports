@@ -57,6 +57,6 @@ struct MatchView: View {
 
 struct MatchesView_Previews: PreviewProvider {
     static var previews: some View {
-        MatchView()
+        MatchesView()
     }
 }
