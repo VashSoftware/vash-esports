@@ -47,8 +47,6 @@ services:
       context: "./packages/frontend/web-laravel"
     networks:
       - webnet
-    ports:
-      - "8000:8000"
     depends_on:
       - socket.io
     restart: unless-stopped
@@ -58,6 +56,7 @@ services:
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.services.web.loadbalancer.server.port=8000"
 
   socket.io:
     build:
