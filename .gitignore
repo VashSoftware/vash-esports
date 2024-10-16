@@ -7,3 +7,4 @@ letsencrypt/
 nginx_logs
 packages/db/postgres/postgres_data
 .idx/
+packages/frontend/ios/Vash Esports.xcodeproj/project.xcworkspace/xcuserdata
