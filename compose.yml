@@ -51,8 +51,6 @@ services:
       context: "./packages/frontend/web-laravel"
     networks:
       - webnet
-    depends_on:
-      - socket.io
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -62,12 +60,12 @@ services:
       - "traefik.http.routers.web.tls.certresolver=myresolver"
       - "traefik.http.services.web.loadbalancer.server.port=8000"
 
-  socket.io:
-    build:
-      context: "./packages/backend/realtime"
-    networks:
-      - webnet
-    restart: unless-stopped
+  # socket.io:
+  #   build:
+  #     context: "./packages/backend/realtime"
+  #   networks:
+  #     - webnet
+  #   restart: unless-stopped
 
   osu-server:
     build:
@@ -82,9 +80,6 @@ services:
       OSU_CLIENT_SECRET: "${OSU_CLIENT_SECRET}"
     networks:
       - webnet
-
-    depends_on:
-      - socket.io
     restart: unless-stopped
 
   # minecraft-hub:
